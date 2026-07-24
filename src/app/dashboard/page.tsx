@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
-  ExternalLink, Copy, Users, CreditCard, BarChart2,
+  ExternalLink, Users, CreditCard, BarChart2,
   CheckCircle2, AlertTriangle, Link2, Globe, ArrowRight,
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
@@ -65,25 +65,29 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
+  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+
   const [
     { data: profile },
-    { data: socialLinks },
-    { data: buttons },
-    { data: recentEvents },
+    { count: activeSocialCount },
+    { count: activeButtonCount },
+    { count: viewCount },
+    { count: clickCount },
   ] = await Promise.all([
     supabase.from('profiles').select('display_name, username, bio, avatar_url, banner_url, plan, is_active').eq('id', user.id).single(),
-    supabase.from('social_links').select('id, is_active').eq('profile_id', user.id),
-    supabase.from('donation_buttons').select('id, is_active').eq('profile_id', user.id),
-    supabase.from('analytics_events').select('event_type').eq('profile_id', user.id).order('created_at', { ascending: false }).limit(200),
+    supabase.from('social_links').select('id', { count: 'exact', head: true }).eq('profile_id', user.id).eq('is_active', true),
+    supabase.from('donation_buttons').select('id', { count: 'exact', head: true }).eq('profile_id', user.id).eq('is_active', true),
+    supabase.from('analytics_events').select('id', { count: 'exact', head: true }).eq('profile_id', user.id).eq('event_type', 'profile_view').gte('created_at', since),
+    supabase.from('analytics_events').select('id', { count: 'exact', head: true }).eq('profile_id', user.id).eq('event_type', 'hotmart_redirect').gte('created_at', since),
   ])
 
   if (!profile) redirect('/auth/login')
 
   const publicUrl = `${BASE_URL}/${profile.username}`
-  const activeSocial = socialLinks?.filter((l) => l.is_active).length ?? 0
-  const activeButtons = buttons?.filter((b) => b.is_active).length ?? 0
-  const totalViews = recentEvents?.filter((e) => e.event_type === 'profile_view').length ?? 0
-  const totalClicks = recentEvents?.filter((e) => e.event_type === 'hotmart_redirect').length ?? 0
+  const activeSocial = activeSocialCount ?? 0
+  const activeButtons = activeButtonCount ?? 0
+  const totalViews = viewCount ?? 0
+  const totalClicks = clickCount ?? 0
 
   const stats = [
     { label: 'Montos activos', value: activeButtons, icon: CreditCard, color: 'text-emerald-500', href: '/dashboard/buttons' },
@@ -130,8 +134,8 @@ export default async function DashboardPage() {
       {/* Completeness */}
       <ProfileCompleteness
         profile={profile}
-        socialCount={socialLinks?.length ?? 0}
-        buttonCount={buttons?.length ?? 0}
+        socialCount={activeSocial}
+        buttonCount={activeButtons}
       />
 
       {/* Stats */}

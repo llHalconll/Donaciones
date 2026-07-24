@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { analyticsLimiter, checkRateLimit } from '@/lib/rate-limit'
 import type { EventType } from '@/types/database.types'
 
 const VALID_EVENTS: Set<EventType> = new Set(['profile_view', 'amount_selected', 'hotmart_redirect'])
-
-// Simple in-memory rate limiting per session (resets per serverless instance)
-// For production, use Redis or Supabase edge function with proper rate limiting
-const rateMap = new Map<string, number>()
-const RATE_WINDOW_MS = 60_000 // 1 minute
-const RATE_LIMIT = 30 // max events per session per window
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,18 +17,20 @@ export async function POST(req: NextRequest) {
     if (!profile_id || typeof profile_id !== 'string')
       return NextResponse.json({ error: 'Missing profile_id' }, { status: 400 })
 
-    // Rate limiting by session_id
-    if (session_id) {
-      const key = `${session_id}:${profile_id}`
-      const last = rateMap.get(key) ?? 0
-      const now = Date.now()
-      if (now - last < RATE_WINDOW_MS / RATE_LIMIT) {
-        // Too fast — silently ignore to avoid blocking visitor experience
-        return NextResponse.json({ ok: true })
-      }
-      rateMap.set(key, now)
-      // Cleanup old entries periodically
-      if (rateMap.size > 10000) rateMap.clear()
+    // ─── Persistent rate limiting (Upstash Redis) ───
+    // Key: session_id if available, else IP. Both scoped to profile_id.
+    const rateLimitKey = session_id
+      ? `session:${String(session_id).slice(0, 64)}:${profile_id}`
+      : `ip:${req.headers.get('x-forwarded-for')?.split(',')[0] ?? 'unknown'}:${profile_id}`
+
+    const rateResult = await checkRateLimit(analyticsLimiter, rateLimitKey)
+    if (!rateResult.allowed) {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (rateResult.retryAfter) headers['Retry-After'] = String(rateResult.retryAfter)
+      return new NextResponse(
+        JSON.stringify({ ok: true }), // Silent 200 — don't alert scrapers
+        { status: 200, headers }
+      )
     }
 
     const supabase = await createClient()

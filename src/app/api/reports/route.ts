@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { reportLimiter, checkRateLimit } from '@/lib/rate-limit'
 
 const VALID_REASONS = new Set(['fraud', 'impersonation', 'prohibited_content', 'suspicious_link', 'spam', 'other'])
-
-// Simple in-memory rate limit: max 5 reports per session per hour
-const reportRateMap = new Map<string, { count: number; windowStart: number }>()
-const RATE_WINDOW = 3_600_000 // 1 hour
-const RATE_MAX = 5
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,25 +22,19 @@ export async function POST(req: NextRequest) {
     if (reporter_email && typeof reporter_email === 'string' && reporter_email.length > 254)
       return NextResponse.json({ error: 'Email inválido.' }, { status: 400 })
 
-    // Rate limiting by IP (hashed, not stored)
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0] ?? 'unknown'
-    const rateKey = ip + ':report'
-    const now = Date.now()
-    const rateEntry = reportRateMap.get(rateKey)
+    // ─── Persistent rate limiting (Upstash Redis) ───
+    // Key: IP address — 5 reports per hour per IP
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+    const rateResult = await checkRateLimit(reportLimiter, `ip:${ip}`)
 
-    if (rateEntry) {
-      if (now - rateEntry.windowStart < RATE_WINDOW) {
-        if (rateEntry.count >= RATE_MAX)
-          return NextResponse.json({ error: 'Demasiados reportes. Intenta más tarde.' }, { status: 429 })
-        rateEntry.count++
-      } else {
-        reportRateMap.set(rateKey, { count: 1, windowStart: now })
-      }
-    } else {
-      reportRateMap.set(rateKey, { count: 1, windowStart: now })
+    if (!rateResult.allowed) {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (rateResult.retryAfter) headers['Retry-After'] = String(rateResult.retryAfter)
+      return new NextResponse(
+        JSON.stringify({ error: 'Demasiados reportes. Intenta más tarde.' }),
+        { status: 429, headers }
+      )
     }
-
-    if (reportRateMap.size > 5000) reportRateMap.clear()
 
     const supabase = await createClient()
 

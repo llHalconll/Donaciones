@@ -14,9 +14,12 @@ export async function registerAction(prevState: unknown, formData: FormData) {
     return { error: 'Todos los campos son obligatorios.' }
   }
 
+  if (password.length < 8) {
+    return { error: 'La contraseña debe tener al menos 8 caracteres.' }
+  }
+
   const username = rawUsername.toLowerCase().trim()
 
-  // 1. Validar formato de username
   const formatCheck = validateUsernameFormat(username)
   if (!formatCheck.ok) {
     return { error: formatCheck.error }
@@ -24,7 +27,6 @@ export async function registerAction(prevState: unknown, formData: FormData) {
 
   const supabase = await createClient()
 
-  // 2. Verificar disponibilidad de username en Supabase
   const { data: existingUser } = await supabase
     .from('profiles')
     .select('username')
@@ -35,7 +37,6 @@ export async function registerAction(prevState: unknown, formData: FormData) {
     return { error: `El usuario "${username}" ya está registrado. Elige otro.` }
   }
 
-  // 3. Registrar usuario en Supabase Auth con metadatos
   const { error: signUpError } = await supabase.auth.signUp({
     email,
     password,
@@ -103,9 +104,14 @@ export async function forgotPasswordAction(prevState: unknown, formData: FormDat
 
 export async function resetPasswordAction(prevState: unknown, formData: FormData) {
   const password = formData.get('password') as string
+  const confirmPassword = formData.get('confirmPassword') as string
 
   if (!password || password.length < 8) {
     return { error: 'La contraseña debe tener al menos 8 caracteres.' }
+  }
+
+  if (password !== confirmPassword) {
+    return { error: 'Las contraseñas no coinciden.' }
   }
 
   const supabase = await createClient()

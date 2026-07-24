@@ -1,11 +1,16 @@
 'use client'
 
-import { useState, useTransition, useActionState } from 'react'
-import { Plus, Trash2, GripVertical, Eye, EyeOff, CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react'
+import { useState, useTransition, useActionState, useRef, useEffect } from 'react'
+import {
+  Plus, Trash2, GripVertical, Eye, EyeOff,
+  CheckCircle2, AlertCircle, ExternalLink,
+} from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { addSocialLinkAction, deleteSocialLinkAction, toggleSocialLinkAction } from './actions'
+import {
+  addSocialLinkAction, deleteSocialLinkAction, toggleSocialLinkAction, reorderSocialLinksAction,
+} from './actions'
 import type { SocialLink } from '@/types/database.types'
 
 type PlatformOption = { value: string; label: string }
@@ -24,9 +29,21 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
   const [, startTransition] = useTransition()
   const [addState, addAction, isAdding] = useActionState(addSocialLinkAction, null)
 
+  // Drag state
+  const dragIdx = useRef<number | null>(null)
+
   const atLimit = links.length >= limit
 
+  // Auto-close and reload on successful add
+  useEffect(() => {
+    if (addState?.success) {
+      setShowForm(false)
+      window.location.reload()
+    }
+  }, [addState?.success])
+
   async function handleDelete(id: string) {
+    if (!confirm('\u00bfEliminar este enlace?')) return
     setDeletingId(id)
     const result = await deleteSocialLinkAction(id)
     if (!result.error) setLinks((prev) => prev.filter((l) => l.id !== id))
@@ -42,23 +59,49 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
     })
   }
 
+  // Drag & drop handlers
+  function onDragStart(idx: number) { dragIdx.current = idx }
+  function onDragOver(e: React.DragEvent, idx: number) {
+    e.preventDefault()
+    if (dragIdx.current === null || dragIdx.current === idx) return
+    setLinks((prev) => {
+      const next = [...prev]
+      const [moved] = next.splice(dragIdx.current!, 1)
+      next.splice(idx, 0, moved)
+      dragIdx.current = idx
+      return next
+    })
+  }
+  function onDragEnd() {
+    dragIdx.current = null
+    startTransition(async () => {
+      await reorderSocialLinksAction(links.map((l) => l.id))
+    })
+  }
+
   const platformLabel = (val: string) => platforms.find((p) => p.value === val)?.label ?? val
 
   return (
     <div className="space-y-4">
-      {/* Link list */}
       {links.length === 0 && (
         <Card className="p-8 text-center">
-          <p className="text-sm text-slate-500 dark:text-slate-400">Aún no tienes redes sociales configuradas.</p>
-          <p className="text-xs text-slate-400 mt-1">Agrega tus primeros enlaces para mostrarlos en tu perfil público.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">A\u00fan no tienes redes sociales configuradas.</p>
+          <p className="text-xs text-slate-400 mt-1">Agrega tus primeros enlaces para mostrarlos en tu perfil p\u00fablico.</p>
         </Card>
       )}
 
       <div className="space-y-2">
-        {links.map((link) => (
-          <Card key={link.id} className="p-4">
+        {links.map((link, idx) => (
+          <Card
+            key={link.id}
+            className="p-4 cursor-grab active:cursor-grabbing"
+            draggable
+            onDragStart={() => onDragStart(idx)}
+            onDragOver={(e) => onDragOver(e, idx)}
+            onDragEnd={onDragEnd}
+          >
             <div className="flex items-center gap-3">
-              <GripVertical className="w-4 h-4 text-slate-300 flex-shrink-0 cursor-grab" />
+              <GripVertical className="w-4 h-4 text-slate-300 flex-shrink-0" aria-hidden="true" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm font-semibold text-slate-900 dark:text-white">{platformLabel(link.platform)}</span>
@@ -96,7 +139,6 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
         ))}
       </div>
 
-      {/* Add Form */}
       {!showForm && !atLimit && (
         <Button variant="outline" size="sm" onClick={() => setShowForm(true)} className="w-full sm:w-auto">
           <Plus className="w-4 h-4" /> Agregar red social
@@ -105,7 +147,8 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
 
       {atLimit && (
         <p className="text-xs text-amber-600 dark:text-amber-400 text-center p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-          Has alcanzado el límite de {limit} enlaces para tu plan actual.
+          Has alcanzado el l\u00edmite de {limit} enlaces para tu plan actual.{' '}
+          <a href="/pricing" className="underline font-semibold">Ver planes &rarr;</a>
         </p>
       )}
 
@@ -113,7 +156,7 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
         <Card>
           <CardHeader><CardTitle className="text-sm">Nuevo enlace</CardTitle></CardHeader>
           <CardContent>
-            <form action={async (fd) => { await addAction(fd); if (!addState?.error) { setShowForm(false) } }} className="space-y-3">
+            <form action={addAction} className="space-y-3">
               {addState?.error && (
                 <div role="alert" className="flex items-center gap-2 text-xs text-rose-500 p-2 rounded-xl bg-rose-500/10 border border-rose-500/20">
                   <AlertCircle className="w-3.5 h-3.5" /> {addState.error}
@@ -133,11 +176,13 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
               </div>
               <div className="space-y-1.5">
                 <label htmlFor="socialUrl" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">URL</label>
-                <input id="socialUrl" name="url" type="url" required placeholder="https://..." className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                <input id="socialUrl" name="url" type="url" required placeholder="https://..."
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
               </div>
               <div className="space-y-1.5">
                 <label htmlFor="socialLabel" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Etiqueta (opcional)</label>
-                <input id="socialLabel" name="label" type="text" placeholder="Ej: Mi canal de tutoriales" className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                <input id="socialLabel" name="label" type="text" placeholder="Ej: Mi canal de tutoriales"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
               </div>
               <div className="flex gap-2">
                 <Button type="submit" variant="primary" size="sm" isLoading={isAdding}>Agregar</Button>

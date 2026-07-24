@@ -2,22 +2,21 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 /**
- * Supabase session refresh + route protection.
+ * Next.js 16 Proxy — Supabase session refresh + route protection.
  *
  * Security guards:
- *   1. /dashboard/* → requires authenticated user (redirect to /auth/login if not)
- *   2. /auth/login, /auth/register → redirect to /dashboard if already authenticated
- *   3. /admin → page-level is_admin check (handled in server component, not here)
+ *   1. /dashboard/* → requires authenticated user
+ *   2. /admin/*    → requires authenticated user (DB is_admin check happens in server component)
+ *   3. /auth/login, /auth/register → redirect authenticated users to /dashboard
  *
- * NOTE: Never trust user metadata for permission checks.
- * Admin verification is always done via DB lookup in the server component.
+ * NOTE: In Next.js 16+, this file is named proxy.ts (not middleware.ts).
  */
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder',
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {
@@ -35,41 +34,41 @@ export async function proxy(request: NextRequest) {
   )
 
   // IMPORTANT: Do not add logic between createServerClient and getUser().
-  // A simple mistake can make server components not refresh their session.
+  // A simple mistake here can break server component session refresh.
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   const pathname = request.nextUrl.pathname
 
-  // Guard 1: Protect /dashboard/* — redirect unauthenticated users to login
-  if (pathname.startsWith('/dashboard') && !user) {
+  // Guard 1: Protect /dashboard/* and /admin/* — redirect unauthenticated users to login
+  if ((pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
+    url.searchParams.set('redirectTo', pathname)
     return NextResponse.redirect(url)
   }
 
-  // Guard 2: Redirect authenticated users away from auth pages
+  // Guard 2: Redirect already-authenticated users away from auth pages
   if ((pathname === '/auth/login' || pathname === '/auth/register') && user) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 
-  // IMPORTANT: Return supabaseResponse, not NextResponse.next().
-  // Returning a new response object without the cookies would break session refresh.
+  // IMPORTANT: Always return supabaseResponse to preserve session cookies.
   return supabaseResponse
 }
 
 export const config = {
   matcher: [
     /*
-     * Match all request paths except:
+     * Match all request paths EXCEPT:
      * - _next/static (static files)
      * - _next/image (image optimization)
      * - favicon.ico
-     * - Public image files
+     * - Public image files (svg, png, jpg, jpeg, gif, webp)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

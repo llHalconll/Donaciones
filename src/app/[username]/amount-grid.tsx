@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Star, ExternalLink, CheckCircle2, Loader2 } from 'lucide-react'
+import { Star, ExternalLink, CheckCircle2, Loader2, AlertCircle, X } from 'lucide-react'
 import type { DonationButton } from '@/types/database.types'
 
 interface Props {
@@ -30,6 +30,7 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
     buttons.find((b) => b.is_featured)?.id ?? null
   )
   const [isRedirecting, setIsRedirecting] = useState(false)
+  const [urlError, setUrlError] = useState<string | null>(null)
 
   const selectedButton = buttons.find((b) => b.id === selectedId)
 
@@ -57,11 +58,13 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
 
   function handleSelect(id: string) {
     setSelectedId(id)
+    setUrlError(null)
     trackEvent('amount_selected', id)
   }
 
   async function handleSupport() {
     if (!selectedButton) return
+    setUrlError(null)
     setIsRedirecting(true)
 
     await trackEvent('hotmart_redirect', selectedButton.id)
@@ -73,7 +76,7 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
       window.location.href = selectedButton.hotmart_checkout_url
     } catch {
       setIsRedirecting(false)
-      alert('El enlace de este monto no es válido. Contacta al creador.')
+      setUrlError('El enlace de este monto no es v\u00e1lido. Por favor contacta al creador.')
     }
   }
 
@@ -82,6 +85,24 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
 
   return (
     <div className="space-y-4">
+      {/* Inline error notification — replaces native alert() */}
+      {urlError && (
+        <div
+          role="alert"
+          className="flex items-start gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm"
+        >
+          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+          <p className="flex-1">{urlError}</p>
+          <button
+            onClick={() => setUrlError(null)}
+            className="p-0.5 hover:opacity-60 transition"
+            aria-label="Cerrar"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Amount grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="listbox" aria-label="Montos de apoyo disponibles">
         {buttons.map((btn) => {
@@ -112,7 +133,9 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
                   )}
                 </div>
                 <div className="flex-shrink-0">
-                  <span className={`text-base font-extrabold font-mono ${isSelected ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                  <span className={`text-base font-extrabold font-mono ${
+                    isSelected ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300'
+                  }`}>
                     {formatAmount(Number(btn.amount), btn.currency)}
                   </span>
                 </div>
@@ -137,12 +160,12 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
           aria-live="polite"
         >
           {isRedirecting ? (
-            <><Loader2 className="w-5 h-5 animate-spin" /> Redirigiendo…</>
+            <><Loader2 className="w-5 h-5 animate-spin" /> Redirigiendo&#8230;</>
           ) : (
             <>
               <ExternalLink className="w-5 h-5" />
               {selectedButton
-                ? `${selectedButton.button_label ?? 'Apoyar ahora'} · ${formatAmount(Number(selectedButton.amount), selectedButton.currency)}`
+                ? `${selectedButton.button_label ?? 'Apoyar ahora'} \u00b7 ${formatAmount(Number(selectedButton.amount), selectedButton.currency)}`
                 : 'Selecciona un monto'}
             </>
           )}

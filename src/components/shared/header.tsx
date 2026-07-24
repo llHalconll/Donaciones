@@ -17,6 +17,12 @@ export function PublicHeader() {
           </span>
         </Link>
 
+        {/* Nav */}
+        <nav className="hidden md:flex items-center gap-6 text-sm text-slate-600 dark:text-slate-400">
+          <Link href="/demo" className="hover:text-slate-900 dark:hover:text-white transition-colors">Demo</Link>
+          <Link href="/pricing" className="hover:text-slate-900 dark:hover:text-white transition-colors">Precios</Link>
+        </nav>
+
         {/* Action Items */}
         <div className="flex items-center gap-3">
           <ThemeToggle />

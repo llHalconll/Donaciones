@@ -5,7 +5,8 @@ import { createClient } from '@/lib/supabase/server'
 import { PublicAmountGrid } from './amount-grid'
 import { PublicSocialLinks } from './social-links'
 import { ReportButton } from './report-button'
-import { Building2, UserCircle2, Globe, Share2 } from 'lucide-react'
+import { ShareButton } from './share-button'
+import { Building2, UserCircle2, Globe } from 'lucide-react'
 
 interface PageProps {
   params: Promise<{ username: string }>
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!profile) return { title: 'Perfil no encontrado' }
 
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://donacionessaas.com'
-  const desc = profile.bio ?? `Apoya a ${profile.display_name} directamente a través de sus enlaces de Hotmart.`
+  const desc = profile.bio ?? `Apoya a ${profile.display_name} directamente a trav\u00e9s de sus enlaces de Hotmart.`
 
   return {
     title: `${profile.display_name} (@${username}) | DonacionesSaaS`,
@@ -38,7 +39,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: 'profile',
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: `${profile.display_name} (@${username})`,
       description: desc,
       images: profile.avatar_url ? [profile.avatar_url] : [],
@@ -97,7 +98,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
 
       {/* Main content */}
       <div className="max-w-2xl mx-auto px-4">
-        {/* Avatar */}
+        {/* Avatar + action buttons */}
         <div className="-mt-14 sm:-mt-16 mb-4 flex items-end justify-between">
           <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border-4 border-white dark:border-slate-950 shadow-xl overflow-hidden bg-gradient-to-br from-emerald-500/20 to-indigo-500/20 flex items-center justify-center">
             {profile.avatar_url ? (
@@ -118,6 +119,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
 
           {/* Share + Report */}
           <div className="flex gap-2 pb-2">
+            <ShareButton url={profileUrl} name={profile.display_name} />
             <ReportButton profileId={profile.id} profileName={profile.display_name} />
           </div>
         </div>
@@ -135,7 +137,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
                     ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20'
                     : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
                 }`}>
-                  {isOrg ? <><Building2 className="w-3 h-3" /> Organización</> : <><UserCircle2 className="w-3 h-3" /> Creador</>}
+                  {isOrg ? <><Building2 className="w-3 h-3" /> Organizaci&oacute;n</> : <><UserCircle2 className="w-3 h-3" /> Creador</>}
                 </span>
               </div>
               <p className="text-sm font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">@{profile.username}</p>
@@ -172,10 +174,10 @@ export default async function PublicProfilePage({ params }: PageProps) {
         <div className="py-8 space-y-5">
           <div className="text-center space-y-1">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-              Elige cómo apoyar a {profile.display_name}
+              Elige c&oacute;mo apoyar a {profile.display_name}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Selecciona un monto. Serás redirigido al checkout de Hotmart del creador.
+              Selecciona un monto. Ser&aacute;s redirigido al checkout de Hotmart del creador.
             </p>
           </div>
 
@@ -186,17 +188,17 @@ export default async function PublicProfilePage({ params }: PageProps) {
             />
           ) : (
             <div className="text-center py-12 text-slate-400">
-              <p className="text-sm">Este creador aún no ha configurado sus montos de apoyo.</p>
+              <p className="text-sm">Este creador a&uacute;n no ha configurado sus montos de apoyo.</p>
             </div>
           )}
 
           {/* Trust notice */}
           <div className="rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 text-center space-y-1">
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Al hacer clic en Apoyar, serás redirigido al checkout de Hotmart del creador.
+              Al hacer clic en Apoyar, ser&aacute;s redirigido al checkout de Hotmart del creador.
             </p>
             <p className="text-xs text-slate-400">
-              DonacionesSaaS no procesa pagos. La transacción se realiza completamente en Hotmart.
+              DonacionesSaaS no procesa pagos. La transacci&oacute;n se realiza completamente en Hotmart.
             </p>
           </div>
         </div>
@@ -204,7 +206,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         {/* Footer branding */}
         <div className="pb-8 text-center">
           <a href="/" className="text-xs text-slate-400 hover:text-emerald-500 transition-colors">
-            Crea tu propia página en <strong>DonacionesSaaS</strong>
+            Crea tu propia p&aacute;gina en <strong>DonacionesSaaS</strong>
           </a>
         </div>
       </div>

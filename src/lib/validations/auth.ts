@@ -53,12 +53,17 @@ export const RESERVED_USERNAMES = new Set([
 ])
 
 export function validateUsernameFormat(raw: string): { ok: boolean; error?: string } {
-  const u = raw.trim().toLowerCase()
+  const u = raw.trim()
 
   if (!u) return { ok: false, error: 'El nombre de usuario es obligatorio.' }
   if (/\s/.test(u)) return { ok: false, error: 'El usuario no puede contener espacios.' }
   if (u.length < 3 || u.length > 30)
     return { ok: false, error: 'El usuario debe tener entre 3 y 30 caracteres.' }
+
+  // Explicitly reject uppercase — callers must lowercase before calling this function
+  if (u !== u.toLowerCase())
+    return { ok: false, error: 'El usuario debe estar en minúsculas.' }
+
   if (!USERNAME_PATTERN.test(u))
     return {
       ok: false,
