@@ -1,31 +1,35 @@
 -- ═══════════════════════════════════════════════════════════════════
--- MIGRATION 002 — Social links extended fields
--- Safe: adds missing columns to existing social_links table.
+-- MIGRATION 002 — Extender tabla social_links
+-- Base actual (schema.sql ya aplicado):
+--   id, profile_id, platform, url, created_at
+--
+-- Esta migración AGREGA únicamente las columnas que faltan.
 -- ═══════════════════════════════════════════════════════════════════
 
+-- label: etiqueta personalizada del enlace (opcional)
 ALTER TABLE public.social_links
   ADD COLUMN IF NOT EXISTS label TEXT;
 
+-- is_active: permite al creador ocultar un enlace sin eliminarlo
 ALTER TABLE public.social_links
   ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT true;
 
+-- order_index: posición en la lista para drag-and-drop futuro
 ALTER TABLE public.social_links
   ADD COLUMN IF NOT EXISTS order_index INT NOT NULL DEFAULT 0;
 
+-- updated_at: auditoría de última modificación
 ALTER TABLE public.social_links
   ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL;
 
--- Index for ordering
+-- Índice para consultas ordenadas eficientes en la página pública
 CREATE INDEX IF NOT EXISTS idx_social_links_profile_order
   ON public.social_links (profile_id, order_index);
 
--- Fix RLS: old ALL policy also covers INSERT — keep it but ensure profile_id is validated
--- The existing "Gestión de redes sociales por el creador" policy already handles INSERT/UPDATE/DELETE
--- The existing "Lectura pública de redes sociales" covers SELECT
-
--- ROLLBACK (manual):
--- ALTER TABLE public.social_links DROP COLUMN IF EXISTS label;
--- ALTER TABLE public.social_links DROP COLUMN IF EXISTS is_active;
--- ALTER TABLE public.social_links DROP COLUMN IF EXISTS order_index;
--- ALTER TABLE public.social_links DROP COLUMN IF EXISTS updated_at;
--- DROP INDEX IF EXISTS idx_social_links_profile_order;
+-- ─────────────────────────────────────────────
+-- Nota sobre RLS existente:
+-- La política "Gestión de redes sociales por el creador" usa FOR ALL,
+-- que cubre INSERT, UPDATE y DELETE. Sigue siendo válida.
+-- La política "Lectura pública de redes sociales" cubre SELECT.
+-- No se requiere modificar las políticas existentes.
+-- ─────────────────────────────────────────────
