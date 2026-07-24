@@ -1,143 +1,180 @@
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { redirect } from 'next/navigation'
+import Link from 'next/link'
+import {
+  ExternalLink, Copy, Users, CreditCard, BarChart2,
+  CheckCircle2, AlertTriangle, Link2, Globe, ArrowRight,
+} from 'lucide-react'
+import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Copy, ExternalLink, UserCircle, CreditCard, Eye, MousePointerClick } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { CopyUrlButton } from './copy-url-button'
+
+export const metadata = { title: 'Dashboard | DonacionesSaaS' }
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://donacionessaas.com'
+
+function ProfileCompleteness({ profile, socialCount, buttonCount }: {
+  profile: { display_name: string; bio: string | null; avatar_url: string | null; banner_url: string | null }
+  socialCount: number
+  buttonCount: number
+}) {
+  const checks = [
+    { label: 'Nombre visible', done: Boolean(profile.display_name) },
+    { label: 'Biografía', done: Boolean(profile.bio) },
+    { label: 'Foto de perfil', done: Boolean(profile.avatar_url) },
+    { label: 'Banner', done: Boolean(profile.banner_url) },
+    { label: 'Al menos 1 red social', done: socialCount > 0 },
+    { label: 'Al menos 1 monto de apoyo', done: buttonCount > 0 },
+  ]
+  const done = checks.filter((c) => c.done).length
+  const pct = Math.round((done / checks.length) * 100)
+
+  return (
+    <Card className="p-5 space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Completitud del perfil</h2>
+        <span className={`text-xs font-bold ${pct === 100 ? 'text-emerald-500' : 'text-amber-500'}`}>{pct}%</span>
+      </div>
+
+      <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all ${pct === 100 ? 'bg-emerald-500' : 'bg-amber-500'}`}
+          style={{ width: `${pct}%` }}
+          role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {checks.map((c) => (
+          <div key={c.label} className="flex items-center gap-2 text-xs">
+            {c.done
+              ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+              : <AlertTriangle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+            }
+            <span className={c.done ? 'text-slate-600 dark:text-slate-300' : 'text-slate-400'}>{c.label}</span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  )
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/auth/login')
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const [
+    { data: profile },
+    { data: socialLinks },
+    { data: buttons },
+    { data: recentEvents },
+  ] = await Promise.all([
+    supabase.from('profiles').select('display_name, username, bio, avatar_url, banner_url, plan, is_active').eq('id', user.id).single(),
+    supabase.from('social_links').select('id, is_active').eq('profile_id', user.id),
+    supabase.from('donation_buttons').select('id, is_active').eq('profile_id', user.id),
+    supabase.from('analytics_events').select('event_type').eq('profile_id', user.id).order('created_at', { ascending: false }).limit(200),
+  ])
 
-  let profile = null
-  if (user) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single()
-    profile = data
-  }
+  if (!profile) redirect('/auth/login')
 
-  const displayName = profile?.display_name || user?.user_metadata?.display_name || 'Creador'
-  const username = profile?.username || user?.user_metadata?.username || 'usuario'
+  const publicUrl = `${BASE_URL}/${profile.username}`
+  const activeSocial = socialLinks?.filter((l) => l.is_active).length ?? 0
+  const activeButtons = buttons?.filter((b) => b.is_active).length ?? 0
+  const totalViews = recentEvents?.filter((e) => e.event_type === 'profile_view').length ?? 0
+  const totalClicks = recentEvents?.filter((e) => e.event_type === 'hotmart_redirect').length ?? 0
+
+  const stats = [
+    { label: 'Montos activos', value: activeButtons, icon: CreditCard, color: 'text-emerald-500', href: '/dashboard/buttons' },
+    { label: 'Redes sociales', value: activeSocial, icon: Link2, color: 'text-indigo-500', href: '/dashboard/social' },
+    { label: 'Visitas (recientes)', value: totalViews, icon: Users, color: 'text-blue-500', href: '/dashboard/analytics' },
+    { label: 'Clics a Hotmart', value: totalClicks, icon: BarChart2, color: 'text-amber-500', href: '/dashboard/analytics' },
+  ]
 
   return (
-    <div className="space-y-8">
-      {/* Welcome Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-indigo-500/10 to-transparent border border-emerald-500/20">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 mb-1">
-            <Badge variant="emerald">Perfil Activo</Badge>
-            <span className="text-xs font-mono text-slate-500 dark:text-slate-400">@{username}</span>
-          </div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">¡Hola, {displayName}! 👋</h1>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Gestiona la apariencia de tu perfil y la configuración de tus botones de donación de Hotmart.
-          </p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+            Hola, {profile.display_name} 👋
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Bienvenido a tu panel de creador.</p>
         </div>
-
-        <Link href={`/${username}`} target="_blank">
-          <Button variant="primary" size="sm" className="whitespace-nowrap shadow-sm">
-            Ver Perfil Público
-            <ExternalLink className="w-4 h-4" />
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Badge variant={profile.is_active ? 'emerald' : 'indigo'}>
+            {profile.is_active ? 'Perfil activo' : 'Perfil inactivo'}
+          </Badge>
+          <Badge variant="indigo">{profile.plan}</Badge>
+        </div>
       </div>
 
-      {/* Shareable Link Card */}
-      <Card className="p-5">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              Tu Enlace Público de Donaciones
-            </span>
-            <p className="font-mono text-emerald-600 dark:text-emerald-400 font-bold text-sm sm:text-base">
-              donaciones.com/{username}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 w-full md:w-auto">
-            <Button variant="outline" size="sm" className="w-full md:w-auto">
-              <Copy className="w-4 h-4" />
-              Copiar Enlace
+      {/* Public URL card */}
+      <Card className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <Globe className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+          <span className="text-sm font-mono text-slate-700 dark:text-slate-300 truncate">{publicUrl}</span>
+        </div>
+        <div className="flex gap-2 flex-shrink-0">
+          <CopyUrlButton url={publicUrl} />
+          <Link href={`/${profile.username}`} target="_blank" rel="noreferrer">
+            <Button variant="outline" size="sm">
+              <ExternalLink className="w-3.5 h-3.5" />
+              Ver perfil
             </Button>
-          </div>
+          </Link>
         </div>
       </Card>
 
-      {/* Quick Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-5 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Botones de Hotmart</span>
-            <CreditCard className="w-4 h-4 text-emerald-500" />
-          </div>
-          <p className="text-3xl font-extrabold text-slate-900 dark:text-white">0</p>
-          <p className="text-xs text-slate-400">Configurados y activos</p>
-        </Card>
+      {/* Completeness */}
+      <ProfileCompleteness
+        profile={profile}
+        socialCount={socialLinks?.length ?? 0}
+        buttonCount={buttons?.length ?? 0}
+      />
 
-        <Card className="p-5 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Visitas Estimadas</span>
-            <Eye className="w-4 h-4 text-indigo-500" />
-          </div>
-          <p className="text-3xl font-extrabold text-slate-900 dark:text-white">0</p>
-          <p className="text-xs text-slate-400">Últimos 30 días</p>
-        </Card>
-
-        <Card className="p-5 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Clics en Donaciones</span>
-            <MousePointerClick className="w-4 h-4 text-emerald-500" />
-          </div>
-          <p className="text-3xl font-extrabold text-slate-900 dark:text-white">0</p>
-          <p className="text-xs text-slate-400">Redirecciones a Hotmart</p>
-        </Card>
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon
+          return (
+            <Link key={stat.label} href={stat.href}>
+              <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer group">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{stat.label}</span>
+                  <Icon className={`w-4 h-4 ${stat.color}`} />
+                </div>
+                <p className="text-2xl font-extrabold text-slate-900 dark:text-white">{stat.value}</p>
+                <p className="text-xs text-slate-400 mt-1 flex items-center gap-1 group-hover:text-emerald-500 transition-colors">
+                  Ver detalle <ArrowRight className="w-3 h-3" />
+                </p>
+              </Card>
+            </Link>
+          )
+        })}
       </div>
 
-      {/* Action Shortcut Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <UserCircle className="w-5 h-5 text-indigo-500" />
-              <span>Personalizar Perfil</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-xs text-slate-600 dark:text-slate-400">
-              Actualiza tu avatar, imagen de portada/banner, biografía y enlaces a tus redes sociales.
-            </p>
-            <Link href="/dashboard/profile" className="block">
-              <Button variant="outline" size="sm" className="w-full">
-                Editar Información de Perfil
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <CreditCard className="w-5 h-5 text-emerald-500" />
-              <span>Gestionar Botones de Donación</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-xs text-slate-600 dark:text-slate-400">
-              Crea nuevos niveles de donación con montos fijos y asocia cada uno a tu checkout oficial de Hotmart.
-            </p>
-            <Link href="/dashboard/buttons" className="block">
-              <Button variant="outline" size="sm" className="w-full">
-                Configurar Botones y URLs
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+      {/* Quick actions */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <Link href="/dashboard/profile">
+          <Card className="p-4 hover:border-emerald-500/50 transition-colors cursor-pointer group">
+            <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400">Editar perfil</p>
+            <p className="text-xs text-slate-400 mt-0.5">Nombre, bio, fotos e identidad</p>
+          </Card>
+        </Link>
+        <Link href="/dashboard/social">
+          <Card className="p-4 hover:border-indigo-500/50 transition-colors cursor-pointer group">
+            <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Redes sociales</p>
+            <p className="text-xs text-slate-400 mt-0.5">Gestiona tus enlaces externos</p>
+          </Card>
+        </Link>
+        <Link href="/dashboard/buttons">
+          <Card className="p-4 hover:border-emerald-500/50 transition-colors cursor-pointer group">
+            <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400">Montos de apoyo</p>
+            <p className="text-xs text-slate-400 mt-0.5">Configura tus botones de Hotmart</p>
+          </Card>
+        </Link>
       </div>
     </div>
   )

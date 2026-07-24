@@ -4,7 +4,13 @@ import { useState, ReactNode } from 'react'
 import { DashboardSidebar } from './sidebar'
 import { DashboardHeader } from './header'
 
-export function DashboardLayoutClient({ children }: { children: ReactNode }) {
+interface Props {
+  children: ReactNode
+  username: string
+  isAdmin: boolean
+}
+
+export function DashboardLayoutClient({ children, username, isAdmin }: Props) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
@@ -12,12 +18,12 @@ export function DashboardLayoutClient({ children }: { children: ReactNode }) {
       <DashboardSidebar
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
+        username={username}
+        isAdmin={isAdmin}
       />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <DashboardHeader
-          onOpenMobileMenu={() => setMobileMenuOpen(true)}
-        />
+        <DashboardHeader onOpenMobileMenu={() => setMobileMenuOpen(true)} />
 
         <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-6xl w-full mx-auto">
           {children}

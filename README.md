@@ -1,72 +1,224 @@
-# Plataforma SaaS de Donaciones para Creadores (tipo Buy Me a Coffee / Ko-fi)
+# DonacionesSaaS
 
-Plataforma SaaS que permite a creadores de contenido registrarse, configurar su perfil público con avatar, banner y enlaces a redes sociales, y crear botones de donación con montos fijos vinculados a enlaces de pago de **Hotmart**.
+Plataforma SaaS de apoyo y donaciones que conecta creadores, profesionales, organizaciones e iglesias con sus comunidades — sin procesar pagos directamente.
+
+Cada monto de apoyo redirige al visitante al checkout de **Hotmart** configurado por el creador.
 
 ---
 
-## 🛠️ Guía de Configuración e Integración con Supabase
+## Stack
 
-### 1. Creación del Proyecto en Supabase
-1. Ingresa a [https://supabase.com](https://supabase.com) y crea un nuevo proyecto.
-2. Copia la **Project URL** y la **anon key** (Key pública de API) desde *Project Settings > API*.
+| Capa | Tecnología |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Lenguaje | TypeScript 5 |
+| Estilos | Tailwind CSS 4 |
+| Backend/Auth/DB | Supabase (PostgreSQL + Auth + Storage) |
+| Iconos | Lucide React |
+| Tipografía | Geist Sans / Geist Mono |
+| Despliegue | Vercel (ready) |
 
-### 2. Variables de Entorno
-Copia `.env.example` a `.env.local`:
+---
+
+## Instalación
 
 ```bash
+git clone <repo>
+cd proyecto-donaciones
+npm install
 cp .env.example .env.local
+# Completa las variables de entorno en .env.local
+npm run dev
 ```
 
-Configura en `.env.local`:
+---
+
+## Variables de entorno
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key-de-supabase
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key
+NEXT_PUBLIC_SITE_URL=https://tudominio.com
+
+# Webhook (no activo todavía)
+HOTMART_WEBHOOK_ENABLED=false
 ```
 
-### 3. Ejecución del Schema SQL y RLS
-1. Ve al **SQL Editor** en la consola de Supabase.
-2. Ejecuta todo el contenido del archivo [`supabase/schema.sql`](supabase/schema.sql).
-3. Este script creará la tabla `profiles`, activará Row Level Security (RLS) y configurará el Trigger automático que crea el perfil cuando un usuario se registra.
-
-### 4. Configuración de URLs de Autenticación en Supabase
-1. En Supabase, ve a *Authentication > URL Configuration*.
-2. Establece **Site URL** a `http://localhost:3000`.
-3. Añade a **Redirect URLs**:
-   - `http://localhost:3000/auth/callback`
-   - `http://localhost:3000/auth/reset-password`
+> ⚠️ Nunca pongas `SUPABASE_SERVICE_ROLE_KEY` en `.env.local` del cliente.
 
 ---
 
-## 🧪 Pruebas de Autenticación y Flujo de Creador
+## Configuración de Supabase
 
-### A. Prueba de Registro
-1. Ve a `/auth/register`.
-2. Completa los campos: Nombre (`Alex Creator`), Username deseado (`alex`), Email y Contraseña.
-3. El sistema validará que `username` cumpla la regla de 3 a 30 caracteres (`[a-z0-9_-]`) y no esté repetido.
-4. Tras registrarte, el Trigger de Supabase creará tu perfil en `public.profiles` y serás redirigido a `/dashboard`.
+### 1. Crea el proyecto en Supabase
 
-### B. Prueba de Inicio de Sesión
-1. Cierra sesión desde el Dashboard o ve a `/auth/login`.
-2. Ingresa tu email y contraseña.
-3. Si la sesión es válida, se guardan cookies seguras y te redirige a `/dashboard`.
+Ejecuta el esquema base:
 
-### C. Prueba de Recuperación de Contraseña
-1. Ve a `/auth/forgot-password`.
-2. Ingresa tu correo para recibir el enlace de restablecimiento a `/auth/reset-password`.
+```sql
+-- Desde supabase/schema.sql
+```
 
-### D. Perfil Público
-1. Accede a `http://localhost:3000/alex` (o tu username elegido).
-2. Verás el perfil público cargado dinámicamente desde la base de datos de Supabase.
+### 2. Ejecuta las migraciones en orden
+
+```sql
+-- 1. supabase/migrations/001_profile_extended.sql
+-- 2. supabase/migrations/002_social_links_extended.sql
+-- 3. supabase/migrations/003_donation_buttons_extended.sql
+-- 4. supabase/migrations/004_analytics_events.sql
+-- 5. supabase/migrations/005_profile_reports.sql
+-- 6. supabase/migrations/006_webhook_events.sql
+```
+
+### 3. Ejecuta Storage (buckets)
+
+```sql
+-- supabase/storage.sql
+```
+
+### 4. Configura Authentication
+
+- Email + Password habilitado
+- Email confirmation: opcional para desarrollo
+- Redirect URL: `http://localhost:3000/auth/callback`
 
 ---
 
-## 🔍 Comandos de Verificación
+## Scripts
 
 ```bash
-# Linter
-npm run lint
-
-# Build de producción
-npm run build
+npm run dev        # Servidor de desarrollo
+npm run build      # Build de producción
+npm run start      # Servidor de producción
+npm run lint       # ESLint
+npm run typecheck  # TypeScript sin emitir
+npm test           # Tests con Node.js built-in runner
 ```
+
+---
+
+## Estructura del proyecto
+
+```
+src/
+├── app/
+│   ├── (legal)/         # Términos, Privacidad
+│   ├── [username]/      # Página pública del creador
+│   ├── admin/           # Panel administrativo (is_admin requerido)
+│   ├── api/
+│   │   ├── analytics/   # POST — registrar eventos
+│   │   ├── reports/     # POST — reportar perfiles
+│   │   └── webhook/hotmart/ # Webhook preparado (no activo)
+│   ├── auth/            # Login, register, reset password
+│   └── dashboard/       # Panel del creador (protegido)
+│       ├── analytics/   # Estadísticas
+│       ├── buttons/     # Montos de apoyo Hotmart
+│       ├── profile/     # Edición de perfil
+│       ├── settings/    # Configuración de cuenta
+│       └── social/      # Redes sociales
+├── components/
+│   ├── dashboard/       # Sidebar, header, uploaders
+│   ├── shared/          # Header público, footer
+│   ├── theme-*          # Dark/light mode
+│   └── ui/              # Button, Card, Input, Badge
+├── lib/
+│   ├── supabase/        # Clientes server/client/middleware
+│   ├── utils/           # Procesador de imágenes
+│   └── validations/     # auth.ts, url.ts
+└── types/
+    └── database.types.ts
+```
+
+---
+
+## Seguridad
+
+- **RLS activo** en todas las tablas.
+- **`is_admin`** solo se puede leer, nunca modificar por formulario normal.
+- **URLs de Hotmart** validadas por hostname exacto (no `includes()`).
+- **Storage** organizado por `{user_id}/` — RLS previene acceso cruzado.
+- **No se usa `service_role`** en ningún cliente del navegador.
+- **`user_metadata` no se usa** para permisos — siempre se consulta `profiles`.
+- **Esquemas peligrosos** bloqueados: `javascript:`, `data:`, `file:`, `vbscript:`.
+
+---
+
+## Flujo de Hotmart
+
+```
+Visitante → selecciona monto → clic en "Apoyar"
+  → se registra evento hotmart_redirect en analytics_events
+  → validación client-side de URL (HTTPS + hostname)
+  → window.location.href = hotmart_checkout_url
+  → Visitante llega al checkout de Hotmart
+```
+
+> ⚠️ Un clic a Hotmart **no confirma** un pago. La confirmación requiere integración con webhook de Hotmart (Fase 12 del roadmap — preparada pero no activa).
+
+---
+
+## Métricas disponibles
+
+| Métrica | Significado |
+|---|---|
+| `profile_view` | El visitante cargó la página del creador |
+| `amount_selected` | El visitante seleccionó un monto |
+| `hotmart_redirect` | El visitante hizo clic en "Apoyar" |
+
+**No disponible sin webhook de Hotmart:**
+- Pagos completados
+- Ingresos confirmados
+- Donaciones recibidas
+
+---
+
+## Planes y límites
+
+| Plan | Botones | Redes sociales |
+|---|---|---|
+| free | 5 | 5 |
+| pro | 20 | 15 |
+| organization | 50 | 30 |
+
+Los límites se validan **del lado del servidor** en cada Server Action.
+
+---
+
+## Despliegue en Vercel
+
+```bash
+# 1. Conecta tu repositorio a Vercel
+# 2. Configura las variables de entorno en el dashboard de Vercel
+# 3. Vercel detecta Next.js automáticamente
+# 4. Deploy
+```
+
+---
+
+## Roadmap de fases
+
+| Fase | Estado | Descripción |
+|---|---|---|
+| 0 | ✅ Completa | Correcciones críticas, build limpio |
+| 1 | ✅ Completa | Perfil completo del creador |
+| 2 | ✅ Completa | Avatar y banner |
+| 3 | ✅ Completa | Redes sociales |
+| 4 | ✅ Completa | Montos y URLs de Hotmart |
+| 5 | ✅ Completa | Dashboard con métricas |
+| 6 | ✅ Completa | Página pública |
+| 7 | ✅ Completa | Métricas de analytics |
+| 8 | ⚠️ Parcial | Admin — datos reales, sin acciones de moderación avanzada |
+| 9 | ✅ Completa | Reportes de perfiles |
+| 10 | 🔜 Pendiente | Configuración de apariencia avanzada |
+| 11 | ✅ Completa | Organizaciones (account_type) |
+| 12 | ✅ Scaffolded | Webhook de Hotmart preparado |
+| 13 | ✅ Completa | Planes y límites centralizados |
+| 14 | ✅ Completa | Páginas legales base |
+| 15 | ✅ Completa | SEO, sitemap, robots, OG tags |
+| 16 | ✅ Completa | Tests de validación |
+| 17 | ✅ Completa | Documentación |
+
+---
+
+## Notas legales
+
+Los textos en `/terms` y `/privacy` son **borradores provisionales** y deben ser revisados por un profesional del derecho antes de publicación oficial.
