@@ -81,7 +81,7 @@ export default async function AdminReportsPage() {
             {reports.map((report) => {
               const statusCfg = STATUS_CONFIG[report.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.pending
               const StatusIcon = statusCfg.icon
-              const reportedProfile = report.profiles as { id: string; username: string; display_name: string } | null
+              const reportedProfile = report.profiles as unknown as { id: string; username: string; display_name: string } | null
 
               return (
                 <Card key={report.id} className={`p-4 ${report.status === 'pending' ? 'border-rose-500/30' : ''}`}>
