@@ -76,7 +76,7 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
       window.location.href = selectedButton.hotmart_checkout_url
     } catch {
       setIsRedirecting(false)
-      setUrlError('El enlace de este monto no es v\u00e1lido. Por favor contacta al creador.')
+      setUrlError('El enlace de este monto no es válido. Por favor contacta al creador.')
     }
   }
 
@@ -165,7 +165,7 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
             <>
               <ExternalLink className="w-5 h-5" />
               {selectedButton
-                ? `${selectedButton.button_label ?? 'Apoyar ahora'} \u00b7 ${formatAmount(Number(selectedButton.amount), selectedButton.currency)}`
+                ? `${selectedButton.button_label ?? 'Apoyar ahora'} · ${formatAmount(Number(selectedButton.amount), selectedButton.currency)}`
                 : 'Selecciona un monto'}
             </>
           )}

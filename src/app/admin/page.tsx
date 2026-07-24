@@ -9,7 +9,7 @@ import {
   Flag, AlertTriangle, Link2,
 } from 'lucide-react'
 
-export const metadata = { title: 'Panel de Administraci\u00f3n | DonacionesSaaS' }
+export const metadata = { title: 'Panel de Administración | DonacionesSaaS' }
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
@@ -32,7 +32,7 @@ export default async function AdminDashboardPage() {
         <div className="space-y-2">
           <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">Acceso Denegado</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-            No tienes permisos para acceder al panel de administraci\u00f3n.
+            No tienes permisos para acceder al panel de administración.
           </p>
         </div>
         <Link href="/dashboard">
@@ -81,10 +81,10 @@ export default async function AdminDashboardPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-slate-900 dark:text-white">Panel de Administraci\u00f3n</h1>
+                <h1 className="text-xl font-bold text-slate-900 dark:text-white">Panel de Administración</h1>
                 <Badge variant="indigo">Admin</Badge>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Sesi\u00f3n como: {profile.display_name}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Sesión como: {profile.display_name}</p>
             </div>
           </div>
           <Link href="/dashboard">
@@ -117,8 +117,8 @@ export default async function AdminDashboardPage() {
           <div className="flex items-center gap-3 p-4 rounded-xl bg-rose-500/5 border border-rose-500/20 text-rose-600 dark:text-rose-400">
             <AlertTriangle className="w-5 h-5 flex-shrink-0" />
             <p className="text-sm">
-              Hay <strong>{pendingReports}</strong> reporte(s) pendiente(s) de revisi\u00f3n.{' '}
-              <Link href="/admin/reports" className="underline font-semibold">Revisar reportes \u2192</Link>
+              Hay <strong>{pendingReports}</strong> reporte(s) pendiente(s) de revisión.{' '}
+              <Link href="/admin/reports" className="underline font-semibold">Revisar reportes →</Link>
             </p>
           </div>
         )}
@@ -127,9 +127,9 @@ export default async function AdminDashboardPage() {
         <Card className="p-5 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-              \u00daltimos creadores registrados
+              Últimos creadores registrados
             </h2>
-            <span className="text-xs text-slate-400">Mostrando \u00faltimos 20</span>
+            <span className="text-xs text-slate-400">Mostrando últimos 20</span>
           </div>
 
           <div className="overflow-x-auto">

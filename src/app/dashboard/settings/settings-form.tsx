@@ -20,7 +20,7 @@ export function SettingsForm({ userEmail }: { userEmail?: string }) {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <KeyRound className="w-4 h-4 text-emerald-500" />
-            Cambiar Contrase\u00f1a
+            Cambiar Contraseña
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -35,12 +35,12 @@ export function SettingsForm({ userEmail }: { userEmail?: string }) {
                 <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> {pwState.success}
               </div>
             )}
-            <Input label="Nueva Contrase\u00f1a" name="newPassword" type="password"
-              placeholder="M\u00ednimo 8 caracteres" autoComplete="new-password" required minLength={8} />
-            <Input label="Confirmar Nueva Contrase\u00f1a" name="confirmPassword" type="password"
-              placeholder="Repite tu nueva contrase\u00f1a" autoComplete="new-password" required minLength={8} />
+            <Input label="Nueva Contraseña" name="newPassword" type="password"
+              placeholder="Mínimo 8 caracteres" autoComplete="new-password" required minLength={8} />
+            <Input label="Confirmar Nueva Contraseña" name="confirmPassword" type="password"
+              placeholder="Repite tu nueva contraseña" autoComplete="new-password" required minLength={8} />
             <Button type="submit" variant="primary" size="sm" isLoading={pwPending}>
-              Actualizar contrase\u00f1a
+              Actualizar contraseña
             </Button>
           </form>
         </CardContent>
@@ -51,7 +51,7 @@ export function SettingsForm({ userEmail }: { userEmail?: string }) {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Mail className="w-4 h-4 text-indigo-500" />
-            Cambiar Correo Electr\u00f3nico
+            Cambiar Correo Electrónico
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -71,12 +71,12 @@ export function SettingsForm({ userEmail }: { userEmail?: string }) {
                 <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" /> {emailState.success}
               </div>
             )}
-            <Input label="Nuevo Correo Electr\u00f3nico" name="newEmail" type="email"
+            <Input label="Nuevo Correo Electrónico" name="newEmail" type="email"
               placeholder="nuevo@ejemplo.com" autoComplete="email" required />
             <Input label="Confirmar Nuevo Correo" name="confirmEmail" type="email"
               placeholder="nuevo@ejemplo.com" autoComplete="email" required />
             <p className="text-xs text-slate-400">
-              Recibir\u00e1s un correo de confirmaci\u00f3n en ambas direcciones. El cambio se aplicar\u00e1 despu\u00e9s de confirmar.
+              Recibirás un correo de confirmación en ambas direcciones. El cambio se aplicará después de confirmar.
             </p>
             <Button type="submit" variant="outline" size="sm" isLoading={emailPending}>
               Solicitar cambio de correo
@@ -106,8 +106,8 @@ export function SettingsForm({ userEmail }: { userEmail?: string }) {
               <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <p className="font-semibold">Esta acci\u00f3n desactiva tu cuenta.</p>
-                  <p className="text-xs">Tu perfil p\u00fablico ser\u00e1 ocultado inmediatamente. Para la eliminaci\u00f3n definitiva de datos, cont\u00e1ctanos a hola@donacionessaas.com.</p>
+                  <p className="font-semibold">Esta acción desactiva tu cuenta.</p>
+                  <p className="text-xs">Tu perfil público será ocultado inmediatamente. Para la eliminación definitiva de datos, contáctanos a hola@donacionessaas.com.</p>
                 </div>
               </div>
               <form action={deleteAction} className="space-y-4">

@@ -84,7 +84,7 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('\u00bfEliminar este bot\u00f3n? Esta acci\u00f3n no se puede deshacer.')) return
+    if (!confirm('¿Eliminar este botón? Esta acción no se puede deshacer.')) return
     setDeletingId(id)
     const result = await deleteButtonAction(id)
     if (!result.error) setButtons((prev) => prev.filter((b) => b.id !== id))
@@ -112,8 +112,8 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
       {buttons.length === 0 && (
         <Card className="p-8 text-center space-y-2">
           <CreditCard className="w-10 h-10 text-slate-300 mx-auto" />
-          <p className="text-sm text-slate-500 dark:text-slate-400">A\u00fan no tienes montos configurados.</p>
-          <p className="text-xs text-slate-400">Crea tu primer bot\u00f3n para empezar a recibir apoyos.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Aún no tienes montos configurados.</p>
+          <p className="text-xs text-slate-400">Crea tu primer botón para empezar a recibir apoyos.</p>
         </Card>
       )}
 
@@ -185,7 +185,7 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
 
       {atLimit && !showForm && (
         <p className="text-xs text-amber-600 dark:text-amber-400 text-center p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-          Has alcanzado el l\u00edmite de {limit} botones para tu plan actual.{' '}
+          Has alcanzado el límite de {limit} botones para tu plan actual.{' '}
           <a href="/pricing" className="underline font-semibold">Ver planes &rarr;</a>
         </p>
       )}
@@ -231,7 +231,7 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
 
                 <div className="flex gap-2">
                   <Button type="submit" variant="primary" size="sm" isLoading={isAdding} disabled={!amountValue}>
-                    Crear bot\u00f3n
+                    Crear botón
                   </Button>
                   <Button type="button" variant="ghost" size="sm" onClick={closeForm}>Cancelar</Button>
                 </div>
@@ -316,19 +316,19 @@ function ButtonFormFields({
 
       <div className="space-y-1.5">
         <label htmlFor="btnTitle" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-          T\u00edtulo <span className="text-rose-500">*</span>
+          Título <span className="text-rose-500">*</span>
         </label>
         <input id="btnTitle" name="title" type="text" required maxLength={80}
           defaultValue={defaultValues?.title ?? ''}
-          placeholder="Ej. Inv\u00edtame un caf\u00e9 \u2615"
+          placeholder="Ej. Invítame un café ☕"
           className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="btnDesc" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Descripci\u00f3n (opcional)</label>
+        <label htmlFor="btnDesc" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Descripción (opcional)</label>
         <input id="btnDesc" name="description" type="text" maxLength={160}
           defaultValue={defaultValues?.description ?? ''}
-          placeholder="Breve descripci\u00f3n para el visitante"
+          placeholder="Breve descripción para el visitante"
           className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
       </div>
 
@@ -344,7 +344,7 @@ function ButtonFormFields({
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="btnLabel" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Texto del bot\u00f3n (opcional)</label>
+        <label htmlFor="btnLabel" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Texto del botón (opcional)</label>
         <input id="btnLabel" name="buttonLabel" type="text" maxLength={40}
           defaultValue={defaultValues?.button_label ?? ''}
           placeholder="Ej. Apoyar ahora"

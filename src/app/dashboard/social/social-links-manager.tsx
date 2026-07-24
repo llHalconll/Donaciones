@@ -43,7 +43,7 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
   }, [addState?.success])
 
   async function handleDelete(id: string) {
-    if (!confirm('\u00bfEliminar este enlace?')) return
+    if (!confirm('¿Eliminar este enlace?')) return
     setDeletingId(id)
     const result = await deleteSocialLinkAction(id)
     if (!result.error) setLinks((prev) => prev.filter((l) => l.id !== id))
@@ -85,8 +85,8 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
     <div className="space-y-4">
       {links.length === 0 && (
         <Card className="p-8 text-center">
-          <p className="text-sm text-slate-500 dark:text-slate-400">A\u00fan no tienes redes sociales configuradas.</p>
-          <p className="text-xs text-slate-400 mt-1">Agrega tus primeros enlaces para mostrarlos en tu perfil p\u00fablico.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Aún no tienes redes sociales configuradas.</p>
+          <p className="text-xs text-slate-400 mt-1">Agrega tus primeros enlaces para mostrarlos en tu perfil público.</p>
         </Card>
       )}
 
@@ -147,7 +147,7 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
 
       {atLimit && (
         <p className="text-xs text-amber-600 dark:text-amber-400 text-center p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-          Has alcanzado el l\u00edmite de {limit} enlaces para tu plan actual.{' '}
+          Has alcanzado el límite de {limit} enlaces para tu plan actual.{' '}
           <a href="/pricing" className="underline font-semibold">Ver planes &rarr;</a>
         </p>
       )}

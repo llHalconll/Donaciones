@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!profile) return { title: 'Perfil no encontrado' }
 
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://donacionessaas.com'
-  const desc = profile.bio ?? `Apoya a ${profile.display_name} directamente a trav\u00e9s de sus enlaces de Hotmart.`
+  const desc = profile.bio ?? `Apoya a ${profile.display_name} directamente a través de sus enlaces de Hotmart.`
 
   return {
     title: `${profile.display_name} (@${username}) | DonacionesSaaS`,

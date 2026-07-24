@@ -12,18 +12,18 @@ export async function updatePasswordAction(
   const newPassword = (formData.get('newPassword') as string | null)?.trim() ?? ''
   const confirm = (formData.get('confirmPassword') as string | null)?.trim() ?? ''
 
-  if (!newPassword) return { error: 'La nueva contrase\u00f1a es obligatoria.' }
-  if (newPassword.length < 8) return { error: 'La contrase\u00f1a debe tener al menos 8 caracteres.' }
-  if (newPassword !== confirm) return { error: 'Las contrase\u00f1as no coinciden.' }
+  if (!newPassword) return { error: 'La nueva contraseña es obligatoria.' }
+  if (newPassword.length < 8) return { error: 'La contraseña debe tener al menos 8 caracteres.' }
+  if (newPassword !== confirm) return { error: 'Las contraseñas no coinciden.' }
 
   // Prevent trivially weak passwords
-  if (/^(.+?)\1+$/.test(newPassword)) return { error: 'La contrase\u00f1a es demasiado simple. Usa una m\u00e1s segura.' }
+  if (/^(.+?)\1+$/.test(newPassword)) return { error: 'La contraseña es demasiado simple. Usa una más segura.' }
 
   const supabase = await createClient()
   const { error } = await supabase.auth.updateUser({ password: newPassword })
   if (error) return { error: error.message }
 
-  return { success: 'Contrase\u00f1a actualizada correctamente.' }
+  return { success: 'Contraseña actualizada correctamente.' }
 }
 
 export async function updateEmailAction(
@@ -34,14 +34,14 @@ export async function updateEmailAction(
   const confirmEmail = (formData.get('confirmEmail') as string | null)?.trim().toLowerCase() ?? ''
 
   if (!newEmail) return { error: 'El correo es obligatorio.' }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) return { error: 'Ingresa un correo electr\u00f3nico v\u00e1lido.' }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) return { error: 'Ingresa un correo electrónico válido.' }
   if (newEmail !== confirmEmail) return { error: 'Los correos no coinciden.' }
 
   const supabase = await createClient()
 
   // Verify user is authenticated
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: 'No est\u00e1s autenticado.' }
+  if (!user) return { error: 'No estás autenticado.' }
   if (user.email === newEmail) return { error: 'El correo nuevo es igual al actual.' }
 
   const { error } = await supabase.auth.updateUser({ email: newEmail })
@@ -65,7 +65,7 @@ export async function deleteAccountAction(
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: 'No est\u00e1s autenticado.' }
+  if (!user) return { error: 'No estás autenticado.' }
 
   // Deactivate the profile first (soft approach — hard delete requires service_role)
   // This immediately hides the profile from the public.

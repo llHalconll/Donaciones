@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { BarChart2, Eye, MousePointerClick, TrendingUp } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 
-export const metadata = { title: 'Estad\u00edsticas | Dashboard' }
+export const metadata = { title: 'Estadísticas | Dashboard' }
 
 function StatCard({ label, value, icon: Icon, note }: {
   label: string; value: number; icon: typeof BarChart2; note?: string
@@ -99,20 +99,20 @@ export default async function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Estad\u00edsticas</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">\u00daltimos 30 d\u00edas. Los datos reflejan visitas y clics, no pagos confirmados.</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Estadísticas</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Últimos 30 días. Los datos reflejan visitas y clics, no pagos confirmados.</p>
       </div>
 
       {/* Main stats */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        <StatCard label="Visitas al perfil" value={views} icon={Eye} note="30 d\u00edas" />
-        <StatCard label="Selecciones de monto" value={selections} icon={MousePointerClick} note="30 d\u00edas" />
-        <StatCard label="Clics hacia Hotmart" value={redirects} icon={TrendingUp} note="30 d\u00edas" />
+        <StatCard label="Visitas al perfil" value={views} icon={Eye} note="30 días" />
+        <StatCard label="Selecciones de monto" value={selections} icon={MousePointerClick} note="30 días" />
+        <StatCard label="Clics hacia Hotmart" value={redirects} icon={TrendingUp} note="30 días" />
       </div>
 
       {/* Daily trend (last 7 days) */}
       <Card className="p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Tendencia \u2014 \u00faltimos 7 d\u00edas</h2>
+        <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Tendencia — últimos 7 días</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
@@ -138,7 +138,7 @@ export default async function AnalyticsPage() {
       {/* Top buttons */}
       {topButtons.length > 0 && (
         <Card className="p-5 space-y-4">
-          <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Montos con m\u00e1s clics (7 d\u00edas)</h2>
+          <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Montos con más clics (7 días)</h2>
           <div className="space-y-2">
             {topButtons.map((btn, i) => (
               <div key={btn.id} className="flex items-center gap-3">
@@ -158,8 +158,8 @@ export default async function AnalyticsPage() {
       )}
 
       <div className="rounded-xl bg-amber-500/5 border border-amber-500/20 p-4 text-xs text-amber-700 dark:text-amber-400 space-y-1">
-        <p><strong>Nota importante:</strong> Las estad\u00edsticas muestran visitas y clics hacia Hotmart, no pagos confirmados.</p>
-        <p>Un clic hacia Hotmart no equivale a una transacci\u00f3n completada. La confirmaci\u00f3n de pago ocurre externamente en Hotmart.</p>
+        <p><strong>Nota importante:</strong> Las estadísticas muestran visitas y clics hacia Hotmart, no pagos confirmados.</p>
+        <p>Un clic hacia Hotmart no equivale a una transacción completada. La confirmación de pago ocurre externamente en Hotmart.</p>
       </div>
     </div>
   )
