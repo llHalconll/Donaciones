@@ -26,9 +26,9 @@ export function ThemeToggle() {
       title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
     >
       {theme === 'dark' ? (
-        <Sun className="w-4 h-4 text-amber-400" />
+        <Moon className="w-4 h-4 text-indigo-400" />
       ) : (
-        <Moon className="w-4 h-4 text-indigo-500" />
+        <Sun className="w-4 h-4 text-amber-500" />
       )}
     </button>
   )

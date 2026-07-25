@@ -7,10 +7,12 @@ import { DashboardHeader } from './header'
 interface Props {
   children: ReactNode
   username: string
+  displayName: string
+  avatarUrl: string | null
   isAdmin: boolean
 }
 
-export function DashboardLayoutClient({ children, username, isAdmin }: Props) {
+export function DashboardLayoutClient({ children, username, displayName, avatarUrl, isAdmin }: Props) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
@@ -23,7 +25,12 @@ export function DashboardLayoutClient({ children, username, isAdmin }: Props) {
       />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <DashboardHeader onOpenMobileMenu={() => setMobileMenuOpen(true)} />
+        <DashboardHeader
+          onOpenMobileMenu={() => setMobileMenuOpen(true)}
+          displayName={displayName}
+          username={username}
+          avatarUrl={avatarUrl}
+        />
 
         <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-6xl w-full mx-auto">
           {children}

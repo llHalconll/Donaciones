@@ -11,13 +11,15 @@ export default async function DashboardLayout({ children }: { children: ReactNod
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('username, is_admin, is_active')
+    .select('username, display_name, avatar_url, is_admin, is_active')
     .eq('id', user.id)
     .single()
 
   return (
     <DashboardLayoutClient
       username={profile?.username ?? ''}
+      displayName={profile?.display_name ?? ''}
+      avatarUrl={profile?.avatar_url ?? null}
       isAdmin={profile?.is_admin ?? false}
     >
       {children}
