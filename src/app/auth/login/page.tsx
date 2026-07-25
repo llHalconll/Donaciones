@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { GoogleButton } from '@/components/ui/google-button'
 import { loginAction } from '../actions'
 
 export default function LoginPage() {
@@ -38,7 +39,18 @@ export default function LoginPage() {
           <CardHeader>
             <CardTitle className="text-base text-center">Iniciar Sesión</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            {/* Google OAuth */}
+            <GoogleButton label="Continuar con Google" />
+
+            {/* Divider */}
+            <div className="relative flex items-center gap-3">
+              <div className="flex-1 border-t border-slate-200 dark:border-slate-800" />
+              <span className="text-xs text-slate-400 font-medium">o con correo</span>
+              <div className="flex-1 border-t border-slate-200 dark:border-slate-800" />
+            </div>
+
+            {/* Email + password form */}
             <form action={formAction} className="space-y-4">
               {state?.error && (
                 <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs font-medium">
