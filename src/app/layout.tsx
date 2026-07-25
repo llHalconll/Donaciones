@@ -31,9 +31,11 @@ export default function RootLayout({
     >
       <head>
         {/*
-          Blocking inline script: runs before React hydrates.
-          Reads localStorage and applies 'dark' class immediately
-          to prevent a flash of wrong theme on first load.
+          Blocking inline script: executes synchronously before React hydrates.
+          Reads the user's saved preference from localStorage.
+          Falls back to the OS color-scheme preference.
+          Falls back to 'light' if neither is available.
+          Runs before any CSS paint → zero flash of wrong theme.
         */}
         <script
           dangerouslySetInnerHTML={{
@@ -41,10 +43,18 @@ export default function RootLayout({
               (function() {
                 try {
                   var saved = localStorage.getItem('theme');
-                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  var theme = saved ? saved : (prefersDark ? 'dark' : 'light');
-                  if (theme === 'dark') document.documentElement.classList.add('dark');
-                  else document.documentElement.classList.remove('dark');
+                  if (saved === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  } else if (saved === 'light') {
+                    document.documentElement.classList.remove('dark');
+                  } else {
+                    // No saved preference: follow OS
+                    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    if (prefersDark) {
+                      document.documentElement.classList.add('dark');
+                    }
+                    // else: no class added → light mode (default)
+                  }
                 } catch(e) {}
               })();
             `,

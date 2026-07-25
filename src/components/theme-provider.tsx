@@ -6,28 +6,37 @@ type Theme = 'light' | 'dark'
 
 interface ThemeContextType {
   theme: Theme
+  mounted: boolean
   toggleTheme: () => void
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+const ThemeContext = createContext<ThemeContextType>({
+  theme: 'light',
+  mounted: false,
+  toggleTheme: () => {},
+})
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Start with 'dark' as default — the inline script in layout.tsx already
-  // applied the correct class to <html> before React hydrates, so there's
-  // no flash. Here we just need the state to match reality.
-  const [theme, setTheme] = useState<Theme>('dark')
+  // null means "not yet read from DOM"
+  const [theme, setTheme] = useState<Theme>('light')
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // Read the actual current class on <html> (set by the inline script)
-    // so the state always matches what is visually rendered.
+    // The inline script in layout.tsx already applied the correct class
+    // before React hydrated — we just read the DOM truth here.
     const isDark = document.documentElement.classList.contains('dark')
     setTheme(isDark ? 'dark' : 'light')
+    setMounted(true)
   }, [])
 
   const toggleTheme = () => {
-    const nextTheme: Theme = theme === 'dark' ? 'light' : 'dark'
+    // Read from DOM directly (source of truth) to avoid any stale-state inversion
+    const currentlyDark = document.documentElement.classList.contains('dark')
+    const nextTheme: Theme = currentlyDark ? 'light' : 'dark'
+
     setTheme(nextTheme)
     localStorage.setItem('theme', nextTheme)
+
     if (nextTheme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
@@ -36,19 +45,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, mounted, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   )
 }
 
 export function useTheme() {
-  const context = useContext(ThemeContext)
-  if (!context) {
-    return {
-      theme: 'dark' as Theme,
-      toggleTheme: () => {},
-    }
-  }
-  return context
+  return useContext(ThemeContext)
 }
