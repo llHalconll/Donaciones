@@ -265,6 +265,41 @@ export function EmojiTitleInput({
             style={cssVars}
             className="emoji-picker-wrapper"
           >
+            {/* ── "Ninguno" option — selectable like any emoji ── */}
+            <div className={`flex items-center gap-2 px-3 py-2 border-b ${isDark ? 'border-slate-700/60 bg-slate-900' : 'border-slate-100 bg-slate-50/60'}`}>
+              <span className={`text-[10px] font-semibold uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                Opción
+              </span>
+              <button
+                type="button"
+                onClick={() => { onChange(''); setOpen(false) }}
+                aria-label="Sin emoji (ninguno)"
+                aria-pressed={!value}
+                className={`
+                  flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium
+                  border transition-all duration-150
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500
+                  ${!value
+                    ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                    : isDark
+                      ? 'border-slate-700 text-slate-400 hover:border-slate-500 hover:text-slate-200 hover:bg-slate-800'
+                      : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700 hover:bg-white'
+                  }
+                `}
+              >
+                {/* Empty square representing "no emoji" */}
+                <span className={`
+                  inline-flex items-center justify-center w-5 h-5 rounded border text-[10px] font-mono leading-none
+                  ${!value
+                    ? 'border-emerald-400 text-emerald-500'
+                    : isDark ? 'border-slate-600 text-slate-600' : 'border-slate-300 text-slate-300'
+                  }
+                `}>∅</span>
+                Ninguno
+                {!value && <span className="text-emerald-500 text-[10px]">✓</span>}
+              </button>
+            </div>
+
             {/*
               Global CSS for the picker is injected via a <style> tag below.
               We target `.emoji-picker-wrapper .EmojiPickerReact` to scope it.
