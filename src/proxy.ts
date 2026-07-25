@@ -56,7 +56,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // IMPORTANT: Always return supabaseResponse to preserve session cookies.
   return supabaseResponse
 }
 

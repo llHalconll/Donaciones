@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getAuthUser } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -61,33 +61,53 @@ function ProfileCompleteness({ profile, socialCount, buttonCount }: {
 }
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  // getAuthUser() is memoized — no extra network call (layout already called it)
+  const { user, supabase } = await getAuthUser()
   if (!user) redirect('/auth/login')
 
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
 
+  // Merge two analytics COUNT queries into one GROUP BY to save a round-trip.
+  // Also run profile + social + buttons in parallel.
   const [
     { data: profile },
     { count: activeSocialCount },
     { count: activeButtonCount },
-    { count: viewCount },
-    { count: clickCount },
+    { data: analyticsGroups },
   ] = await Promise.all([
-    supabase.from('profiles').select('display_name, username, bio, avatar_url, banner_url, plan, is_active').eq('id', user.id).single(),
-    supabase.from('social_links').select('id', { count: 'exact', head: true }).eq('profile_id', user.id).eq('is_active', true),
-    supabase.from('donation_buttons').select('id', { count: 'exact', head: true }).eq('profile_id', user.id).eq('is_active', true),
-    supabase.from('analytics_events').select('id', { count: 'exact', head: true }).eq('profile_id', user.id).eq('event_type', 'profile_view').gte('created_at', since),
-    supabase.from('analytics_events').select('id', { count: 'exact', head: true }).eq('profile_id', user.id).eq('event_type', 'hotmart_redirect').gte('created_at', since),
+    supabase
+      .from('profiles')
+      .select('display_name, username, bio, avatar_url, banner_url, plan, is_active')
+      .eq('id', user.id)
+      .single(),
+    supabase
+      .from('social_links')
+      .select('id', { count: 'exact', head: true })
+      .eq('profile_id', user.id)
+      .eq('is_active', true),
+    supabase
+      .from('donation_buttons')
+      .select('id', { count: 'exact', head: true })
+      .eq('profile_id', user.id)
+      .eq('is_active', true),
+    // Single query for both analytics counts grouped by event_type
+    supabase
+      .from('analytics_events')
+      .select('event_type')
+      .eq('profile_id', user.id)
+      .in('event_type', ['profile_view', 'hotmart_redirect'])
+      .gte('created_at', since),
   ])
 
   if (!profile) redirect('/auth/login')
 
+  // Derive counts from the grouped result
+  const totalViews = analyticsGroups?.filter(e => e.event_type === 'profile_view').length ?? 0
+  const totalClicks = analyticsGroups?.filter(e => e.event_type === 'hotmart_redirect').length ?? 0
+
   const publicUrl = `${BASE_URL}/${profile.username}`
   const activeSocial = activeSocialCount ?? 0
   const activeButtons = activeButtonCount ?? 0
-  const totalViews = viewCount ?? 0
-  const totalClicks = clickCount ?? 0
 
   const stats = [
     { label: 'Montos activos', value: activeButtons, icon: CreditCard, color: 'text-emerald-500', href: '/dashboard/buttons' },
