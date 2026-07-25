@@ -8,7 +8,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { EmojiPickerInput } from '@/components/emoji-picker-input'
+import { EmojiTitleInput } from '@/components/emoji-picker-input'
 import {
   createButtonAction, deleteButtonAction, toggleButtonAction, updateButtonAction,
 } from './actions'
@@ -30,6 +30,7 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null)
   const [customAmount, setCustomAmount] = useState('')
   const [emoji, setEmoji] = useState('')
+  const [titleValue, setTitleValue] = useState('')
   const [, startTransition] = useTransition()
   const [addState, addAction, isAdding] = useActionState(createButtonAction, null)
   const [editState, editAction, isEditing] = useActionState(updateButtonAction, null)
@@ -37,25 +38,16 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
   const atLimit = buttons.length >= limit
   const formMode: FormMode = editingButton ? 'edit' : 'create'
 
-  const amountValue = selectedAmount !== null
-    ? selectedAmount.toString()
-    : customAmount
+  const amountValue = selectedAmount !== null ? selectedAmount.toString() : customAmount
 
-  // Auto-close form and reload on success
   useEffect(() => {
-    if (addState?.success) {
-      closeForm()
-      window.location.reload()
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (addState?.success) { closeForm(); window.location.reload() }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addState?.success])
 
   useEffect(() => {
-    if (editState?.success) {
-      closeForm()
-      window.location.reload()
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (editState?.success) { closeForm(); window.location.reload() }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editState?.success])
 
   function openCreate() {
@@ -63,12 +55,14 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
     setSelectedAmount(null)
     setCustomAmount('')
     setEmoji('')
+    setTitleValue('')
     setShowForm(true)
   }
 
   function openEdit(btn: DonationButton) {
     setEditingButton(btn)
     setEmoji(btn.emoji ?? '')
+    setTitleValue(btn.title)
     setShowForm(true)
     const isPreset = presetAmounts.includes(Number(btn.amount))
     if (isPreset) {
@@ -86,6 +80,7 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
     setSelectedAmount(null)
     setCustomAmount('')
     setEmoji('')
+    setTitleValue('')
   }
 
   async function handleDelete(id: string) {
@@ -104,16 +99,28 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
   }
 
   const getEditFormAction = useCallback(
-    (fd: FormData) => {
-      fd.set('id', editingButton!.id)
-      return editAction(fd)
-    },
+    (fd: FormData) => { fd.set('id', editingButton!.id); return editAction(fd) },
     [editAction, editingButton]
+  )
+
+  const sharedFields = (
+    <ButtonFormFields
+      presetAmounts={presetAmounts}
+      selectedAmount={selectedAmount}
+      customAmount={customAmount}
+      onSelectAmount={(a) => { setSelectedAmount(a); setCustomAmount('') }}
+      onCustomAmount={(v) => { setCustomAmount(v); setSelectedAmount(null) }}
+      defaultValues={formMode === 'edit' ? editingButton : null}
+      emoji={emoji}
+      onEmojiChange={setEmoji}
+      titleValue={titleValue}
+      onTitleChange={setTitleValue}
+    />
   )
 
   return (
     <div className="space-y-4">
-      {/* Button list */}
+      {/* Empty state */}
       {buttons.length === 0 && (
         <Card className="p-8 text-center space-y-2">
           <CreditCard className="w-10 h-10 text-slate-300 mx-auto" />
@@ -122,6 +129,7 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
         </Card>
       )}
 
+      {/* Button list */}
       <div className="space-y-3">
         {buttons.map((btn) => (
           <Card key={btn.id} className={`p-4 transition-all ${btn.is_featured ? 'border-emerald-500/50' : ''}`}>
@@ -153,28 +161,20 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
                   <span className="truncate">{btn.hotmart_checkout_url}</span>
                 </a>
               </div>
-
               <div className="flex items-center gap-1 flex-shrink-0">
-                <button
-                  onClick={() => handleToggle(btn.id, btn.is_active)}
+                <button onClick={() => handleToggle(btn.id, btn.is_active)}
                   className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                  aria-label={btn.is_active ? 'Desactivar' : 'Activar'}
-                >
+                  aria-label={btn.is_active ? 'Desactivar' : 'Activar'}>
                   {btn.is_active ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
-                <button
-                  onClick={() => openEdit(btn)}
+                <button onClick={() => openEdit(btn)}
                   className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-500 hover:bg-indigo-500/10 transition"
-                  aria-label="Editar"
-                >
+                  aria-label="Editar">
                   <Edit3 className="w-4 h-4" />
                 </button>
-                <button
-                  onClick={() => handleDelete(btn.id)}
-                  disabled={deletingId === btn.id}
+                <button onClick={() => handleDelete(btn.id)} disabled={deletingId === btn.id}
                   className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition disabled:opacity-50"
-                  aria-label="Eliminar"
-                >
+                  aria-label="Eliminar">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
@@ -183,13 +183,12 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
         ))}
       </div>
 
-      {/* Add button */}
+      {/* Add button CTA */}
       {!showForm && !atLimit && (
         <Button variant="outline" size="sm" onClick={openCreate} className="w-full sm:w-auto">
           <Plus className="w-4 h-4" /> Crear nuevo monto
         </Button>
       )}
-
       {atLimit && !showForm && (
         <p className="text-xs text-amber-600 dark:text-amber-400 text-center p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
           Has alcanzado el límite de {limit} botones para tu plan actual.{' '}
@@ -197,16 +196,17 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
         </p>
       )}
 
-      {/* Create/Edit Form */}
+      {/* Create / Edit form */}
       {showForm && (
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm">
-                {formMode === 'create' ? 'Nuevo monto de apoyo' : `Editar: ${editingButton?.title}`}
+                {formMode === 'create' ? 'Nuevo monto de apoyo' : `Editar: ${editingButton?.emoji ? editingButton.emoji + ' ' : ''}${editingButton?.title}`}
               </CardTitle>
               <button onClick={closeForm}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition" aria-label="Cerrar">
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition"
+                aria-label="Cerrar">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -215,31 +215,14 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
             {formMode === 'create' ? (
               <form action={addAction} className="space-y-4">
                 <input type="hidden" name="amount" value={amountValue} />
-
                 {addState?.error && (
                   <div role="alert" className="flex items-center gap-2 text-xs text-rose-500 p-2 rounded-xl bg-rose-500/10 border border-rose-500/20">
                     <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /> {addState.error}
                   </div>
                 )}
-                {addState?.success && (
-                  <div role="status" className="flex items-center gap-2 text-xs text-emerald-500">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> {addState.success}
-                  </div>
-                )}
-
-                <ButtonFormFields
-                  presetAmounts={presetAmounts}
-                  selectedAmount={selectedAmount}
-                  customAmount={customAmount}
-                  onSelectAmount={(a) => { setSelectedAmount(a); setCustomAmount('') }}
-                  onCustomAmount={(v) => { setCustomAmount(v); setSelectedAmount(null) }}
-                  defaultValues={null}
-                  emoji={emoji}
-                  onEmojiChange={setEmoji}
-                />
-
+                {sharedFields}
                 <div className="flex gap-2">
-                  <Button type="submit" variant="primary" size="sm" isLoading={isAdding} disabled={!amountValue}>
+                  <Button type="submit" variant="primary" size="sm" isLoading={isAdding} disabled={!amountValue || !titleValue.trim()}>
                     Crear botón
                   </Button>
                   <Button type="button" variant="ghost" size="sm" onClick={closeForm}>Cancelar</Button>
@@ -248,31 +231,14 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
             ) : (
               <form action={getEditFormAction} className="space-y-4">
                 <input type="hidden" name="amount" value={amountValue} />
-
                 {editState?.error && (
                   <div role="alert" className="flex items-center gap-2 text-xs text-rose-500 p-2 rounded-xl bg-rose-500/10 border border-rose-500/20">
                     <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /> {editState.error}
                   </div>
                 )}
-                {editState?.success && (
-                  <div role="status" className="flex items-center gap-2 text-xs text-emerald-500">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> {editState.success}
-                  </div>
-                )}
-
-                <ButtonFormFields
-                  presetAmounts={presetAmounts}
-                  selectedAmount={selectedAmount}
-                  customAmount={customAmount}
-                  onSelectAmount={(a) => { setSelectedAmount(a); setCustomAmount('') }}
-                  onCustomAmount={(v) => { setCustomAmount(v); setSelectedAmount(null) }}
-                  defaultValues={editingButton}
-                  emoji={emoji}
-                  onEmojiChange={setEmoji}
-                />
-
+                {sharedFields}
                 <div className="flex gap-2">
-                  <Button type="submit" variant="primary" size="sm" isLoading={isEditing} disabled={!amountValue}>
+                  <Button type="submit" variant="primary" size="sm" isLoading={isEditing} disabled={!amountValue || !titleValue.trim()}>
                     Guardar cambios
                   </Button>
                   <Button type="button" variant="ghost" size="sm" onClick={closeForm}>Cancelar</Button>
@@ -286,6 +252,8 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
   )
 }
 
+// ─── Form fields ──────────────────────────────────────────────────────────────
+
 interface FieldProps {
   presetAmounts: number[]
   selectedAmount: number | null
@@ -295,20 +263,22 @@ interface FieldProps {
   defaultValues: DonationButton | null
   emoji: string
   onEmojiChange: (e: string) => void
+  titleValue: string
+  onTitleChange: (v: string) => void
 }
 
 function ButtonFormFields({
   presetAmounts, selectedAmount, customAmount, onSelectAmount, onCustomAmount,
-  defaultValues, emoji, onEmojiChange,
+  defaultValues, emoji, onEmojiChange, titleValue, onTitleChange,
 }: FieldProps) {
   return (
     <>
+      {/* Amount selector */}
       <div className="space-y-2">
         <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">Monto (USD)</p>
         <div className="flex flex-wrap gap-2">
           {presetAmounts.map((amt) => (
-            <button key={amt} type="button"
-              onClick={() => onSelectAmount(amt)}
+            <button key={amt} type="button" onClick={() => onSelectAmount(amt)}
               className={`px-3 py-1.5 text-xs font-mono font-semibold rounded-lg border transition ${
                 selectedAmount === amt
                   ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
@@ -328,42 +298,37 @@ function ButtonFormFields({
         </div>
       </div>
 
-      {/* Title + emoji picker in the same row */}
+      {/* WhatsApp-style title + emoji bar */}
       <div className="space-y-1.5">
         <label htmlFor="btnTitle" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
           Título <span className="text-rose-500">*</span>
-          <span className="ml-1 font-normal text-slate-400">(el emoji se muestra aparte)</span>
         </label>
-        <div className="flex items-center gap-2">
-          {/* Title input */}
-          <input
-            id="btnTitle"
-            name="title"
-            type="text"
-            required
-            maxLength={80}
-            defaultValue={defaultValues?.title ?? ''}
-            placeholder="Ej. Invítame un café"
-            className="flex-1 px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          />
-          {/* Emoji picker trigger — styled like the password-reveal btn pattern */}
-          <EmojiPickerInput value={emoji} onChange={onEmojiChange} name="emoji" />
-        </div>
-        {emoji && (
-          <p className="text-xs text-slate-400">
-            Se mostrará como: <span className="font-semibold text-slate-700 dark:text-slate-200">{emoji} {defaultValues?.title || 'Título del botón'}</span>
-          </p>
-        )}
+        <EmojiTitleInput
+          value={emoji}
+          onChange={onEmojiChange}
+          titleValue={titleValue}
+          onTitleChange={onTitleChange}
+          emojiName="emoji"
+          titleName="title"
+          titleId="btnTitle"
+          titlePlaceholder="Ej. Invítame un café"
+          titleMaxLength={80}
+          titleRequired
+        />
       </div>
 
+      {/* Description */}
       <div className="space-y-1.5">
-        <label htmlFor="btnDesc" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Descripción (opcional)</label>
+        <label htmlFor="btnDesc" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+          Descripción (opcional)
+        </label>
         <input id="btnDesc" name="description" type="text" maxLength={160}
           defaultValue={defaultValues?.description ?? ''}
           placeholder="Breve descripción para el visitante"
           className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
       </div>
 
+      {/* Hotmart URL */}
       <div className="space-y-1.5">
         <label htmlFor="btnUrl" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
           URL de checkout Hotmart <span className="text-rose-500">*</span>
@@ -375,14 +340,18 @@ function ButtonFormFields({
         <p className="text-xs text-slate-400">Solo se aceptan URLs de dominios oficiales de Hotmart con HTTPS.</p>
       </div>
 
+      {/* Button label */}
       <div className="space-y-1.5">
-        <label htmlFor="btnLabel" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Texto del botón (opcional)</label>
+        <label htmlFor="btnLabel" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+          Texto del botón (opcional)
+        </label>
         <input id="btnLabel" name="buttonLabel" type="text" maxLength={40}
           defaultValue={defaultValues?.button_label ?? ''}
           placeholder="Ej. Apoyar ahora"
           className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
       </div>
 
+      {/* Featured toggle */}
       <label className="flex items-center gap-2 cursor-pointer">
         <input type="checkbox" name="isFeatured" value="true"
           defaultChecked={defaultValues?.is_featured ?? false}
