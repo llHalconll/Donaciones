@@ -53,11 +53,17 @@ export default async function PublicProfilePage({ params }: PageProps) {
   const { username } = await params
   const supabase = await createClient()
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('id, display_name, username, bio, avatar_url, banner_url, account_type, website_url, is_active')
-    .eq('username', username.toLowerCase())
-    .single()
+  // Read auth in parallel with profile fetch
+  const [{ data: profile }, { data: { user } }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('id, display_name, username, bio, avatar_url, banner_url, account_type, website_url, is_active')
+      .eq('username', username.toLowerCase())
+      .single(),
+    supabase.auth.getUser(),
+  ])
+
+  const isLoggedIn = !!user
 
   if (!profile || !profile.is_active) notFound()
 
@@ -83,15 +89,25 @@ export default async function PublicProfilePage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
 
-      {/* Back to home */}
+      {/* Context-aware back link */}
       <div className="max-w-2xl mx-auto px-4 pt-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          Volver al inicio
-        </Link>
+        {isLoggedIn ? (
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 transition"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Ir al panel
+          </Link>
+        ) : (
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Volver al inicio
+          </Link>
+        )}
       </div>
 
       <main className="max-w-2xl mx-auto px-4 pb-20 pt-2">

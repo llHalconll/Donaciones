@@ -4,12 +4,17 @@ import { PublicFooter } from '@/components/shared/footer'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { createClient } from '@/lib/supabase/server'
 import {
   Sparkles, ArrowRight, Zap, Globe, DollarSign,
-  CheckCircle2, Star, Users, BarChart2,
+  CheckCircle2, Star, Users, BarChart2, LayoutDashboard,
 } from 'lucide-react'
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const isLoggedIn = !!user
+
   return (
     <div className="min-h-screen flex flex-col">
       <PublicHeader />
@@ -41,14 +46,23 @@ export default function HomePage() {
               , añade botones de aportes fijos y permite que tu audiencia te apoye sin complicaciones.
             </p>
 
-            {/* CTA */}
+            {/* CTA — adapts to auth state */}
             <div className="max-w-md mx-auto flex flex-col sm:flex-row items-center gap-3">
-              <Link href="/auth/register" className="w-full sm:w-auto">
-                <Button variant="primary" size="lg" className="w-full whitespace-nowrap">
-                  Crear mi perfil gratis
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
+              {isLoggedIn ? (
+                <Link href="/dashboard" className="w-full sm:w-auto">
+                  <Button variant="primary" size="lg" className="w-full whitespace-nowrap gap-2">
+                    <LayoutDashboard className="w-4 h-4" />
+                    Ir a mi panel
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/auth/register" className="w-full sm:w-auto">
+                  <Button variant="primary" size="lg" className="w-full whitespace-nowrap">
+                    Crear mi perfil gratis
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+              )}
               <Link href="/demo" className="w-full sm:w-auto">
                 <Button variant="outline" size="lg" className="w-full whitespace-nowrap">
                   Ver demo
@@ -56,7 +70,9 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <p className="text-xs text-slate-400">Sin tarjeta de crédito. Sin comisiones. 100% gratis para empezar.</p>
+            {!isLoggedIn && (
+              <p className="text-xs text-slate-400">Sin tarjeta de crédito. Sin comisiones. 100% gratis para empezar.</p>
+            )}
           </div>
         </section>
 
@@ -141,9 +157,18 @@ export default function HomePage() {
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
-              <Link href="/auth/register">
-                <Button variant="outline" size="lg">Empezar gratis</Button>
-              </Link>
+              {isLoggedIn ? (
+                <Link href="/dashboard">
+                  <Button variant="outline" size="lg" className="gap-1.5">
+                    <LayoutDashboard className="w-4 h-4" />
+                    Ir a mi panel
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/auth/register">
+                  <Button variant="outline" size="lg">Empezar gratis</Button>
+                </Link>
+              )}
             </div>
             <div className="flex items-center justify-center gap-6 text-sm text-slate-500 dark:text-slate-400 pt-2">
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Sin tarjeta de crédito</span>

@@ -1,9 +1,14 @@
 import Link from 'next/link'
-import { Heart } from 'lucide-react'
+import { Heart, LayoutDashboard } from 'lucide-react'
 import { ThemeToggle } from '../theme-toggle'
 import { Button } from '../ui/button'
+import { createClient } from '@/lib/supabase/server'
 
-export function PublicHeader() {
+export async function PublicHeader() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const isLoggedIn = !!user
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -27,17 +32,25 @@ export function PublicHeader() {
         <div className="flex items-center gap-3">
           <ThemeToggle />
 
-          <Link href="/auth/login">
-            <Button variant="ghost" size="sm">
-              Iniciar Sesión
-            </Button>
-          </Link>
-
-          <Link href="/auth/register">
-            <Button variant="primary" size="sm">
-              Crear mi Perfil
-            </Button>
-          </Link>
+          {isLoggedIn ? (
+            /* Authenticated: single clear CTA to the panel */
+            <Link href="/dashboard">
+              <Button variant="primary" size="sm" className="gap-1.5">
+                <LayoutDashboard className="w-4 h-4" />
+                Mi panel
+              </Button>
+            </Link>
+          ) : (
+            /* Guest: login + register */
+            <>
+              <Link href="/auth/login">
+                <Button variant="ghost" size="sm">Iniciar sesión</Button>
+              </Link>
+              <Link href="/auth/register">
+                <Button variant="primary" size="sm">Crear mi perfil</Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
