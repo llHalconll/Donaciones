@@ -24,6 +24,7 @@ export async function createButtonAction(prevState: unknown, formData: FormData)
   const hotmartUrl = (formData.get('hotmartUrl') as string | null)?.trim() ?? ''
   const buttonLabel = (formData.get('buttonLabel') as string | null)?.trim() || null
   const isFeaturedRaw = formData.get('isFeatured')
+  const emoji = (formData.get('emoji') as string | null)?.trim() || null
 
   if (!title) return { error: 'El título es obligatorio.' }
   if (title.length > 80) return { error: 'El título no puede superar 80 caracteres.' }
@@ -62,7 +63,7 @@ export async function createButtonAction(prevState: unknown, formData: FormData)
   const nextIndex = (last?.order_index ?? -1) + 1
 
   const { error } = await supabase.from('donation_buttons').insert({
-    profile_id: user.id, title, description,
+    profile_id: user.id, title, emoji, description,
     amount, currency: currency.toUpperCase(),
     hotmart_checkout_url: urlCheck.normalizedUrl ?? hotmartUrl,
     button_label: buttonLabel, is_active: true, is_featured: isFeatured,
@@ -85,6 +86,7 @@ export async function updateButtonAction(prevState: unknown, formData: FormData)
   const hotmartUrl = (formData.get('hotmartUrl') as string | null)?.trim() ?? ''
   const buttonLabel = (formData.get('buttonLabel') as string | null)?.trim() || null
   const isFeatured = formData.get('isFeatured') === 'true'
+  const emoji = (formData.get('emoji') as string | null)?.trim() || null
 
   if (!id) return { error: 'ID inválido.' }
   if (!title) return { error: 'El título es obligatorio.' }
@@ -104,7 +106,12 @@ export async function updateButtonAction(prevState: unknown, formData: FormData)
   }
 
   const { error } = await supabase.from('donation_buttons')
-    .update({ title, description, amount, hotmart_checkout_url: urlCheck.normalizedUrl ?? hotmartUrl, button_label: buttonLabel, is_featured: isFeatured, updated_at: new Date().toISOString() })
+    .update({
+      title, emoji, description, amount,
+      hotmart_checkout_url: urlCheck.normalizedUrl ?? hotmartUrl,
+      button_label: buttonLabel, is_featured: isFeatured,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', id).eq('profile_id', user.id)
 
   if (error) return { error: error.message }

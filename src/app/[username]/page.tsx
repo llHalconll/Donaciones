@@ -70,7 +70,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
       .order('order_index'),
     supabase
       .from('donation_buttons')
-      .select('id, title, description, amount, currency, hotmart_checkout_url, button_label, is_active, is_featured, order_index')
+      .select('id, title, emoji, description, amount, currency, hotmart_checkout_url, button_label, is_active, is_featured, order_index')
       .eq('profile_id', profile.id)
       .eq('is_active', true)
       .order('order_index'),

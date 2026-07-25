@@ -58,6 +58,7 @@ export interface DonationButton {
   id: string
   profile_id: string
   title: string
+  emoji: string | null
   description: string | null
   amount: number
   currency: string
