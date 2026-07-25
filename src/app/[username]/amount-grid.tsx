@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Script from 'next/script'
 import {
   Star,
@@ -69,10 +69,6 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
         return null
       }
 
-      /*
-       * El widget que proporcionó Hotmart utiliza pay.hotmart.com.
-       * Evitamos aceptar dominios parecidos o manipulados.
-       */
       if (parsed.hostname.toLowerCase() !== 'pay.hotmart.com') {
         return null
       }
@@ -109,7 +105,7 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
           }),
         })
       } catch {
-        // Un error de Analytics nunca debe bloquear el checkout.
+        // Analytics no debe bloquear el checkout.
       }
     },
     [profileId]
@@ -132,10 +128,6 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
 
     setUrlError(null)
 
-    /*
-     * No esperamos la respuesta de Analytics.
-     * Así no retrasamos ni interferimos con la apertura del widget.
-     */
     void trackEvent('hotmart_redirect', selectedButton.id)
   }
 
@@ -151,11 +143,6 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
       <Script
         src="https://static.hotmart.com/checkout/widget.min.js"
         strategy="afterInteractive"
-      />
-
-      <link
-        rel="stylesheet"
-        href="https://static.hotmart.com/css/hotmart-fb.min.css"
       />
 
       <div className="space-y-4">
