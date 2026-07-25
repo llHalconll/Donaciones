@@ -1,13 +1,12 @@
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthUser } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { SettingsForm } from './settings-form'
 
 export const metadata: Metadata = { title: 'Configuración | Dashboard' }
 
 export default async function SettingsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { user } = await getAuthUser()
   if (!user) redirect('/auth/login')
 
   return (

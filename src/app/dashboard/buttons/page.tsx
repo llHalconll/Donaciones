@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthUser } from '@/lib/supabase/server'
 import { ButtonsManager } from './buttons-manager'
 import { PLAN_LIMITS } from '@/types/database.types'
 
@@ -7,8 +7,7 @@ export const metadata = { title: 'Montos de Apoyo | Dashboard' }
 const PRESET_AMOUNTS = [5, 10, 15, 20, 30, 40, 50, 100, 200, 300]
 
 export default async function DonationButtonsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { user, supabase } = await getAuthUser()
 
   const [{ data: buttons }, { data: profile }] = await Promise.all([
     supabase

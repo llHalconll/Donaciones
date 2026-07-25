@@ -1,12 +1,11 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthUser } from '@/lib/supabase/server'
 import { SocialLinksManager } from './social-links-manager'
 import { PLAN_LIMITS, SOCIAL_PLATFORMS } from '@/types/database.types'
 
 export const metadata = { title: 'Redes Sociales | Dashboard' }
 
 export default async function SocialLinksPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { user, supabase } = await getAuthUser()
 
   const [{ data: links }, { data: profile }] = await Promise.all([
     supabase.from('social_links').select('*').eq('profile_id', user!.id).order('order_index'),

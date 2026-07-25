@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthUser } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { BarChart2, Eye, MousePointerClick, TrendingUp } from 'lucide-react'
 import { Card } from '@/components/ui/card'
@@ -21,8 +21,7 @@ function StatCard({ label, value, icon: Icon, note }: {
 }
 
 export default async function AnalyticsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { user, supabase } = await getAuthUser()
   if (!user) redirect('/auth/login')
 
   // Last 30 days — use aggregated server-side counts to avoid fetching all rows
