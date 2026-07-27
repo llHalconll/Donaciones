@@ -3,6 +3,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { validateHotmartUrl } from '@/lib/validations/url'
 import { PLAN_LIMITS } from '@/types/database.types'
+import {
+  moveOrderedSupportOption,
+  type MoveDirection,
+} from '@/lib/support-options'
 import { revalidatePath } from 'next/cache'
 
 interface ActionResult { error?: string; success?: string }
@@ -28,6 +32,10 @@ export async function createButtonAction(prevState: unknown, formData: FormData)
 
   if (!title) return { error: 'El título es obligatorio.' }
   if (title.length > 80) return { error: 'El título no puede superar 80 caracteres.' }
+  if (description && description.length > 160)
+    return { error: 'La descripción no puede superar 160 caracteres.' }
+  if (buttonLabel && buttonLabel.length > 40)
+    return { error: 'El texto del botón no puede superar 40 caracteres.' }
 
   const amount = parseFloat(amountRaw)
   if (isNaN(amount) || amount <= 0) return { error: 'El monto debe ser mayor a cero.' }
@@ -90,9 +98,15 @@ export async function updateButtonAction(prevState: unknown, formData: FormData)
 
   if (!id) return { error: 'ID inválido.' }
   if (!title) return { error: 'El título es obligatorio.' }
+  if (title.length > 80) return { error: 'El título no puede superar 80 caracteres.' }
+  if (description && description.length > 160)
+    return { error: 'La descripción no puede superar 160 caracteres.' }
+  if (buttonLabel && buttonLabel.length > 40)
+    return { error: 'El texto del botón no puede superar 40 caracteres.' }
 
   const amount = parseFloat(amountRaw)
   if (isNaN(amount) || amount <= 0) return { error: 'El monto debe ser mayor a cero.' }
+  if (!/^\d+(\.\d{1,2})?$/.test(amountRaw)) return { error: 'El monto permite máximo 2 decimales.' }
 
   const urlCheck = validateHotmartUrl(hotmartUrl)
   if (!urlCheck.ok) return { error: urlCheck.error }
@@ -137,4 +151,48 @@ export async function toggleButtonAction(id: string, isActive: boolean): Promise
   if (error) return { error: error.message }
   revalidatePath('/dashboard/buttons')
   return { success: isActive ? 'Botón activado.' : 'Botón desactivado.' }
+}
+
+export async function moveButtonAction(
+  id: string,
+  direction: MoveDirection
+): Promise<ActionResult> {
+  const { user, supabase } = await getUser()
+  if (!user) return { error: 'No estás autenticado.' }
+  if (direction !== 'up' && direction !== 'down')
+    return { error: 'Dirección de movimiento inválida.' }
+
+  const { data: currentButtons, error: loadError } = await supabase
+    .from('donation_buttons')
+    .select('id, order_index')
+    .eq('profile_id', user.id)
+    .order('order_index')
+
+  if (loadError) return { error: loadError.message }
+
+  const original = currentButtons ?? []
+  const reordered = moveOrderedSupportOption(original, id, direction)
+  if (reordered === original) return { success: 'El orden no cambió.' }
+
+  const previousOrder = new Map(
+    original.map((button) => [button.id, button.order_index])
+  )
+  const changed = reordered.filter(
+    (button) => previousOrder.get(button.id) !== button.order_index
+  )
+  const updatedAt = new Date().toISOString()
+  const results = await Promise.all(
+    changed.map((button) =>
+      supabase
+        .from('donation_buttons')
+        .update({ order_index: button.order_index, updated_at: updatedAt })
+        .eq('id', button.id)
+        .eq('profile_id', user.id)
+    )
+  )
+  const updateError = results.find((result) => result.error)?.error
+
+  if (updateError) return { error: updateError.message }
+  revalidatePath('/dashboard/buttons')
+  return { success: 'Orden actualizado.' }
 }

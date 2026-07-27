@@ -4,7 +4,7 @@ import { useState, useTransition, useActionState, useCallback, useEffect } from 
 import Link from 'next/link'
 import {
   Plus, Trash2, Edit3, Star, Eye, EyeOff,
-  AlertCircle, ExternalLink, CreditCard, X, GripVertical,
+  AlertCircle, ExternalLink, CreditCard, X, ArrowUp, ArrowDown,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,9 +12,14 @@ import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { EmojiTitleInput } from '@/components/emoji-picker-input'
 import {
-  createButtonAction, deleteButtonAction, toggleButtonAction, updateButtonAction,
+  createButtonAction, deleteButtonAction, moveButtonAction,
+  toggleButtonAction, updateButtonAction,
 } from './actions'
 import type { DonationButton } from '@/types/database.types'
+import {
+  moveOrderedSupportOption,
+  type MoveDirection,
+} from '@/lib/support-options'
 
 interface Props {
   buttons: DonationButton[]
@@ -29,6 +34,8 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
   const [showForm, setShowForm] = useState(false)
   const [editingButton, setEditingButton] = useState<DonationButton | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [movingId, setMovingId] = useState<string | null>(null)
+  const [orderMessage, setOrderMessage] = useState<string | null>(null)
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null)
   const [customAmount, setCustomAmount] = useState('')
   const [emoji, setEmoji] = useState('')
@@ -98,6 +105,24 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
     })
   }
 
+  async function handleMove(id: string, direction: MoveDirection) {
+    if (movingId) return
+
+    setMovingId(id)
+    setOrderMessage(null)
+    const result = await moveButtonAction(id, direction)
+
+    if (result.error) {
+      setOrderMessage(result.error)
+    } else {
+      setButtons((current) =>
+        moveOrderedSupportOption(current, id, direction)
+      )
+      setOrderMessage('Orden actualizado.')
+    }
+    setMovingId(null)
+  }
+
   const getEditFormAction = useCallback(
     (fd: FormData) => { fd.set('id', editingButton!.id); return editAction(fd) },
     [editAction, editingButton]
@@ -136,11 +161,43 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
       )}
 
       {/* Button list */}
+      {orderMessage && (
+        <p
+          role="status"
+          aria-live="polite"
+          className="text-sm text-slate-600 dark:text-slate-300"
+        >
+          {orderMessage}
+        </p>
+      )}
       <div className="space-y-3">
-        {buttons.map((btn) => (
+        {buttons.map((btn, index) => (
           <Card key={btn.id} className={`p-4 transition-all ${btn.is_featured ? 'border-emerald-500/50' : ''}`}>
             <div className="flex items-start gap-3">
-              <GripVertical className="w-4 h-4 text-slate-300 flex-shrink-0 mt-0.5" />
+              <div
+                className="flex shrink-0 flex-col gap-1"
+                role="group"
+                aria-label={`Orden de ${btn.title}`}
+              >
+                <button
+                  type="button"
+                  onClick={() => handleMove(btn.id, 'up')}
+                  disabled={index === 0 || movingId !== null}
+                  className="flex size-11 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-30 dark:hover:bg-slate-800"
+                  aria-label={`Mover "${btn.title}" arriba`}
+                >
+                  <ArrowUp className="size-4" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleMove(btn.id, 'down')}
+                  disabled={index === buttons.length - 1 || movingId !== null}
+                  className="flex size-11 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-30 dark:hover:bg-slate-800"
+                  aria-label={`Mover "${btn.title}" abajo`}
+                >
+                  <ArrowDown className="size-4" aria-hidden="true" />
+                </button>
+              </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm font-bold text-slate-900 dark:text-white">

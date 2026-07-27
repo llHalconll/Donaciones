@@ -18,6 +18,7 @@ import { ProfileViewTracker } from './profile-view-tracker'
 import { PublicSocialLinks } from './social-links'
 import { ReportButton } from './report-button'
 import { ShareButton } from './share-button'
+import { getSupportEmptyStateCopy } from '@/lib/support-options'
 
 interface PageProps {
   params: Promise<{ username: string }>
@@ -94,9 +95,13 @@ function PublicSupportLoading() {
         <div className="h-3 w-24 rounded bg-emerald-500/20" />
         <div className="mt-3 h-7 w-44 rounded bg-slate-200 dark:bg-slate-800" />
         <div className="mt-3 h-4 w-full rounded bg-slate-200 dark:bg-slate-800" />
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          <div className="h-36 rounded-2xl bg-slate-100 dark:bg-slate-800" />
-          <div className="h-36 rounded-2xl bg-slate-100 dark:bg-slate-800" />
+        <div className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+          {Array.from({ length: 4 }, (_, index) => (
+            <div
+              key={index}
+              className="h-28 rounded-xl bg-slate-100 dark:bg-slate-800"
+            />
+          ))}
         </div>
         <div className="mt-5 h-14 rounded-2xl bg-slate-200 dark:bg-slate-800" />
       </div>
@@ -108,9 +113,11 @@ function PublicSupportLoading() {
 async function PublicSupportContent({
   profileId,
   creatorName,
+  hasWebsite,
 }: {
   profileId: string
   creatorName: string
+  hasWebsite: boolean
 }) {
   const supabase = await createClient()
   const [
@@ -153,6 +160,10 @@ async function PublicSupportContent({
       Number(button.amount) > 0 &&
       validateHotmartUrl(button.hotmart_checkout_url).ok
   )
+  const emptyStateCopy = getSupportEmptyStateCopy(
+    creatorName,
+    hasWebsite || safeSocialLinks.length > 0
+  )
 
   return (
     <>
@@ -190,8 +201,8 @@ async function PublicSupportContent({
         ) : (
           <EmptyState
             icon={Heart}
-            title="Este perfil todavía no recibe apoyos"
-            description={`Puedes conocer mejor el trabajo de ${creatorName} en sus enlaces públicos y volver más adelante.`}
+            title={emptyStateCopy.title}
+            description={emptyStateCopy.description}
             className="mt-2"
           />
         )}
@@ -336,7 +347,11 @@ export default async function PublicProfilePage({ params }: PageProps) {
         </section>
 
         <Suspense fallback={<PublicSupportLoading />}>
-          <PublicSupportContent profileId={profile.id} creatorName={profile.display_name} />
+          <PublicSupportContent
+            profileId={profile.id}
+            creatorName={profile.display_name}
+            hasWebsite={Boolean(safeWebsite)}
+          />
         </Suspense>
 
         <div className="mt-10 text-center">
