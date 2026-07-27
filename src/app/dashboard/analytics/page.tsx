@@ -32,11 +32,11 @@ export default async function AnalyticsPage() {
   const since = isoDaysAgo(30)
   const sevenDaysAgo = isoDaysAgo(7)
 
-  const [{ data: events }, { count: totalViews }, { count: totalSelections }, { count: totalRedirects }, { data: buttons }] = await Promise.all([
+  const [{ data: events }, { count: totalViews }, { count: totalSelections }, { count: totalRedirects }, { data: goals }] = await Promise.all([
     // Only fetch recent 7-day events for the trend table (limited row count)
     supabase
       .from('analytics_events')
-      .select('event_type, donation_button_id, created_at')
+      .select('event_type, support_amount_id, created_at')
       .eq('profile_id', user.id)
       .gte('created_at', sevenDaysAgo)
       .order('created_at', { ascending: false })
@@ -61,8 +61,8 @@ export default async function AnalyticsPage() {
       .eq('event_type', 'hotmart_redirect')
       .gte('created_at', since),
     supabase
-      .from('donation_buttons')
-      .select('id, title, amount, currency')
+      .from('support_goals')
+      .select('id, title, support_amounts(id, amount, currency)')
       .eq('profile_id', user.id)
       .eq('is_active', true),
   ])
@@ -72,15 +72,21 @@ export default async function AnalyticsPage() {
   const redirects = totalRedirects ?? 0
   const hasActivity = views + selections + redirects > 0
 
-  // Top buttons by redirects (from 7-day data)
-  const buttonClickMap = new Map<string, number>()
-  events?.filter((e) => e.event_type === 'hotmart_redirect' && e.donation_button_id).forEach((e) => {
-    const id = e.donation_button_id!
-    buttonClickMap.set(id, (buttonClickMap.get(id) ?? 0) + 1)
+  // Top support levels by redirects (from 7-day data)
+  const levelClickMap = new Map<string, number>()
+  events?.filter((e) => e.event_type === 'hotmart_redirect' && e.support_amount_id).forEach((e) => {
+    const id = e.support_amount_id!
+    levelClickMap.set(id, (levelClickMap.get(id) ?? 0) + 1)
   })
 
-  const topButtons = (buttons ?? [])
-    .map((btn) => ({ ...btn, clicks: buttonClickMap.get(btn.id) ?? 0 }))
+  const topLevels = (goals ?? [])
+    .flatMap((goal) =>
+      (goal.support_amounts ?? []).map((level) => ({
+        ...level,
+        goalTitle: goal.title,
+        clicks: levelClickMap.get(level.id) ?? 0,
+      }))
+    )
     .sort((a, b) => b.clicks - a.clicks)
     .slice(0, 5)
 
@@ -153,21 +159,21 @@ export default async function AnalyticsPage() {
         />
       )}
 
-      {/* Top buttons */}
-      {redirects > 0 && topButtons.length > 0 && (
+      {/* Top support levels */}
+      {redirects > 0 && topLevels.length > 0 && (
         <Card className="p-5 space-y-4">
           <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Montos con más clics (7 días)</h2>
           <div className="space-y-2">
-            {topButtons.map((btn, i) => (
-              <div key={btn.id} className="flex items-center gap-3">
+            {topLevels.map((level, i) => (
+              <div key={level.id} className="flex items-center gap-3">
                 <span className="text-xs font-bold text-slate-400 w-5 text-right">{i + 1}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{btn.title}</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{level.goalTitle ?? 'Objetivo'}</p>
                   <p className="text-xs font-mono text-emerald-600 dark:text-emerald-400">
-                    {btn.currency} {Number(btn.amount).toFixed(2)}
+                    {level.currency} {Number(level.amount).toFixed(2)}
                   </p>
                 </div>
-                <span className="text-sm font-bold tabular-nums text-slate-700 dark:text-slate-300">{btn.clicks}</span>
+                <span className="text-sm font-bold tabular-nums text-slate-700 dark:text-slate-300">{level.clicks}</span>
                 <span className="text-xs text-slate-400">clics</span>
               </div>
             ))}

@@ -1,6 +1,10 @@
 -- ==========================================
 -- SCHEMA Y SEGURIDAD (RLS) PARA SUPABASE
 -- ==========================================
+-- Este archivo conserva el bootstrap histórico requerido por la secuencia
+-- 001–011. La migración 011 transforma donation_buttons en support_goals y
+-- support_amounts y retira la tabla legada. No usar schema.sql sin aplicar
+-- todas las migraciones en orden.
 
 -- 1. Tabla de Perfiles de Creadores
 CREATE TABLE IF NOT EXISTS public.profiles (

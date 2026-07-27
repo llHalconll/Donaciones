@@ -42,6 +42,26 @@
 --      → Sin políticas RLS (acceso solo server-side)
 --      → CREATE INDEX: external_id, status
 --
+--   7. migrations/007_donation_buttons_emoji.sql
+--      → Agrega emoji al modelo legado
+--
+--   8. migrations/008_oauth_handle_new_user.sql
+--      → Endurece la creación de perfiles OAuth
+--
+--   9. migrations/009_performance_indexes.sql
+--      → Agrega índices de analytics y username
+--
+--  10. migrations/010_public_profile_rls_hardening.sql
+--      → Limita lecturas públicas a perfiles y registros activos
+--
+--  11. migrations/011_support_goals.sql
+--      → Crea support_goals y support_amounts
+--      → Convierte automáticamente cada donation_button en un objetivo
+--        con un nivel, conservando datos, orden y referencias históricas
+--      → Migra analytics_events y webhook_events a support_amount_id
+--      → Retira donation_buttons únicamente después de verificar conteos
+--      → Crea RLS, índices y el bucket support-goals
+--
 -- ═══════════════════════════════════════════════════════════════════
 -- VERIFICACIÓN DESPUÉS DE APLICAR CADA MIGRACIÓN:
 -- ═══════════════════════════════════════════════════════════════════
@@ -58,11 +78,12 @@ FROM information_schema.columns
 WHERE table_schema = 'public' AND table_name = 'social_links'
 ORDER BY ordinal_position;
 
--- Verificar columnas de donation_buttons:
+-- Verificar columnas del modelo final de objetivos:
 SELECT column_name, data_type, column_default
 FROM information_schema.columns
-WHERE table_schema = 'public' AND table_name = 'donation_buttons'
-ORDER BY ordinal_position;
+WHERE table_schema = 'public'
+  AND table_name IN ('support_goals', 'support_amounts')
+ORDER BY table_name, ordinal_position;
 
 -- Verificar tablas nuevas:
 SELECT table_name

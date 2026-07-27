@@ -24,7 +24,7 @@ const PLANS = [
     borderColor: 'border-slate-200 dark:border-slate-800',
     features: [
       'Perfil público personalizable',
-      'Hasta 5 botones de donación',
+      'Hasta 5 objetivos de apoyo',
       'Hasta 5 redes sociales',
       'Avatar y banner de perfil',
       'Página pública única (URL propia)',
@@ -48,7 +48,7 @@ const PLANS = [
     borderColor: 'border-emerald-500',
     features: [
       'Todo lo del plan Gratuito',
-      'Hasta 20 botones de donación',
+      'Hasta 20 objetivos de apoyo',
       'Hasta 15 redes sociales',
       'Estadísticas avanzadas (30 días)',
       'Soporte prioritario por email',
@@ -70,7 +70,7 @@ const PLANS = [
     borderColor: 'border-indigo-500',
     features: [
       'Todo lo del plan Pro',
-      'Hasta 50 botones de donación',
+      'Hasta 50 objetivos de apoyo',
       'Hasta 30 redes sociales',
       'Estadísticas completas (1 año)',
       'Soporte dedicado',

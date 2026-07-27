@@ -54,17 +54,26 @@ export interface SocialLink {
   updated_at: string
 }
 
-export interface DonationButton {
+export interface SupportGoal {
   id: string
   profile_id: string
   title: string
   emoji: string | null
   description: string | null
+  cover_url: string | null
+  is_active: boolean
+  order_index: number
+  created_at: string
+  updated_at: string
+}
+
+export interface SupportAmount {
+  id: string
+  goal_id: string
   amount: number
   currency: string
   hotmart_checkout_url: string
   button_label: string | null
-  is_active: boolean
   is_featured: boolean
   order_index: number
   created_at: string
@@ -74,7 +83,7 @@ export interface DonationButton {
 export interface AnalyticsEvent {
   id: string
   profile_id: string
-  donation_button_id: string | null
+  support_amount_id: string | null
   event_type: EventType
   session_id: string | null
   referrer: string | null
@@ -97,11 +106,13 @@ export interface ProfileReport {
 // Plan limits (centralized — never trust client)
 // ─────────────────────────────────────────────
 
-export const PLAN_LIMITS: Record<PlanType, { buttons: number; socialLinks: number }> = {
-  free: { buttons: 5, socialLinks: 5 },
-  pro: { buttons: 20, socialLinks: 15 },
-  organization: { buttons: 50, socialLinks: 30 },
+export const PLAN_LIMITS: Record<PlanType, { goals: number; socialLinks: number }> = {
+  free: { goals: 5, socialLinks: 5 },
+  pro: { goals: 20, socialLinks: 15 },
+  organization: { goals: 50, socialLinks: 30 },
 }
+
+export const MAX_SUPPORT_AMOUNTS_PER_GOAL = 50
 
 // ─────────────────────────────────────────────
 // Social platforms

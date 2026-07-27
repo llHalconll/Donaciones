@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
     }
 
-    const { profile_id, donation_button_id, event_type, session_id, referrer } =
+    const { profile_id, support_amount_id, event_type, session_id, referrer } =
       body as Record<string, unknown>
 
     // Validate event_type strictly — never trust client
@@ -66,23 +66,23 @@ export async function POST(req: NextRequest) {
 
     if (!profile) return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
 
-    let safeButtonId: string | null = null
+    let safeSupportAmountId: string | null = null
     if (event_type !== 'profile_view') {
-      if (typeof donation_button_id !== 'string' || !UUID_PATTERN.test(donation_button_id))
-        return NextResponse.json({ error: 'Missing donation_button_id' }, { status: 400 })
+      if (typeof support_amount_id !== 'string' || !UUID_PATTERN.test(support_amount_id))
+        return NextResponse.json({ error: 'Missing support_amount_id' }, { status: 400 })
 
-      const { data: donationButton } = await supabase
-        .from('donation_buttons')
-        .select('id')
-        .eq('id', donation_button_id)
-        .eq('profile_id', profile_id)
-        .eq('is_active', true)
+      const { data: supportAmount } = await supabase
+        .from('support_amounts')
+        .select('id, support_goals!inner(profile_id, is_active)')
+        .eq('id', support_amount_id)
+        .eq('support_goals.profile_id', profile_id)
+        .eq('support_goals.is_active', true)
         .single()
 
-      if (!donationButton)
-        return NextResponse.json({ error: 'Donation button not found' }, { status: 404 })
+      if (!supportAmount)
+        return NextResponse.json({ error: 'Support amount not found' }, { status: 404 })
 
-      safeButtonId = donationButton.id
+      safeSupportAmountId = supportAmount.id
     }
 
     // Truncate referrer to avoid storing long sensitive URLs
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
 
     const { error: insertError } = await supabase.from('analytics_events').insert({
       profile_id,
-      donation_button_id: safeButtonId,
+      support_amount_id: safeSupportAmountId,
       event_type,
       session_id: safeSession,
       referrer: safeReferrer,

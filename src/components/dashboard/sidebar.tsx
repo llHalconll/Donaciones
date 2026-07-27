@@ -23,7 +23,7 @@ export function DashboardSidebar({ isOpen = false, onClose, username, isAdmin }:
     { label: 'Resumen', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Mi perfil', href: '/dashboard/profile', icon: UserCircle },
     { label: 'Redes sociales', href: '/dashboard/social', icon: Link2 },
-    { label: 'Montos de apoyo', href: '/dashboard/buttons', icon: CreditCard },
+    { label: 'Objetivos de apoyo', href: '/dashboard/goals', icon: CreditCard },
     { label: 'Estadísticas', href: '/dashboard/analytics', icon: BarChart2 },
     { label: 'Configuración', href: '/dashboard/settings', icon: Settings },
   ]

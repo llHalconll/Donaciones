@@ -22,14 +22,14 @@ export function getOrCreatePublicSessionId() {
 interface TrackPublicEventInput {
   profileId: string
   eventType: EventType
-  buttonId?: string
+  supportAmountId?: string
   keepalive?: boolean
 }
 
 export async function trackPublicEvent({
   profileId,
   eventType,
-  buttonId,
+  supportAmountId,
   keepalive = false,
 }: TrackPublicEventInput) {
   try {
@@ -39,7 +39,7 @@ export async function trackPublicEvent({
       keepalive,
       body: JSON.stringify({
         profile_id: profileId,
-        donation_button_id: buttonId ?? null,
+        support_amount_id: supportAmountId ?? null,
         event_type: eventType,
         session_id: getOrCreatePublicSessionId(),
         referrer: document.referrer ? document.referrer.slice(0, 200) : null,

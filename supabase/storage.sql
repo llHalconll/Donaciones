@@ -34,6 +34,20 @@ ON CONFLICT (id) DO UPDATE
       file_size_limit    = 5242880,
       allowed_mime_types = ARRAY['image/jpeg','image/jpg','image/png','image/webp'];
 
+-- support-goals: portadas públicas opcionales, max 5 MB
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'support-goals',
+  'support-goals',
+  true,
+  5242880,
+  ARRAY['image/jpeg','image/jpg','image/png','image/webp']
+)
+ON CONFLICT (id) DO UPDATE
+  SET public             = true,
+      file_size_limit    = 5242880,
+      allowed_mime_types = ARRAY['image/jpeg','image/jpg','image/png','image/webp'];
+
 
 -- ─────────────────────────────────────────────
 -- 2. RLS Policies — avatars
@@ -102,6 +116,43 @@ CREATE POLICY "banner_owner_delete"
   ON storage.objects FOR DELETE
   USING (
     bucket_id = 'banners'
+    AND auth.role() = 'authenticated'
+    AND (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+
+-- ─────────────────────────────────────────────
+-- 4. RLS Policies — support-goals
+-- ─────────────────────────────────────────────
+DROP POLICY IF EXISTS "support_goal_cover_public_read" ON storage.objects;
+DROP POLICY IF EXISTS "support_goal_cover_owner_insert" ON storage.objects;
+DROP POLICY IF EXISTS "support_goal_cover_owner_update" ON storage.objects;
+DROP POLICY IF EXISTS "support_goal_cover_owner_delete" ON storage.objects;
+
+CREATE POLICY "support_goal_cover_public_read"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'support-goals');
+
+CREATE POLICY "support_goal_cover_owner_insert"
+  ON storage.objects FOR INSERT
+  WITH CHECK (
+    bucket_id = 'support-goals'
+    AND auth.role() = 'authenticated'
+    AND (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+CREATE POLICY "support_goal_cover_owner_update"
+  ON storage.objects FOR UPDATE
+  USING (
+    bucket_id = 'support-goals'
+    AND auth.role() = 'authenticated'
+    AND (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+CREATE POLICY "support_goal_cover_owner_delete"
+  ON storage.objects FOR DELETE
+  USING (
+    bucket_id = 'support-goals'
     AND auth.role() = 'authenticated'
     AND (storage.foldername(name))[1] = auth.uid()::text
   );

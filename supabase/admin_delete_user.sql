@@ -47,12 +47,12 @@ WHERE u.id = 'USER_UUID_AQUI';
 --
 -- profiles (id) → FK fuente:
 --   social_links.profile_id        ON DELETE CASCADE  ← se elimina automáticamente
---   donation_buttons.profile_id    ON DELETE CASCADE  ← se elimina automáticamente
+--   support_goals.profile_id       ON DELETE CASCADE  ← elimina objetivos y niveles
 --   analytics_events.profile_id    ON DELETE CASCADE  ← se elimina automáticamente
 --   profile_reports.profile_id     ON DELETE CASCADE  ← se elimina automáticamente
 --
--- donation_buttons (id) → FK fuente:
---   analytics_events.donation_button_id  ON DELETE SET NULL  ← evento persiste, FK = NULL
+-- support_amounts (id) → FK fuente:
+--   analytics_events.support_amount_id   ON DELETE SET NULL  ← evento persiste, FK = NULL
 --
 -- auth.users (id) → FK fuente:
 --   profiles.id                    (trigger on_auth_user_created)
@@ -76,7 +76,7 @@ WHERE u.id = 'USER_UUID_AQUI';
 --   1. Ve a Storage → avatars
 --   2. Busca la carpeta con el nombre del UUID del usuario
 --   3. Elimina todos los archivos dentro de esa carpeta
---   4. Repite en Storage → banners
+--   4. Repite en Storage → banners y Storage → support-goals
 --
 -- Opción B — Supabase Management API (script curl):
 --   curl -X DELETE "https://YOUR_PROJECT.supabase.co/storage/v1/object/avatars/USER_UUID_AQUI/avatar.webp" \
@@ -87,7 +87,7 @@ WHERE u.id = 'USER_UUID_AQUI';
 --
 -- Confirmar eliminación antes de continuar:
 SELECT name FROM storage.objects
-WHERE bucket_id IN ('avatars', 'banners')
+WHERE bucket_id IN ('avatars', 'banners', 'support-goals')
   AND (storage.foldername(name))[1] = 'USER_UUID_AQUI';
 -- Debe devolver 0 filas antes de continuar.
 
@@ -123,7 +123,7 @@ SELECT COUNT(*) AS remaining_reports FROM public.profile_reports WHERE profile_i
 -- ═══════════════════════════════════════════════════════════════════
 -- Este DELETE activa los ON DELETE CASCADE para:
 --   - social_links
---   - donation_buttons
+--   - support_goals (y support_amounts por cascada)
 --   - analytics_events (si quedó alguno)
 --   - profile_reports (si quedó alguno)
 
@@ -132,7 +132,7 @@ WHERE id = 'USER_UUID_AQUI';
 
 -- Verificar:
 SELECT COUNT(*) AS remaining_social   FROM public.social_links      WHERE profile_id = 'USER_UUID_AQUI';
-SELECT COUNT(*) AS remaining_buttons  FROM public.donation_buttons   WHERE profile_id = 'USER_UUID_AQUI';
+SELECT COUNT(*) AS remaining_goals    FROM public.support_goals      WHERE profile_id = 'USER_UUID_AQUI';
 SELECT COUNT(*) AS remaining_profile  FROM public.profiles           WHERE id         = 'USER_UUID_AQUI';
 -- Todos deben ser 0.
 
@@ -181,7 +181,7 @@ SELECT 'profiles',                    COUNT(*)              FROM public.profiles
 UNION ALL
 SELECT 'social_links',                COUNT(*)              FROM public.social_links  WHERE profile_id = 'USER_UUID_AQUI'
 UNION ALL
-SELECT 'donation_buttons',            COUNT(*)              FROM public.donation_buttons WHERE profile_id = 'USER_UUID_AQUI'
+SELECT 'support_goals',               COUNT(*)              FROM public.support_goals WHERE profile_id = 'USER_UUID_AQUI'
 UNION ALL
 SELECT 'analytics_events',            COUNT(*)              FROM public.analytics_events WHERE profile_id = 'USER_UUID_AQUI'
 UNION ALL
@@ -201,7 +201,7 @@ SELECT 'profile_reports',             COUNT(*)              FROM public.profile_
 -- UUID del usuario:     _______________
 -- Ejecutado por:        _______________
 -- Fecha de ejecución:   _______________
--- Archivos de Storage eliminados: ✓ avatars / ✓ banners
+-- Archivos de Storage eliminados: ✓ avatars / ✓ banners / ✓ support-goals
 -- Registros de BD eliminados:     ✓
 -- Usuario de Auth eliminado:      ✓
 -- ═══════════════════════════════════════════════════════════════════

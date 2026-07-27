@@ -33,18 +33,18 @@ type ProfileSummary = {
 function ProfileCompleteness({
   profile,
   socialCount,
-  buttonCount,
+  goalCount,
 }: {
   profile: ProfileSummary
   socialCount: number
-  buttonCount: number
+  goalCount: number
 }) {
   const checks = [
     { label: 'Añade una biografía', done: Boolean(profile.bio), href: '/dashboard/profile' },
     { label: 'Sube una foto de perfil', done: Boolean(profile.avatar_url), href: '/dashboard/profile' },
     { label: 'Añade una portada', done: Boolean(profile.banner_url), href: '/dashboard/profile' },
     { label: 'Conecta una red social', done: socialCount > 0, href: '/dashboard/social' },
-    { label: 'Crea un monto de apoyo', done: buttonCount > 0, href: '/dashboard/buttons' },
+    { label: 'Crea un objetivo de apoyo', done: goalCount > 0, href: '/dashboard/goals' },
   ]
   const done = checks.filter((check) => check.done).length
   const percentage = Math.round((done / checks.length) * 100)
@@ -123,7 +123,7 @@ export default async function DashboardPage() {
   const since = isoDaysAgo(30)
   const [
     { count: activeSocialCount },
-    { count: activeButtonCount },
+    { count: activeGoalCount },
     { count: totalViews },
     { count: totalClicks },
   ] = await Promise.all([
@@ -133,7 +133,7 @@ export default async function DashboardPage() {
       .eq('profile_id', user.id)
       .eq('is_active', true),
     supabase
-      .from('donation_buttons')
+      .from('support_goals')
       .select('id', { count: 'exact', head: true })
       .eq('profile_id', user.id)
       .eq('is_active', true),
@@ -153,11 +153,11 @@ export default async function DashboardPage() {
 
   const publicUrl = `${resolveSiteUrl()}/${profile.username}`
   const activeSocial = activeSocialCount ?? 0
-  const activeButtons = activeButtonCount ?? 0
+  const activeGoals = activeGoalCount ?? 0
   const planLabel = PLAN_LABELS[profile.plan as PlanType] ?? 'Plan'
 
   const stats = [
-    { label: 'Montos activos', value: activeButtons, icon: CreditCard, href: '/dashboard/buttons' },
+    { label: 'Objetivos activos', value: activeGoals, icon: CreditCard, href: '/dashboard/goals' },
     { label: 'Redes sociales', value: activeSocial, icon: Link2, href: '/dashboard/social' },
     { label: 'Visitas en 30 días', value: totalViews ?? 0, icon: Users, href: '/dashboard/analytics' },
     { label: 'Clics a Hotmart', value: totalClicks ?? 0, icon: BarChart2, href: '/dashboard/analytics' },
@@ -166,7 +166,7 @@ export default async function DashboardPage() {
   const quickActions = [
     { title: 'Editar perfil', description: 'Actualiza tu identidad y presentación.', href: '/dashboard/profile', icon: UserCircle },
     { title: 'Redes sociales', description: 'Gestiona tus enlaces externos.', href: '/dashboard/social', icon: Link2 },
-    { title: 'Montos de apoyo', description: 'Configura tus enlaces de Hotmart.', href: '/dashboard/buttons', icon: Settings2 },
+    { title: 'Objetivos de apoyo', description: 'Agrupa causas y sus niveles de Hotmart.', href: '/dashboard/goals', icon: Settings2 },
   ]
 
   return (
@@ -218,7 +218,7 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      <ProfileCompleteness profile={profile} socialCount={activeSocial} buttonCount={activeButtons} />
+      <ProfileCompleteness profile={profile} socialCount={activeSocial} goalCount={activeGoals} />
 
       <section aria-labelledby="metrics-title">
         <div className="mb-4 flex items-end justify-between gap-4">

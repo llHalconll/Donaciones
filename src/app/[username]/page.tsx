@@ -12,13 +12,13 @@ import {
   validatePublicImageUrl,
   validatePublicUrl,
 } from '@/lib/validations/url'
-import { PublicAmountGrid } from './amount-grid'
+import { PublicSupportGoals } from './support-goals'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ProfileViewTracker } from './profile-view-tracker'
 import { PublicSocialLinks } from './social-links'
 import { ReportButton } from './report-button'
 import { ShareButton } from './share-button'
-import { getSupportEmptyStateCopy } from '@/lib/support-options'
+import { getSupportEmptyStateCopy } from '@/lib/support-goals'
 
 interface PageProps {
   params: Promise<{ username: string }>
@@ -95,13 +95,9 @@ function PublicSupportLoading() {
         <div className="h-3 w-24 rounded bg-emerald-500/20" />
         <div className="mt-3 h-7 w-44 rounded bg-slate-200 dark:bg-slate-800" />
         <div className="mt-3 h-4 w-full rounded bg-slate-200 dark:bg-slate-800" />
-        <div className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-          {Array.from({ length: 4 }, (_, index) => (
-            <div
-              key={index}
-              className="h-28 rounded-xl bg-slate-100 dark:bg-slate-800"
-            />
-          ))}
+        <div className="mt-6 space-y-2">
+          <div className="h-20 rounded-2xl bg-slate-100 dark:bg-slate-800" />
+          <div className="h-20 rounded-2xl bg-slate-100 dark:bg-slate-800" />
         </div>
         <div className="mt-5 h-14 rounded-2xl bg-slate-200 dark:bg-slate-800" />
       </div>
@@ -122,7 +118,7 @@ async function PublicSupportContent({
   const supabase = await createClient()
   const [
     { data: socialLinks, error: socialLinksError },
-    { data: buttons, error: buttonsError },
+    { data: goals, error: goalsError },
   ] = await Promise.all([
     supabase
       .from('social_links')
@@ -131,8 +127,26 @@ async function PublicSupportContent({
       .eq('is_active', true)
       .order('order_index'),
     supabase
-      .from('donation_buttons')
-      .select('id, title, emoji, description, amount, currency, hotmart_checkout_url, button_label, is_active, is_featured, order_index')
+      .from('support_goals')
+      .select(`
+        id,
+        emoji,
+        title,
+        description,
+        cover_url,
+        is_active,
+        order_index,
+        support_amounts (
+          id,
+          goal_id,
+          amount,
+          currency,
+          hotmart_checkout_url,
+          button_label,
+          is_featured,
+          order_index
+        )
+      `)
       .eq('profile_id', profileId)
       .eq('is_active', true)
       .order('order_index'),
@@ -144,22 +158,34 @@ async function PublicSupportContent({
       ? [{ ...link, url: result.normalizedUrl }]
       : []
   })
-  const featuredButtonId = (buttons ?? []).find((button) => button.is_featured)?.id ?? null
-  const availableButtons = (buttons ?? []).map((button) => {
-    const urlResult = validateHotmartUrl(button.hotmart_checkout_url)
-
-    return {
-      ...button,
-      is_featured: button.id === featuredButtonId,
-      hotmart_checkout_url: urlResult.normalizedUrl ?? '',
-    }
-  })
-  const hasValidSupportOption = availableButtons.some(
-    (button) =>
-      Number.isFinite(Number(button.amount)) &&
-      Number(button.amount) > 0 &&
-      validateHotmartUrl(button.hotmart_checkout_url).ok
-  )
+  const availableGoals = (goals ?? [])
+    .map((goal) => {
+      const { support_amounts: supportAmounts, ...goalFields } = goal
+      return {
+        ...goalFields,
+        cover_url: goal.cover_url
+          ? validatePublicImageUrl(goal.cover_url).normalizedUrl ?? null
+          : null,
+        amounts: [...(supportAmounts ?? [])]
+          .sort((a, b) => a.order_index - b.order_index)
+          .map((amount) => {
+            const urlResult = validateHotmartUrl(amount.hotmart_checkout_url)
+            return {
+              ...amount,
+              hotmart_checkout_url: urlResult.normalizedUrl ?? '',
+            }
+          }),
+      }
+    })
+    .filter((goal) =>
+      goal.amounts.some(
+        (amount) =>
+          Number.isFinite(Number(amount.amount)) &&
+          Number(amount.amount) > 0 &&
+          validateHotmartUrl(amount.hotmart_checkout_url).ok
+      )
+    )
+  const hasValidSupportOption = availableGoals.length > 0
   const emptyStateCopy = getSupportEmptyStateCopy(
     creatorName,
     hasWebsite || safeSocialLinks.length > 0
@@ -182,22 +208,22 @@ async function PublicSupportContent({
           <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
             Si este trabajo te aporta valor, puedes ayudar a que continúe. Elige la opción que tenga sentido para ti.
           </p>
-          {!buttonsError && hasValidSupportOption && (
+          {!goalsError && hasValidSupportOption && (
             <p className="mt-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-              Selecciona una opción para continuar.
+              Elige una causa y después el nivel que tenga sentido para ti.
             </p>
           )}
         </div>
 
-        {buttonsError ? (
+        {goalsError ? (
           <div
             role="alert"
             className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-5 text-sm text-rose-700 dark:text-rose-300"
           >
             No pudimos cargar las opciones de apoyo. Intenta nuevamente más tarde.
           </div>
-        ) : availableButtons.length > 0 ? (
-          <PublicAmountGrid buttons={availableButtons} profileId={profileId} />
+        ) : availableGoals.length > 0 ? (
+          <PublicSupportGoals goals={availableGoals} profileId={profileId} />
         ) : (
           <EmptyState
             icon={Heart}
@@ -207,7 +233,7 @@ async function PublicSupportContent({
           />
         )}
 
-        {!buttonsError && hasValidSupportOption && (
+        {!goalsError && hasValidSupportOption && (
           <div className="mt-4 flex items-start gap-2.5 px-1 text-slate-500 dark:text-slate-400">
             <ShieldCheck className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
             <div>

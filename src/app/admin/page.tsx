@@ -46,13 +46,13 @@ export default async function AdminDashboardPage() {
   const [
     { count: totalProfiles },
     { count: activeProfiles },
-    { count: totalButtons },
+    { count: totalGoals },
     { count: pendingReports },
     { data: recentProfiles },
   ] = await Promise.all([
     supabase.from('profiles').select('id', { count: 'exact', head: true }),
     supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('is_active', true),
-    supabase.from('donation_buttons').select('id', { count: 'exact', head: true }),
+    supabase.from('support_goals').select('id', { count: 'exact', head: true }),
     supabase.from('profile_reports').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase
       .from('profiles')
@@ -64,7 +64,7 @@ export default async function AdminDashboardPage() {
   const stats = [
     { label: 'Creadores totales', value: totalProfiles ?? 0, icon: Users, color: 'text-indigo-500' },
     { label: 'Perfiles activos', value: activeProfiles ?? 0, icon: ShieldCheck, color: 'text-emerald-500' },
-    { label: 'Botones configurados', value: totalButtons ?? 0, icon: CreditCard, color: 'text-emerald-500' },
+    { label: 'Objetivos configurados', value: totalGoals ?? 0, icon: CreditCard, color: 'text-emerald-500' },
     { label: 'Reportes pendientes', value: pendingReports ?? 0, icon: Flag, color: pendingReports ? 'text-rose-500' : 'text-slate-400' },
   ]
 

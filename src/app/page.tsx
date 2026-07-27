@@ -37,15 +37,20 @@ export default async function HomePage() {
           username,
           bio,
           avatar_url,
-          donation_buttons (
+          support_goals (
             id,
             title,
             emoji,
-            amount,
-            currency,
+            description,
             is_active,
-            is_featured,
-            order_index
+            order_index,
+            support_amounts (
+              id,
+              amount,
+              currency,
+              is_featured,
+              order_index
+            )
           )
         `)
         .eq('username', demoUsername)
@@ -53,10 +58,13 @@ export default async function HomePage() {
         .maybeSingle()
     : { data: null }
 
-  const exampleButtons = (exampleProfile?.donation_buttons ?? [])
-    .filter((button) => button.is_active)
+  const exampleGoals = (exampleProfile?.support_goals ?? [])
+    .filter((goal) => goal.is_active)
     .sort((a, b) => a.order_index - b.order_index)
-    .slice(0, 3)
+  const exampleGoal = exampleGoals[0] ?? null
+  const exampleAmounts = [...(exampleGoal?.support_amounts ?? [])]
+    .sort((a, b) => a.order_index - b.order_index)
+    .slice(0, 8)
   const exampleAvatar = exampleProfile?.avatar_url
     ? validatePublicImageUrl(exampleProfile.avatar_url).normalizedUrl
     : null
@@ -157,26 +165,33 @@ export default async function HomePage() {
                   <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 sm:p-6">
                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-emerald-400">Apoyo directo</p>
                     <h3 className="mt-2 text-xl font-extrabold text-slate-900 dark:text-white">Apoya a {exampleProfile.display_name}</h3>
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                      {exampleButtons.map((button) => (
-                        <div key={button.id} className="flex min-h-28 flex-col rounded-xl border border-slate-200 p-3 dark:border-slate-700">
-                          <div className="flex items-start gap-2">
-                            <span aria-hidden="true">{button.emoji || '♥'}</span>
-                            <p className="line-clamp-2 text-sm font-bold text-slate-900 dark:text-white">{button.title}</p>
-                          </div>
-                          <div className="mt-auto flex items-end justify-between gap-2 pt-4">
-                            <p className="font-black text-emerald-600 dark:text-emerald-400">
-                              {formatSupportAmount(Number(button.amount), button.currency)}
-                            </p>
-                            {button.is_featured && (
-                              <span className="rounded-full bg-amber-500/10 px-2 py-1 text-[9px] font-bold uppercase text-amber-700 dark:text-amber-300">
-                                Destacada
-                              </span>
+                    {exampleGoal && (
+                      <div className="mt-5 rounded-2xl border border-slate-200 p-4 dark:border-slate-700">
+                        <div className="flex items-start gap-2">
+                          <span className="text-xl" aria-hidden="true">{exampleGoal.emoji || '♥'}</span>
+                          <div>
+                            <p className="font-bold text-slate-900 dark:text-white">{exampleGoal.title}</p>
+                            {exampleGoal.description && (
+                              <p className="mt-0.5 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">{exampleGoal.description}</p>
                             )}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                        <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                          {exampleAmounts.map((amount, index) => (
+                            <span
+                              key={amount.id}
+                              className={`flex h-11 items-center justify-center rounded-full px-2 text-xs font-extrabold ${
+                                index === 0
+                                  ? 'bg-emerald-500 text-white dark:text-slate-950'
+                                  : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200'
+                              }`}
+                            >
+                              {formatSupportAmount(Number(amount.amount), amount.currency)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     <Link href="/demo" className={buttonStyles({ className: 'mt-4 w-full' })}>
                       Abrir perfil real
                     </Link>
@@ -205,7 +220,7 @@ export default async function HomePage() {
             <ol className="mt-10 grid gap-4 md:grid-cols-3">
               {[
                 { icon: UserRound, title: 'Crea tu perfil', text: 'Añade tu nombre, presentación e identidad visual.' },
-                { icon: CreditCard, title: 'Añade tus enlaces de Hotmart', text: 'Define cada opción y conecta su checkout correspondiente.' },
+                { icon: CreditCard, title: 'Crea objetivos y niveles', text: 'Agrupa cada causa y conecta un checkout de Hotmart por nivel.' },
                 { icon: Link2, title: 'Comparte tu URL', text: 'Publica un solo enlace para que tu audiencia elija cómo apoyarte.' },
               ].map((step, index) => {
                 const Icon = step.icon
@@ -244,7 +259,7 @@ export default async function HomePage() {
                 {[
                   { icon: UserRound, text: 'Configura tu perfil en pocos pasos.' },
                   { icon: MousePointerClick, text: 'Envía a tu audiencia directamente a Hotmart.' },
-                  { icon: CreditCard, text: 'Personaliza tus opciones de apoyo.' },
+                  { icon: CreditCard, text: 'Organiza causas con varios niveles de apoyo.' },
                   { icon: BarChart2, text: 'Consulta visitas y clics de los últimos 30 días.' },
                   { icon: Globe, text: 'Comparte una sola URL pública.' },
                 ].map(({ icon: Icon, text }) => (
