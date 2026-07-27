@@ -48,13 +48,13 @@ export function ShareButton({ url, name }: Props) {
     <button
       type="button"
       onClick={handleShare}
-      className="flex min-h-11 items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-xs text-slate-500 transition-colors hover:border-emerald-500/30 hover:bg-emerald-500/10 hover:text-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:border-slate-800 dark:text-slate-400"
+      className="flex size-11 items-center justify-center gap-1.5 rounded-full text-xs text-slate-400 transition-colors duration-150 hover:bg-emerald-500/10 hover:text-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-slate-500 dark:hover:text-emerald-400 sm:w-auto sm:px-3"
       aria-label="Compartir o copiar enlace"
     >
       {copied ? (
-        <><CheckCircle2 className="size-3.5 text-emerald-500" aria-hidden="true" /> <span className="text-emerald-500">Copiado</span></>
+        <><CheckCircle2 className="size-4 text-emerald-500" aria-hidden="true" /> <span className="hidden text-emerald-500 sm:inline">Copiado</span></>
       ) : (
-        <><Share2 className="size-3.5" aria-hidden="true" /> Compartir</>
+        <><Share2 className="size-4" aria-hidden="true" /> <span className="hidden sm:inline">Compartir</span></>
       )}
     </button>
   )

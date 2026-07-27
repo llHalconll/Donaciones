@@ -193,7 +193,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
         strategy="afterInteractive"
       />
 
-      <div className="space-y-2">
+      <div className="divide-y divide-slate-200/80 overflow-hidden rounded-2xl border border-slate-200/90 bg-white/70 dark:divide-slate-800 dark:border-slate-800 dark:bg-slate-900/45">
         {goals.map((goal) => {
           const isOpen = goal.id === openGoalId
           const selectedId =
@@ -211,10 +211,10 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
           return (
             <section
               key={goal.id}
-              className={`overflow-hidden rounded-[1.25rem] border transition-[border-color,background-color] duration-200 ${
+              className={`overflow-hidden transition-colors duration-200 ${
                 isOpen
-                  ? 'border-emerald-500/35 bg-white dark:border-emerald-400/30 dark:bg-slate-900/80'
-                  : 'border-slate-200/90 bg-white/65 hover:border-slate-300 hover:bg-white dark:border-slate-800 dark:bg-slate-900/35 dark:hover:border-slate-700 dark:hover:bg-slate-900/55'
+                  ? 'bg-white dark:bg-slate-900/85'
+                  : 'hover:bg-white dark:hover:bg-slate-900/65'
               }`}
             >
               <h3>
@@ -223,10 +223,10 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                   onClick={() => handleGoalToggle(goal.id)}
                   aria-expanded={isOpen}
                   aria-controls={`support-goal-panel-${goal.id}`}
-                  className="flex min-h-[4.75rem] w-full items-center gap-3 px-3.5 py-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500 sm:px-4"
+                  className="flex min-h-[4.5rem] w-full items-center gap-2.5 px-3 py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500 sm:px-3.5"
                 >
                   <span
-                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/12 text-xl ring-1 ring-inset ring-emerald-500/15"
+                    className="flex size-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/12 text-xl ring-1 ring-inset ring-emerald-500/15"
                     aria-hidden="true"
                   >
                     {goal.emoji || '♥'}
@@ -253,7 +253,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
               {isOpen && (
                 <div
                   id={`support-goal-panel-${goal.id}`}
-                  className="border-t border-slate-100 px-3.5 pb-4 pt-3 dark:border-slate-800 sm:px-4"
+                  className="support-panel border-t border-slate-100 px-3 pb-3 pt-2.5 dark:border-slate-800 sm:px-3.5"
                 >
                   <div
                     role="group"
@@ -277,7 +277,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                           onKeyDown={(event) =>
                             handleAmountKeyDown(event, goal.id, amount.id)
                           }
-                          className={`relative inline-flex min-h-10 min-w-[4.5rem] flex-none items-center justify-center rounded-full border px-3 text-center text-[13px] font-semibold transition-[border-color,background-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 dark:focus-visible:ring-offset-slate-950 ${
+                          className={`relative inline-flex min-h-9 min-w-[4.25rem] flex-none items-center justify-center rounded-[0.625rem] border px-2.5 text-center text-[13px] font-semibold transition-[border-color,background-color,color,transform] duration-150 ease-out hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 dark:focus-visible:ring-offset-slate-950 ${
                             isSelected
                               ? 'border-emerald-500 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-400/10 dark:text-emerald-300'
                               : 'border-slate-200 bg-white text-slate-700 hover:border-emerald-500/45 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-emerald-400/45 dark:hover:text-emerald-300'
@@ -308,7 +308,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                       type="button"
                       onClick={() => toggleAllAmounts(goal.id)}
                       aria-expanded={isExpanded}
-                      className="mt-2 inline-flex min-h-10 items-center gap-1 rounded-lg px-1 text-xs font-semibold text-slate-500 transition-colors hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-slate-400 dark:hover:text-emerald-300"
+                      className="mt-1.5 inline-flex min-h-9 items-center gap-1 rounded-lg px-1 text-xs font-medium text-slate-500 transition-colors duration-150 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-slate-400 dark:hover:text-emerald-300"
                     >
                       {isExpanded
                         ? 'Ver menos'
@@ -356,7 +356,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                               selectedAmount
                             )} mediante Hotmart`
                       }
-                      className={`hotmart-fb hotmart__button-checkout mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:text-slate-950 dark:focus-visible:ring-offset-slate-900 ${
+                      className={`hotmart-fb hotmart__button-checkout mt-2.5 flex min-h-11 w-full items-center justify-center gap-2 rounded-[0.625rem] bg-emerald-500 px-4 py-2 text-center text-sm font-semibold text-white transition-[background-color,transform,opacity] duration-150 ease-out hover:-translate-y-px hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 active:translate-y-0 dark:text-slate-950 dark:focus-visible:ring-offset-slate-900 ${
                         isRedirecting ? 'pointer-events-none opacity-70' : ''
                       }`}
                     >
@@ -374,7 +374,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                     <button
                       type="button"
                       disabled
-                      className="mt-3 flex min-h-12 w-full items-center justify-center rounded-xl bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                      className="mt-2.5 flex min-h-11 w-full items-center justify-center rounded-[0.625rem] bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400"
                     >
                       No hay niveles disponibles
                     </button>
@@ -385,6 +385,30 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
           )
         })}
       </div>
+
+      <style>{`
+        .support-panel {
+          animation: support-panel-in 180ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes support-panel-in {
+          from {
+            opacity: 0;
+            transform: translateY(-0.25rem);
+          }
+
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .support-panel {
+            animation: none;
+          }
+        }
+      `}</style>
     </>
   )
 }

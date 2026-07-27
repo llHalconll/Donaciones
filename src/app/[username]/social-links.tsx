@@ -173,7 +173,7 @@ export function PublicSocialLinks({ links }: Props) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${displayLabel} (abre en una pestaña nueva)`}
-            className={`inline-flex min-h-11 items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${config.color} ${config.hover}`}
+            className={`inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-transparent bg-slate-100/80 px-2.5 py-1.5 text-xs font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:bg-slate-900 ${config.color} ${config.hover}`}
           >
             <Icon className="size-3.5" />
             <span>{displayLabel}</span>

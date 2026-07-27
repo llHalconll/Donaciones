@@ -68,11 +68,11 @@ export function ReportButton({ profileId, profileName }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex min-h-11 items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-xs text-slate-500 transition-colors hover:bg-rose-500/10 hover:text-rose-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-slate-800 dark:text-slate-400"
+        className="flex size-11 items-center justify-center gap-1.5 rounded-full text-xs text-slate-400 transition-colors duration-150 hover:bg-rose-500/10 hover:text-rose-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:text-slate-500 sm:w-auto sm:px-3"
         aria-label={`Reportar perfil de ${profileName}`}
       >
-        <Flag className="size-3.5" aria-hidden="true" />
-        Reportar
+        <Flag className="size-4" aria-hidden="true" />
+        <span className="hidden sm:inline">Reportar</span>
       </button>
     )
   }

@@ -87,16 +87,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 function PublicSupportLoading() {
   return (
     <section
-      className="border-t border-slate-200 pt-6 dark:border-slate-800"
+      className="border-t border-slate-200/80 pt-5 dark:border-slate-800"
       aria-busy="true"
       aria-label="Cargando opciones de apoyo"
     >
       <div className="animate-pulse">
         <div className="h-6 w-40 rounded bg-slate-200 dark:bg-slate-800" />
         <div className="mt-2 h-4 w-56 rounded bg-slate-200 dark:bg-slate-800" />
-        <div className="mt-4 space-y-2">
-          <div className="h-[4.75rem] rounded-[1.25rem] bg-slate-100 dark:bg-slate-900" />
-          <div className="h-[4.75rem] rounded-[1.25rem] bg-slate-100 dark:bg-slate-900" />
+        <div className="mt-3.5 overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800">
+          <div className="h-[4.5rem] bg-slate-100 dark:bg-slate-900" />
+          <div className="h-[4.5rem] border-t border-slate-200/80 bg-slate-100 dark:border-slate-800 dark:bg-slate-900" />
         </div>
       </div>
       <span className="sr-only">Cargando las opciones del creador…</span>
@@ -194,9 +194,9 @@ async function PublicSupportContent({
       <section
         id="apoyar"
         aria-labelledby="support-title"
-        className="border-t border-slate-200 pt-6 dark:border-slate-800"
+        className="border-t border-slate-200/80 pt-5 dark:border-slate-800"
       >
-        <div className="mb-4">
+        <div className="mb-3.5">
           <h2 id="support-title" className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white sm:text-xl">
             Objetivos de apoyo
           </h2>
@@ -224,7 +224,7 @@ async function PublicSupportContent({
         )}
 
         {!goalsError && hasValidSupportOption && (
-          <div className="mt-3 flex items-center gap-2 px-1 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
+          <div className="mt-2.5 flex items-center gap-2 px-1 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
             <ShieldCheck className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
             <p>
               Pago gestionado por Hotmart. DonacionesSaaS no almacena datos de pago.
@@ -234,11 +234,11 @@ async function PublicSupportContent({
       </section>
 
       {!socialLinksError && safeSocialLinks.length > 0 && (
-        <section className="mt-8 px-1" aria-labelledby="social-title">
+        <section className="mt-6 px-1" aria-labelledby="social-title">
           <h2 id="social-title" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
             Encuéntrame también en
           </h2>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
             <PublicSocialLinks links={safeSocialLinks} />
           </div>
         </section>
@@ -321,8 +321,8 @@ export default async function PublicProfilePage({ params }: PageProps) {
           </div>
         </div>
 
-        <section className="mb-6 space-y-1.5 px-1" aria-labelledby="creator-name">
-          <div className="flex flex-col items-start justify-between gap-3 sm:flex-row">
+        <section className="mb-4 space-y-1.5 px-1" aria-labelledby="creator-name">
+          <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h1 id="creator-name" className="break-words text-[1.75rem] font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
                 {profile.display_name}
@@ -331,14 +331,14 @@ export default async function PublicProfilePage({ params }: PageProps) {
                 @{profile.username}
               </p>
             </div>
-            <div className="flex shrink-0 gap-2">
+            <div className="flex shrink-0 gap-1">
               <ShareButton url={profileUrl} name={profile.display_name} />
               <ReportButton profileId={profile.id} profileName={profile.display_name} />
             </div>
           </div>
 
           {profile.bio && (
-            <p className="max-w-prose pt-2 text-[15px] leading-6 text-slate-600 dark:text-slate-400">
+            <p className="max-w-prose pt-1.5 text-[15px] leading-6 text-slate-600 dark:text-slate-400">
               {profile.bio}
             </p>
           )}
