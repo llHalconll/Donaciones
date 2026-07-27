@@ -93,9 +93,9 @@ export default function PricingPage() {
         <div className="max-w-5xl mx-auto space-y-12">
           {/* Header */}
           <div className="text-center space-y-4">
-            <Badge variant="emerald">Planes y Precios</Badge>
+            <Badge variant="emerald">Planes y precios</Badge>
             <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Sin comisiones. Sin sorpresas.
+              Elige el plan que se ajusta a tu perfil
             </h1>
             <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
               Elige el plan que mejor se adapte a tu proyecto.
@@ -172,8 +172,8 @@ export default function PricingPage() {
             <div className="space-y-4">
               {[
                 {
-                  q: '¿DonacionesSaaS cobra comisión por cada donación?',
-                  a: 'No. La plataforma no cobra comisión alguna. El 100% del pago va directamente a tu cuenta de Hotmart. El pago de la plataforma es únicamente la suscripción mensual al plan elegido.',
+                  q: '¿DonacionesSaaS cobra comisión por cada apoyo?',
+                  a: 'DonacionesSaaS no añade una comisión por cada apoyo. El checkout se completa en Hotmart, que puede aplicar sus propias tarifas según tu cuenta y producto. La suscripción de DonacionesSaaS se cobra por separado cuando eliges un plan de pago.',
                 },
                 {
                   q: '¿Puedo empezar con el plan gratuito y luego subir?',
@@ -181,7 +181,7 @@ export default function PricingPage() {
                 },
                 {
                   q: '¿Cómo funciona el pago de los planes Pro y Organización?',
-                  a: 'Actualmente los upgrades se procesan manualmente. Envíanos un correo y te configuramos el plan en menos de 24 horas.',
+                  a: 'Actualmente los cambios de plan se coordinan manualmente. Envíanos un correo para revisar la opción y completar la activación.',
                 },
                 {
                   q: '¿Puedo cancelar en cualquier momento?',
@@ -201,7 +201,7 @@ export default function PricingPage() {
             <Mail className="w-8 h-8 text-emerald-500 mx-auto" />
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">¿Tienes dudas?</h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Escríbenos y te respondemos en menos de 24 horas.
+              Escríbenos para resolver dudas sobre el plan adecuado.
             </p>
             <a
               href="mailto:hola@donacionessaas.com"

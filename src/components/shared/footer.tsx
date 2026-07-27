@@ -1,10 +1,9 @@
 import Link from 'next/link'
 import { Heart } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthUser } from '@/lib/supabase/server'
 
 export async function PublicFooter() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { user } = await getAuthUser()
   const isLoggedIn = !!user
 
   return (
@@ -15,9 +14,9 @@ export async function PublicFooter() {
           <span>© 2026 DonacionesSaaS. Todos los derechos reservados.</span>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
           <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">Inicio</Link>
-          <Link href="/demo" className="hover:text-slate-900 dark:hover:text-white transition-colors">Demo</Link>
+          <Link href="/demo" className="hover:text-slate-900 dark:hover:text-white transition-colors">Ejemplo</Link>
           <Link href="/pricing" className="hover:text-slate-900 dark:hover:text-white transition-colors">Precios</Link>
 
           {/* Show Dashboard link for logged-in users, Register link for guests */}

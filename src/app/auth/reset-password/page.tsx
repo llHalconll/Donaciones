@@ -1,13 +1,13 @@
 'use client'
 
 import { useActionState } from 'react'
-import Link from 'next/link'
-import { Heart, KeyRound, AlertCircle } from 'lucide-react'
+import { KeyRound, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { resetPasswordAction } from '../actions'
+import { BrandLink } from '@/components/shared/brand-link'
 
 export default function ResetPasswordPage() {
   const [state, formAction, isPending] = useActionState(resetPasswordAction, null)
@@ -20,14 +20,7 @@ export default function ResetPasswordPage() {
 
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-500">
-              <Heart className="w-5 h-5 fill-emerald-500/20" />
-            </div>
-            <span className="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">
-              Donaciones<span className="text-emerald-500">SaaS</span>
-            </span>
-          </Link>
+          <BrandLink size="lg" />
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Establecer Nueva Contraseña</h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Ingresa y confirma tu nueva contraseña para actualizar el acceso.

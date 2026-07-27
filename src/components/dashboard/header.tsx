@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { Menu, Bell } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { ThemeToggle } from '../theme-toggle'
 
 interface DashboardHeaderProps {
@@ -22,28 +22,19 @@ export function DashboardHeader({ onOpenMobileMenu, displayName, username, avata
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenMobileMenu}
-          className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white md:hidden"
+          className="flex size-11 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:hover:bg-slate-900 dark:hover:text-white md:hidden"
           aria-label="Abrir menú"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 hidden sm:inline">
-          Panel de Creador
+          Panel del creador
         </span>
       </div>
 
       <div className="flex items-center gap-3">
         <ThemeToggle />
-
-        {/* Notifications placeholder */}
-        <button
-          type="button"
-          className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-          aria-label="Notificaciones"
-        >
-          <Bell className="w-4 h-4" />
-        </button>
 
         {/* Real user pill */}
         <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">

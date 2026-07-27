@@ -24,9 +24,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // The inline script in layout.tsx already applied the correct class
     // before React hydrated — we just read the DOM truth here.
-    const isDark = document.documentElement.classList.contains('dark')
-    setTheme(isDark ? 'dark' : 'light')
-    setMounted(true)
+    const frame = requestAnimationFrame(() => {
+      const isDark = document.documentElement.classList.contains('dark')
+      setTheme(isDark ? 'dark' : 'light')
+      setMounted(true)
+    })
+    return () => cancelAnimationFrame(frame)
   }, [])
 
   const toggleTheme = () => {

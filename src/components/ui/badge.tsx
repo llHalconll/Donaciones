@@ -1,7 +1,7 @@
 import React, { HTMLAttributes } from 'react'
 
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  variant?: 'emerald' | 'indigo' | 'outline' | 'slate'
+  variant?: 'emerald' | 'indigo' | 'outline' | 'slate' | 'success' | 'warning' | 'danger' | 'info'
 }
 
 export function Badge({ children, variant = 'emerald', className = '', ...props }: BadgeProps) {
@@ -10,6 +10,10 @@ export function Badge({ children, variant = 'emerald', className = '', ...props 
     indigo: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20',
     outline: 'border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300',
     slate: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-transparent',
+    success: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20',
+    warning: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20',
+    danger: 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/20',
+    info: 'bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-500/20',
   }
 
   return (

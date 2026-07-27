@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
 // ═══════════════════════════════════════════════════════════════════
 // WEBHOOK ENDPOINT — PREPARED, NOT ACTIVE
@@ -19,7 +19,7 @@ import { NextRequest, NextResponse } from 'next/server'
 //
 // ═══════════════════════════════════════════════════════════════════
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   // Check that the endpoint is intentionally enabled
   if (!process.env.HOTMART_WEBHOOK_ENABLED) {
     return NextResponse.json(

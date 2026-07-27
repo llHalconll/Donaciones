@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { cache, Suspense } from 'react'
-import { ArrowDown, ArrowLeft, Globe, Heart, ShieldCheck } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
+import { ArrowLeft, Globe, Heart, ShieldCheck } from 'lucide-react'
+import { createClient, getAuthUser } from '@/lib/supabase/server'
 import { validateUsernameFormat } from '@/lib/validations/auth'
 import {
   validateHotmartUrl,
@@ -162,26 +162,22 @@ async function PublicSupportContent({ profileId }: { profileId: string }) {
       <section
         id="apoyar"
         aria-labelledby="support-title"
-        className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 sm:p-6"
+        className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
       >
-        <div className="mb-6">
+        <div className="mb-5">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-600 dark:text-emerald-400">
             Apoyo directo
           </p>
           <h2 id="support-title" className="mt-2 text-xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-2xl">
             Apoya mi trabajo
           </h2>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:text-base">
-            Tu apoyo me ayuda a seguir creando proyectos, contenido y nuevas herramientas.
+          <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+            Tu apoyo me ayuda a seguir creando proyectos y nuevas herramientas.
           </p>
           {!buttonsError && hasValidSupportOption && (
-            <a
-              href="#opciones-apoyo"
-              className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-emerald-700 hover:bg-emerald-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-emerald-300"
-            >
-              Ver opciones de apoyo
-              <ArrowDown className="size-4" aria-hidden="true" />
-            </a>
+            <p className="mt-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              Selecciona una opción para continuar.
+            </p>
           )}
         </div>
 
@@ -207,14 +203,14 @@ async function PublicSupportContent({ profileId }: { profileId: string }) {
         )}
 
         {!buttonsError && hasValidSupportOption && (
-          <div className="mt-5 flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/70">
-            <ShieldCheck className="size-5 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+          <div className="mt-4 flex items-start gap-2.5 px-1 text-slate-500 dark:text-slate-400">
+            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
             <div>
-              <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Serás redirigido a Hotmart para completar la operación.
+              <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                Continuarás en Hotmart para completar el pago.
               </p>
-              <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                DonacionesSaaS no procesa ni almacena tus datos de pago.
+              <p className="mt-0.5 text-xs leading-relaxed">
+                DonacionesSaaS no almacena tus datos de pago.
               </p>
             </div>
           </div>
@@ -222,7 +218,7 @@ async function PublicSupportContent({ profileId }: { profileId: string }) {
       </section>
 
       {!socialLinksError && safeSocialLinks.length > 0 && (
-        <section className="mt-8 px-1" aria-labelledby="social-title">
+        <section className="mt-12 px-1" aria-labelledby="social-title">
           <h2 id="social-title" className="text-sm font-bold text-slate-700 dark:text-slate-300">
             Encuéntrame también en
           </h2>
@@ -238,11 +234,9 @@ async function PublicSupportContent({ profileId }: { profileId: string }) {
 export default async function PublicProfilePage({ params }: PageProps) {
   const { username } = await params
   const canonicalUsername = username.toLowerCase()
-  const supabase = await createClient()
-
-  const [{ data: profile, error: profileError }, { data: { user } }] = await Promise.all([
+  const [{ data: profile, error: profileError }, { user }] = await Promise.all([
     getPublicProfile(canonicalUsername),
-    supabase.auth.getUser(),
+    getAuthUser(),
   ])
 
   if (profileError) {

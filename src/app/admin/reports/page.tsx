@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { buttonStyles } from '@/components/ui/button'
 import { ArrowLeft, Flag, ExternalLink, Clock, CheckCircle2, XCircle, Eye } from 'lucide-react'
 import { AdminReportActions } from './report-actions'
 
@@ -56,8 +56,8 @@ export default async function AdminReportsPage() {
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Link href="/admin">
-                <Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4" /></Button>
+              <Link href="/admin" className={buttonStyles({ variant: 'ghost', size: 'sm' })} aria-label="Volver al panel de administración">
+                <ArrowLeft className="w-4 h-4" />
               </Link>
               <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Flag className="w-5 h-5 text-rose-500" /> Reportes de Perfiles

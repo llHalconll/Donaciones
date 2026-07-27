@@ -1,30 +1,22 @@
 import Link from 'next/link'
-import { Heart, LayoutDashboard } from 'lucide-react'
+import { LayoutDashboard } from 'lucide-react'
 import { ThemeToggle } from '../theme-toggle'
-import { Button } from '../ui/button'
-import { createClient } from '@/lib/supabase/server'
+import { buttonStyles } from '../ui/button'
+import { getAuthUser } from '@/lib/supabase/server'
+import { BrandLink } from './brand-link'
 
 export async function PublicHeader() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { user } = await getAuthUser()
   const isLoggedIn = !!user
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-500 group-hover:scale-105 transition-transform">
-            <Heart className="w-5 h-5 fill-emerald-500/20" />
-          </div>
-          <span className="font-extrabold text-lg tracking-tight text-slate-900 dark:text-white">
-            Donaciones<span className="text-emerald-500">SaaS</span>
-          </span>
-        </Link>
+        <BrandLink className="[&>span:last-child]:hidden sm:[&>span:last-child]:inline" />
 
         {/* Nav */}
         <nav className="hidden md:flex items-center gap-6 text-sm text-slate-600 dark:text-slate-400">
-          <Link href="/demo" className="hover:text-slate-900 dark:hover:text-white transition-colors">Demo</Link>
+          <Link href="/demo" className="rounded-lg px-2 py-2 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:hover:text-white">Ejemplo</Link>
           <Link href="/pricing" className="hover:text-slate-900 dark:hover:text-white transition-colors">Precios</Link>
         </nav>
 
@@ -34,20 +26,19 @@ export async function PublicHeader() {
 
           {isLoggedIn ? (
             /* Authenticated: single clear CTA to the panel */
-            <Link href="/dashboard">
-              <Button variant="primary" size="sm" className="gap-1.5">
-                <LayoutDashboard className="w-4 h-4" />
-                Mi panel
-              </Button>
+            <Link href="/dashboard" className={buttonStyles({ size: 'sm' })}>
+              <LayoutDashboard className="size-4" aria-hidden="true" />
+              Mi panel
             </Link>
           ) : (
             /* Guest: login + register */
             <>
-              <Link href="/auth/login">
-                <Button variant="ghost" size="sm">Iniciar sesión</Button>
+              <Link href="/auth/login" className={`${buttonStyles({ variant: 'ghost', size: 'sm' })} hidden sm:inline-flex`}>
+                Iniciar sesión
               </Link>
-              <Link href="/auth/register">
-                <Button variant="primary" size="sm">Crear mi perfil</Button>
+              <Link href="/auth/register" className={buttonStyles({ size: 'sm' })}>
+                <span className="hidden sm:inline">Crear mi perfil</span>
+                <span className="sm:hidden">Crear perfil</span>
               </Link>
             </>
           )}

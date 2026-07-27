@@ -111,13 +111,8 @@ export function EmojiTitleInput({
 
   // ── Animate in after mount ────────────────────────────────────────────────
   useEffect(() => {
-    if (open) {
-      // tiny delay so the DOM paints before the transition starts
-      const t = requestAnimationFrame(() => setVisible(true))
-      return () => cancelAnimationFrame(t)
-    } else {
-      setVisible(false)
-    }
+    const frame = requestAnimationFrame(() => setVisible(open))
+    return () => cancelAnimationFrame(frame)
   }, [open])
 
   // ── Close on outside click ────────────────────────────────────────────────

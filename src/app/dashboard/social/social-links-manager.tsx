@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition, useActionState, useRef, useEffect } from 'react'
+import Link from 'next/link'
 import {
   Plus, Trash2, GripVertical, Eye, EyeOff,
   CheckCircle2, AlertCircle, ExternalLink,
@@ -36,10 +37,7 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
 
   // Auto-close and reload on successful add
   useEffect(() => {
-    if (addState?.success) {
-      setShowForm(false)
-      window.location.reload()
-    }
+    if (addState?.success) window.location.reload()
   }, [addState?.success])
 
   async function handleDelete(id: string) {
@@ -148,7 +146,7 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
       {atLimit && (
         <p className="text-xs text-amber-600 dark:text-amber-400 text-center p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
           Has alcanzado el límite de {limit} enlaces para tu plan actual.{' '}
-          <a href="/pricing" className="underline font-semibold">Ver planes &rarr;</a>
+          <Link href="/pricing" className="underline font-semibold">Ver planes &rarr;</Link>
         </p>
       )}
 

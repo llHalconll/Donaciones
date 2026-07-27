@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useTransition, useActionState, useCallback, useEffect } from 'react'
+import Link from 'next/link'
 import {
   Plus, Trash2, Edit3, Star, Eye, EyeOff,
-  CheckCircle2, AlertCircle, ExternalLink, CreditCard, X, GripVertical,
+  AlertCircle, ExternalLink, CreditCard, X, GripVertical,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -41,13 +42,11 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
   const amountValue = selectedAmount !== null ? selectedAmount.toString() : customAmount
 
   useEffect(() => {
-    if (addState?.success) { closeForm(); window.location.reload() }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (addState?.success) window.location.reload()
   }, [addState?.success])
 
   useEffect(() => {
-    if (editState?.success) { closeForm(); window.location.reload() }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (editState?.success) window.location.reload()
   }, [editState?.success])
 
   function openCreate() {
@@ -192,7 +191,7 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
       {atLimit && !showForm && (
         <p className="text-xs text-amber-600 dark:text-amber-400 text-center p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
           Has alcanzado el límite de {limit} botones para tu plan actual.{' '}
-          <a href="/pricing" className="underline font-semibold">Ver planes &rarr;</a>
+          <Link href="/pricing" className="underline font-semibold">Ver planes &rarr;</Link>
         </p>
       )}
 

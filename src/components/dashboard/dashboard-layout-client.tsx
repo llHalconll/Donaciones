@@ -32,7 +32,7 @@ export function DashboardLayoutClient({ children, username, displayName, avatarU
           avatarUrl={avatarUrl}
         />
 
-        <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-6xl w-full mx-auto">
+        <main className="w-full max-w-7xl flex-1 p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>

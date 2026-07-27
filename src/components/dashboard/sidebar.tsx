@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, UserCircle, CreditCard, Settings,
-  ExternalLink, ShieldCheck, X, Link2, BarChart2,
+  ExternalLink, ShieldCheck, X, Link2, BarChart2, Heart,
 } from 'lucide-react'
 import { Badge } from '../ui/badge'
 import { LogoutButton } from './logout-button'
@@ -21,9 +21,9 @@ export function DashboardSidebar({ isOpen = false, onClose, username, isAdmin }:
 
   const navItems = [
     { label: 'Resumen', href: '/dashboard', icon: LayoutDashboard },
-    { label: 'Mi Perfil', href: '/dashboard/profile', icon: UserCircle },
-    { label: 'Redes Sociales', href: '/dashboard/social', icon: Link2 },
-    { label: 'Montos de Apoyo', href: '/dashboard/buttons', icon: CreditCard },
+    { label: 'Mi perfil', href: '/dashboard/profile', icon: UserCircle },
+    { label: 'Redes sociales', href: '/dashboard/social', icon: Link2 },
+    { label: 'Montos de apoyo', href: '/dashboard/buttons', icon: CreditCard },
     { label: 'Estadísticas', href: '/dashboard/analytics', icon: BarChart2 },
     { label: 'Configuración', href: '/dashboard/settings', icon: Settings },
   ]
@@ -50,8 +50,11 @@ export function DashboardSidebar({ isOpen = false, onClose, username, isAdmin }:
       >
         <div className="p-4 space-y-6 overflow-y-auto flex-1">
           {/* Header Brand */}
-          <div className="flex items-center justify-between px-2">
-            <Link href="/" className="flex items-center gap-2">
+          <div className="flex min-h-11 items-center justify-between">
+            <Link href="/" className="flex min-h-11 items-center gap-2 rounded-xl px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">
+              <span className="flex size-8 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-500">
+                <Heart className="size-4 fill-emerald-500/20" aria-hidden="true" />
+              </span>
               <span className="font-extrabold text-lg tracking-tight text-slate-900 dark:text-white">
                 Donaciones<span className="text-emerald-500">SaaS</span>
               </span>
@@ -60,7 +63,7 @@ export function DashboardSidebar({ isOpen = false, onClose, username, isAdmin }:
             {onClose && (
               <button
                 onClick={onClose}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white md:hidden"
+                className="flex size-11 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:hover:bg-slate-900 dark:hover:text-white md:hidden"
                 aria-label="Cerrar menú"
               >
                 <X className="w-5 h-5" />
@@ -79,7 +82,7 @@ export function DashboardSidebar({ isOpen = false, onClose, username, isAdmin }:
                   key={item.href}
                   href={item.href}
                   onClick={onClose}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  className={`flex min-h-11 items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     active
                       ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold'
                       : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-100'
@@ -102,7 +105,7 @@ export function DashboardSidebar({ isOpen = false, onClose, username, isAdmin }:
               href={`/${username}`}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300 transition-colors group"
+              className="group flex min-h-11 items-center justify-between rounded-xl bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               <span className="truncate">/{username}</span>
               <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" />
@@ -113,10 +116,10 @@ export function DashboardSidebar({ isOpen = false, onClose, username, isAdmin }:
           {isAdmin && (
             <Link
               href="/admin"
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/10 transition-colors"
+              className="flex min-h-11 items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:text-indigo-400"
             >
               <ShieldCheck className="w-4 h-4" />
-              <span>Panel Admin</span>
+              <span>Panel de administración</span>
               <Badge variant="indigo" className="ml-auto text-[10px] px-1.5 py-0">Admin</Badge>
             </Link>
           )}

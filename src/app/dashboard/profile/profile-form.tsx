@@ -7,7 +7,6 @@ import {
 } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { AvatarUploader } from '@/components/dashboard/avatar-uploader'
 import { BannerUploader } from '@/components/dashboard/banner-uploader'
 import { ProfilePreviewCard } from '@/components/dashboard/profile-preview-card'

@@ -6,23 +6,11 @@ import { AlertCircle, Check, ExternalLink, LoaderCircle, Star, X } from 'lucide-
 import { trackPublicEvent } from '@/lib/analytics/public-client'
 import type { DonationButton } from '@/types/database.types'
 import { validateHotmartUrl } from '@/lib/validations/url'
+import { formatSupportAmount } from '@/lib/presentation'
 
 interface Props {
   buttons: Pick<DonationButton, 'id' | 'title' | 'emoji' | 'description' | 'amount' | 'currency' | 'hotmart_checkout_url' | 'button_label' | 'is_featured'>[]
   profileId: string
-}
-
-function formatAmount(amount: number, currency: string) {
-  try {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(amount)
-  } catch {
-    return `${currency} ${amount.toLocaleString('es-CO')}`
-  }
 }
 
 function isAvailableButton(button: Props['buttons'][number]) {
@@ -97,9 +85,9 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
   return (
     <>
       <Script src="https://static.hotmart.com/checkout/widget.min.js" strategy="afterInteractive" />
-      <div className="space-y-5">
+      <div className="space-y-4">
         <fieldset id="opciones-apoyo" disabled={isRedirecting}>
-          <legend className="mb-3 text-sm font-bold text-slate-800 dark:text-slate-200">Elige una opción</legend>
+          <legend className="sr-only">Opciones de apoyo</legend>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {buttons.map((button) => {
               const isSelected = selectedId === button.id
@@ -116,12 +104,12 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
               return (
                 <label
                   key={button.id}
-                  className={`relative flex min-h-36 cursor-pointer flex-col rounded-2xl border-2 p-4 transition-[border-color,background-color,box-shadow] duration-200 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 dark:focus-within:ring-offset-slate-900 ${
+                  className={`relative flex min-h-44 cursor-pointer flex-col rounded-2xl border p-4 transition-[border-color,background-color,box-shadow] duration-200 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 dark:focus-within:ring-offset-slate-900 ${
                     !isValid
-                      ? 'cursor-not-allowed border-slate-200 bg-slate-100 opacity-60 dark:border-slate-800 dark:bg-slate-950'
+                      ? 'cursor-not-allowed border-slate-200 bg-slate-100/70 opacity-60 dark:border-slate-800 dark:bg-slate-950/50'
                       : isSelected
                         ? 'border-emerald-500 bg-emerald-500/5 shadow-sm'
-                        : 'border-slate-200 bg-white hover:border-emerald-300 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-700'
+                        : 'border-slate-200 bg-transparent hover:border-emerald-400 dark:border-slate-700 dark:hover:border-emerald-700'
                   }`}
                 >
                   <input
@@ -134,16 +122,12 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
                     className="sr-only"
                     aria-describedby={describedBy}
                   />
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      {button.id === featuredId && (
-                        <span className="mb-2 inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300">
-                          <Star className="size-3 fill-current" aria-hidden="true" />
-                          Destacada
-                        </span>
-                      )}
+                  <div className="flex items-start gap-3">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-lg dark:bg-slate-800" aria-hidden="true">
+                      {button.emoji || '♥'}
+                    </span>
+                    <div className="min-w-0 flex-1">
                       <p className="line-clamp-2 font-bold leading-snug text-slate-900 dark:text-white">
-                        {button.emoji && <span aria-hidden="true">{button.emoji} </span>}
                         {button.title}
                       </p>
                     </div>
@@ -151,14 +135,23 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
                       <Check className="size-3.5" strokeWidth={3} />
                     </span>
                   </div>
-                  {button.description && (
-                    <p id={`support-description-${button.id}`} className="mt-2 line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                      {button.description}
-                    </p>
-                  )}
-                  <p className={`mt-auto pt-4 text-xl font-black tracking-tight ${isSelected ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-100'}`}>
-                    {formatAmount(amount, button.currency)}
+                  <p
+                    id={descriptionId ?? undefined}
+                    className="mt-3 min-h-10 line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400"
+                  >
+                    {button.description || 'Selecciona esta opción para continuar.'}
                   </p>
+                  <div className="mt-auto flex min-h-7 items-end justify-between gap-3 pt-4">
+                    <p className={`text-xl font-black tracking-tight ${isSelected ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-100'}`}>
+                      {formatSupportAmount(amount, button.currency)}
+                    </p>
+                    {button.id === featuredId && (
+                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300">
+                        <Star className="size-3 fill-current" aria-hidden="true" />
+                        Destacada
+                      </span>
+                    )}
+                  </div>
                   {!isValid && (
                     <span
                       id={`support-unavailable-${button.id}`}
@@ -172,20 +165,6 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
             })}
           </div>
         </fieldset>
-
-        <div className="min-h-20" aria-live="polite" aria-atomic="true">
-          {selectedButton && (
-            <div className="flex min-h-20 items-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-xl" aria-hidden="true">{selectedButton.emoji || '♥'}</span>
-              <div className="min-w-0">
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Vas a apoyar con</p>
-                <p className="break-words text-sm font-bold text-slate-900 dark:text-white">
-                  {selectedButton.title} · {formatAmount(Number(selectedButton.amount), selectedButton.currency)}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
 
         {urlError && (
           <div role="alert" className="flex items-start gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-700 dark:text-rose-300">
@@ -205,12 +184,12 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
             aria-label={
               isRedirecting
                 ? 'Abriendo Hotmart'
-                : `${selectedButton.button_label ?? 'Apoyar ahora'} con ${formatAmount(Number(selectedButton.amount), selectedButton.currency)} mediante Hotmart`
+                : `Apoyar con ${formatSupportAmount(Number(selectedButton.amount), selectedButton.currency)} mediante Hotmart`
             }
             className={`hotmart-fb hotmart__button-checkout flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-center text-base font-bold text-white shadow-sm transition-colors duration-200 hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:text-slate-950 dark:focus-visible:ring-offset-slate-900 ${isRedirecting ? 'pointer-events-none opacity-70' : ''}`}
           >
             {isRedirecting ? <LoaderCircle className="size-5 animate-spin motion-reduce:animate-none" aria-hidden="true" /> : <ExternalLink className="size-5" aria-hidden="true" />}
-            {isRedirecting ? 'Abriendo Hotmart…' : `${selectedButton.button_label ?? 'Apoyar ahora'} · ${formatAmount(Number(selectedButton.amount), selectedButton.currency)}`}
+            {isRedirecting ? 'Abriendo Hotmart…' : `Apoyar con ${formatSupportAmount(Number(selectedButton.amount), selectedButton.currency)}`}
           </a>
         ) : (
           <button type="button" disabled className="flex min-h-14 w-full items-center justify-center rounded-2xl bg-slate-300 px-5 py-3 text-base font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">

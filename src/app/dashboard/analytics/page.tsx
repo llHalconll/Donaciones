@@ -2,6 +2,7 @@ import { getAuthUser } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { BarChart2, Eye, MousePointerClick, TrendingUp } from 'lucide-react'
 import { Card } from '@/components/ui/card'
+import { isoDaysAgo } from '@/lib/presentation'
 
 export const metadata = { title: 'Estadísticas | Dashboard' }
 
@@ -25,8 +26,8 @@ export default async function AnalyticsPage() {
   if (!user) redirect('/auth/login')
 
   // Last 30 days — use aggregated server-side counts to avoid fetching all rows
-  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+  const since = isoDaysAgo(30)
+  const sevenDaysAgo = isoDaysAgo(7)
 
   const [{ data: events }, { count: totalViews }, { count: totalSelections }, { count: totalRedirects }, { data: buttons }] = await Promise.all([
     // Only fetch recent 7-day events for the trend table (limited row count)
@@ -81,8 +82,9 @@ export default async function AnalyticsPage() {
 
   // Events by day (last 7 days)
   const dayMap = new Map<string, { views: number; redirects: number }>()
+  const todayTimestamp = Date.parse(sevenDaysAgo) + 7 * 86400000
   for (let i = 6; i >= 0; i--) {
-    const d = new Date(Date.now() - i * 86400000)
+    const d = new Date(todayTimestamp - i * 86400000)
     const key = d.toISOString().slice(0, 10)
     dayMap.set(key, { views: 0, redirects: 0 })
   }

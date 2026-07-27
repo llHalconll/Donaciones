@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { buttonStyles } from '@/components/ui/button'
 import {
   ShieldCheck, Users, CreditCard, ArrowLeft, ShieldX,
   Flag, AlertTriangle, Link2,
@@ -35,10 +35,8 @@ export default async function AdminDashboardPage() {
             No tienes permisos para acceder al panel de administración.
           </p>
         </div>
-        <Link href="/dashboard">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="w-4 h-4" /> Volver a mi Dashboard
-          </Button>
+        <Link href="/dashboard" className={buttonStyles({ variant: 'outline', size: 'sm' })}>
+          <ArrowLeft className="w-4 h-4" /> Volver a mi panel
         </Link>
       </div>
     )
@@ -87,10 +85,8 @@ export default async function AdminDashboardPage() {
               <p className="text-xs text-slate-500 dark:text-slate-400">Sesión como: {profile.display_name}</p>
             </div>
           </div>
-          <Link href="/dashboard">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4" /> Dashboard
-            </Button>
+          <Link href="/dashboard" className={buttonStyles({ variant: 'outline', size: 'sm' })}>
+            <ArrowLeft className="w-4 h-4" /> Panel del creador
           </Link>
         </div>
 

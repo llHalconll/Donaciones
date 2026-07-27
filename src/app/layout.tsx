@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Plataforma SaaS de Donaciones | Apoyo Directo a Creadores",
-  description: "Crea tu perfil personalizado de creador y recibe aportes directos vinculados a tus enlaces de Hotmart.",
+  title: "DonacionesSaaS | Perfiles de apoyo conectados con Hotmart",
+  description: "Crea una página personalizada, añade tus enlaces de Hotmart y comparte una sola URL con tu audiencia.",
 };
 
 export default function RootLayout({

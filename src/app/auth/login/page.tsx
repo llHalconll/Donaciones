@@ -2,13 +2,14 @@
 
 import { useActionState } from 'react'
 import Link from 'next/link'
-import { Heart, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { GoogleButton } from '@/components/ui/google-button'
 import { loginAction } from '../actions'
+import { BrandLink } from '@/components/shared/brand-link'
 
 export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(loginAction, null)
@@ -21,14 +22,7 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-500">
-              <Heart className="w-5 h-5 fill-emerald-500/20" />
-            </div>
-            <span className="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">
-              Donaciones<span className="text-emerald-500">SaaS</span>
-            </span>
-          </Link>
+          <BrandLink size="lg" />
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Bienvenido de nuevo</h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Ingresa a tu panel de creador para gestionar tus enlaces de Hotmart.

@@ -1,85 +1,127 @@
-import { createClient, getAuthUser } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
-  ExternalLink, Users, CreditCard, BarChart2,
-  CheckCircle2, AlertTriangle, Link2, Globe, ArrowRight,
+  ArrowRight,
+  BarChart2,
+  CheckCircle2,
+  CreditCard,
+  ExternalLink,
+  Globe,
+  Link2,
+  Settings2,
+  UserCircle,
+  Users,
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { buttonStyles } from '@/components/ui/button'
 import { CopyUrlButton } from './copy-url-button'
+import { getDashboardProfile } from '@/lib/dashboard-profile'
+import { isoDaysAgo, PLAN_LABELS } from '@/lib/presentation'
+import type { PlanType } from '@/types/database.types'
 
-export const metadata = { title: 'Dashboard | DonacionesSaaS' }
+export const metadata = { title: 'Panel del creador | DonacionesSaaS' }
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://donacionessaas.com'
 
-function ProfileCompleteness({ profile, socialCount, buttonCount }: {
-  profile: { display_name: string; bio: string | null; avatar_url: string | null; banner_url: string | null }
+type ProfileSummary = {
+  display_name: string
+  bio: string | null
+  avatar_url: string | null
+  banner_url: string | null
+}
+
+function ProfileCompleteness({
+  profile,
+  socialCount,
+  buttonCount,
+}: {
+  profile: ProfileSummary
   socialCount: number
   buttonCount: number
 }) {
   const checks = [
-    { label: 'Nombre visible', done: Boolean(profile.display_name) },
-    { label: 'Biografía', done: Boolean(profile.bio) },
-    { label: 'Foto de perfil', done: Boolean(profile.avatar_url) },
-    { label: 'Banner', done: Boolean(profile.banner_url) },
-    { label: 'Al menos 1 red social', done: socialCount > 0 },
-    { label: 'Al menos 1 monto de apoyo', done: buttonCount > 0 },
+    { label: 'Añade una biografía', done: Boolean(profile.bio), href: '/dashboard/profile' },
+    { label: 'Sube una foto de perfil', done: Boolean(profile.avatar_url), href: '/dashboard/profile' },
+    { label: 'Añade una portada', done: Boolean(profile.banner_url), href: '/dashboard/profile' },
+    { label: 'Conecta una red social', done: socialCount > 0, href: '/dashboard/social' },
+    { label: 'Crea un monto de apoyo', done: buttonCount > 0, href: '/dashboard/buttons' },
   ]
-  const done = checks.filter((c) => c.done).length
-  const pct = Math.round((done / checks.length) * 100)
+  const done = checks.filter((check) => check.done).length
+  const percentage = Math.round((done / checks.length) * 100)
+  const pending = checks.filter((check) => !check.done)
+
+  if (percentage === 100) {
+    return (
+      <section aria-labelledby="profile-status-title">
+        <Card className="flex items-center gap-3 border-emerald-500/20 bg-emerald-500/5 p-4 sm:p-5">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <CheckCircle2 className="size-5" aria-hidden="true" />
+          </span>
+          <div>
+            <h2 id="profile-status-title" className="font-bold text-slate-900 dark:text-white">Perfil completo</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Tu página está lista para compartir.</p>
+          </div>
+        </Card>
+      </section>
+    )
+  }
 
   return (
-    <Card className="p-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Completitud del perfil</h2>
-        <span className={`text-xs font-bold ${pct === 100 ? 'text-emerald-500' : 'text-amber-500'}`}>{pct}%</span>
-      </div>
-
-      <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all ${pct === 100 ? 'bg-emerald-500' : 'bg-amber-500'}`}
-          style={{ width: `${pct}%` }}
-          role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        {checks.map((c) => (
-          <div key={c.label} className="flex items-center gap-2 text-xs">
-            {c.done
-              ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
-              : <AlertTriangle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
-            }
-            <span className={c.done ? 'text-slate-600 dark:text-slate-300' : 'text-slate-400'}>{c.label}</span>
+    <section aria-labelledby="profile-status-title">
+      <Card className="p-5 sm:p-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-xl">
+            <div className="flex items-center gap-3">
+              <h2 id="profile-status-title" className="text-base font-bold text-slate-900 dark:text-white">
+                Completa tu perfil
+              </h2>
+              <span className="text-sm font-bold tabular-nums text-amber-600 dark:text-amber-400">{percentage}%</span>
+            </div>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Termina estos pasos para presentar una página clara y confiable.
+            </p>
+            <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+              <div
+                className="h-full rounded-full bg-amber-500"
+                style={{ width: `${percentage}%` }}
+                role="progressbar"
+                aria-label="Progreso de configuración del perfil"
+                aria-valuenow={percentage}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              />
+            </div>
           </div>
-        ))}
-      </div>
-    </Card>
+          <div className="grid gap-2 sm:grid-cols-2 lg:min-w-[28rem]">
+            {pending.map((check) => (
+              <Link
+                key={check.label}
+                href={check.href}
+                className="group flex min-h-11 items-center justify-between gap-3 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-emerald-500/40 hover:bg-emerald-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:border-slate-800 dark:text-slate-300"
+              >
+                {check.label}
+                <ArrowRight className="size-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-emerald-500" aria-hidden="true" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      </Card>
+    </section>
   )
 }
 
 export default async function DashboardPage() {
-  // getAuthUser() is memoized — no extra network call (layout already called it)
-  const { user, supabase } = await getAuthUser()
-  if (!user) redirect('/auth/login')
+  const { user, supabase, profile } = await getDashboardProfile()
+  if (!user || !profile) redirect('/auth/login')
 
-  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-
-  // Merge two analytics COUNT queries into one GROUP BY to save a round-trip.
-  // Also run profile + social + buttons in parallel.
+  const since = isoDaysAgo(30)
   const [
-    { data: profile },
     { count: activeSocialCount },
     { count: activeButtonCount },
-    { data: analyticsGroups },
+    { count: totalViews },
+    { count: totalClicks },
   ] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('display_name, username, bio, avatar_url, banner_url, plan, is_active')
-      .eq('id', user.id)
-      .single(),
     supabase
       .from('social_links')
       .select('id', { count: 'exact', head: true })
@@ -90,116 +132,148 @@ export default async function DashboardPage() {
       .select('id', { count: 'exact', head: true })
       .eq('profile_id', user.id)
       .eq('is_active', true),
-    // Single query for both analytics counts grouped by event_type
     supabase
       .from('analytics_events')
-      .select('event_type')
+      .select('id', { count: 'exact', head: true })
       .eq('profile_id', user.id)
-      .in('event_type', ['profile_view', 'hotmart_redirect'])
+      .eq('event_type', 'profile_view')
+      .gte('created_at', since),
+    supabase
+      .from('analytics_events')
+      .select('id', { count: 'exact', head: true })
+      .eq('profile_id', user.id)
+      .eq('event_type', 'hotmart_redirect')
       .gte('created_at', since),
   ])
 
-  if (!profile) redirect('/auth/login')
-
-  // Derive counts from the grouped result
-  const totalViews = analyticsGroups?.filter(e => e.event_type === 'profile_view').length ?? 0
-  const totalClicks = analyticsGroups?.filter(e => e.event_type === 'hotmart_redirect').length ?? 0
-
-  const publicUrl = `${BASE_URL}/${profile.username}`
+  const publicUrl = `${BASE_URL.replace(/\/$/, '')}/${profile.username}`
   const activeSocial = activeSocialCount ?? 0
   const activeButtons = activeButtonCount ?? 0
+  const planLabel = PLAN_LABELS[profile.plan as PlanType] ?? 'Plan'
 
   const stats = [
-    { label: 'Montos activos', value: activeButtons, icon: CreditCard, color: 'text-emerald-500', href: '/dashboard/buttons' },
-    { label: 'Redes sociales', value: activeSocial, icon: Link2, color: 'text-indigo-500', href: '/dashboard/social' },
-    { label: 'Visitas (recientes)', value: totalViews, icon: Users, color: 'text-blue-500', href: '/dashboard/analytics' },
-    { label: 'Clics a Hotmart', value: totalClicks, icon: BarChart2, color: 'text-amber-500', href: '/dashboard/analytics' },
+    { label: 'Montos activos', value: activeButtons, icon: CreditCard, href: '/dashboard/buttons' },
+    { label: 'Redes sociales', value: activeSocial, icon: Link2, href: '/dashboard/social' },
+    { label: 'Visitas en 30 días', value: totalViews ?? 0, icon: Users, href: '/dashboard/analytics' },
+    { label: 'Clics a Hotmart', value: totalClicks ?? 0, icon: BarChart2, href: '/dashboard/analytics' },
+  ]
+
+  const quickActions = [
+    { title: 'Editar perfil', description: 'Actualiza tu identidad y presentación.', href: '/dashboard/profile', icon: UserCircle },
+    { title: 'Redes sociales', description: 'Gestiona tus enlaces externos.', href: '/dashboard/social', icon: Link2 },
+    { title: 'Montos de apoyo', description: 'Configura tus enlaces de Hotmart.', href: '/dashboard/buttons', icon: Settings2 },
   ]
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-            Hola, {profile.display_name} 👋
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+            Hola, {profile.display_name}
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Bienvenido a tu panel de creador.</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 sm:text-base">
+            Gestiona tu perfil público y revisa su rendimiento.
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant={profile.is_active ? 'emerald' : 'indigo'}>
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant={profile.is_active ? 'success' : 'warning'}>
             {profile.is_active ? 'Perfil activo' : 'Perfil inactivo'}
           </Badge>
-          <Badge variant="indigo">{profile.plan}</Badge>
+          <Badge variant="slate">{planLabel}</Badge>
         </div>
       </div>
 
-      {/* Public URL card */}
-      <Card className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Globe className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-          <span className="text-sm font-mono text-slate-700 dark:text-slate-300 truncate">{publicUrl}</span>
-        </div>
-        <div className="flex gap-2 flex-shrink-0">
-          <CopyUrlButton url={publicUrl} />
-          <Link href={`/${profile.username}`} target="_blank" rel="noreferrer">
-            <Button variant="outline" size="sm">
-              <ExternalLink className="w-3.5 h-3.5" />
-              Ver perfil
-            </Button>
+      <section aria-labelledby="public-url-title">
+        <Card className="p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+            <div className="min-w-0 flex-1">
+              <p id="public-url-title" className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+                Perfil público
+              </p>
+              <div className="mt-2 flex min-w-0 items-center gap-2">
+                <Globe className="size-5 shrink-0 text-emerald-500" aria-hidden="true" />
+                <span className="truncate font-mono text-sm font-medium text-slate-800 dark:text-slate-200 sm:text-base">
+                  {publicUrl}
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <CopyUrlButton url={publicUrl} />
+              <Link
+                href={`/${profile.username}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={buttonStyles({ variant: 'outline', size: 'sm' })}
+              >
+                <ExternalLink className="size-4" aria-hidden="true" />
+                Ver perfil
+              </Link>
+            </div>
+          </div>
+        </Card>
+      </section>
+
+      <ProfileCompleteness profile={profile} socialCount={activeSocial} buttonCount={activeButtons} />
+
+      <section aria-labelledby="metrics-title">
+        <div className="mb-4 flex items-end justify-between gap-4">
+          <div>
+            <h2 id="metrics-title" className="text-xl font-bold text-slate-900 dark:text-white">Resumen</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Visitas y clics corresponden a los últimos 30 días.</p>
+          </div>
+          <Link href="/dashboard/analytics" className="hidden min-h-11 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-emerald-400 sm:flex">
+            Ver estadísticas <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
         </div>
-      </Card>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {stats.map((stat) => {
+            const Icon = stat.icon
+            return (
+              <Link key={stat.label} href={stat.href} className="group rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950">
+                <Card className="flex min-h-40 h-full flex-col p-5 transition-[border-color,box-shadow,transform] group-hover:-translate-y-0.5 group-hover:border-emerald-500/30 group-hover:shadow-md">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-4xl font-black tabular-nums tracking-tight text-slate-900 dark:text-white">
+                      {stat.value.toLocaleString('es-CO')}
+                    </p>
+                    <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                      <Icon className="size-5" aria-hidden="true" />
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-300">{stat.label}</p>
+                  <span className="mt-auto flex items-center gap-1 pt-3 text-xs font-semibold text-slate-400 transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                    Ver detalle <ArrowRight className="size-3.5" aria-hidden="true" />
+                  </span>
+                </Card>
+              </Link>
+            )
+          })}
+        </div>
+      </section>
 
-      {/* Completeness */}
-      <ProfileCompleteness
-        profile={profile}
-        socialCount={activeSocial}
-        buttonCount={activeButtons}
-      />
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon
-          return (
-            <Link key={stat.label} href={stat.href}>
-              <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer group">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{stat.label}</span>
-                  <Icon className={`w-4 h-4 ${stat.color}`} />
-                </div>
-                <p className="text-2xl font-extrabold text-slate-900 dark:text-white">{stat.value}</p>
-                <p className="text-xs text-slate-400 mt-1 flex items-center gap-1 group-hover:text-emerald-500 transition-colors">
-                  Ver detalle <ArrowRight className="w-3 h-3" />
-                </p>
-              </Card>
-            </Link>
-          )
-        })}
-      </div>
-
-      {/* Quick actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <Link href="/dashboard/profile">
-          <Card className="p-4 hover:border-emerald-500/50 transition-colors cursor-pointer group">
-            <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400">Editar perfil</p>
-            <p className="text-xs text-slate-400 mt-0.5">Nombre, bio, fotos e identidad</p>
-          </Card>
-        </Link>
-        <Link href="/dashboard/social">
-          <Card className="p-4 hover:border-indigo-500/50 transition-colors cursor-pointer group">
-            <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Redes sociales</p>
-            <p className="text-xs text-slate-400 mt-0.5">Gestiona tus enlaces externos</p>
-          </Card>
-        </Link>
-        <Link href="/dashboard/buttons">
-          <Card className="p-4 hover:border-emerald-500/50 transition-colors cursor-pointer group">
-            <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400">Montos de apoyo</p>
-            <p className="text-xs text-slate-400 mt-0.5">Configura tus botones de Hotmart</p>
-          </Card>
-        </Link>
-      </div>
+      <section aria-labelledby="quick-actions-title">
+        <h2 id="quick-actions-title" className="mb-4 text-xl font-bold text-slate-900 dark:text-white">Accesos rápidos</h2>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {quickActions.map((action) => {
+            const Icon = action.icon
+            return (
+              <Link key={action.href} href={action.href} className="group rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950">
+                <Card className="flex h-full min-h-36 items-start gap-4 p-5 transition-[border-color,box-shadow,transform] group-hover:-translate-y-0.5 group-hover:border-emerald-500/30 group-hover:shadow-md">
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition-colors group-hover:bg-emerald-500/10 group-hover:text-emerald-600 dark:bg-slate-800 dark:text-slate-300 dark:group-hover:text-emerald-400">
+                    <Icon className="size-5" aria-hidden="true" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center justify-between gap-2 font-bold text-slate-900 dark:text-white">
+                      {action.title}
+                      <ArrowRight className="size-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-emerald-500" aria-hidden="true" />
+                    </span>
+                    <span className="mt-1 block text-sm leading-relaxed text-slate-500 dark:text-slate-400">{action.description}</span>
+                  </span>
+                </Card>
+              </Link>
+            )
+          })}
+        </div>
+      </section>
     </div>
   )
 }
