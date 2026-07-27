@@ -17,10 +17,17 @@ import {
   X,
 } from 'lucide-react'
 import { trackPublicEvent } from '@/lib/analytics/public-client'
+import {
+  attachHotmartOverlay,
+  getHotmartCheckoutPresentation,
+  getHotmartOfferCode,
+  HOTMART_CHECKOUT_ELEMENTS_SRC,
+  type HotmartOverlayInstance,
+  type HotmartScriptStatus,
+} from '@/lib/hotmart-checkout'
 import { formatSupportAmount } from '@/lib/presentation'
 import {
-  buildHotmartWidgetUrl,
-  canStartSupportRedirect,
+  canStartSupportCheckout,
   getFeaturedSupportAmountId,
   getInitialSupportAmountId,
   getSelectedSupportAmount,
@@ -34,6 +41,9 @@ interface Props {
   goals: PublicSupportGoal[]
   profileId: string
 }
+
+const SUPPORT_CTA_CLASS =
+  'mt-2.5 flex min-h-11 w-full items-center justify-center gap-2 rounded-[0.625rem] bg-emerald-500 px-4 py-2 text-center text-sm font-semibold text-white transition-[background-color,transform,opacity] duration-150 ease-out hover:-translate-y-px hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 active:translate-y-0 disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0 dark:text-slate-950 dark:focus-visible:ring-offset-slate-900'
 
 export function PublicSupportGoals({ goals, profileId }: Props) {
   const [openGoalId, setOpenGoalId] = useState<string | null>(
@@ -52,14 +62,21 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
     () => new Set()
   )
   const [urlError, setUrlError] = useState<string | null>(null)
-  const [isRedirecting, setIsRedirecting] = useState(false)
-  const redirectLockRef = useRef(false)
-  const redirectTimeoutRef = useRef<number | null>(null)
+  const [isActivatingCheckout, setIsActivatingCheckout] = useState(false)
+  const [scriptStatus, setScriptStatus] =
+    useState<HotmartScriptStatus>('loading')
+  const [attachedAmountId, setAttachedAmountId] = useState<string | null>(null)
+  const [failedOverlayAmountIds, setFailedOverlayAmountIds] = useState<
+    Set<string>
+  >(() => new Set())
+  const checkoutLockRef = useRef(false)
+  const checkoutTimeoutRef = useRef<number | null>(null)
+  const overlayInstanceRef = useRef<HotmartOverlayInstance | null>(null)
 
   useEffect(() => {
     return () => {
-      if (redirectTimeoutRef.current !== null) {
-        window.clearTimeout(redirectTimeoutRef.current)
+      if (checkoutTimeoutRef.current !== null) {
+        window.clearTimeout(checkoutTimeoutRef.current)
       }
     }
   }, [])
@@ -75,10 +92,68 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
       selectedByGoal[openGoal.id] ?? null
     )
   }, [openGoal, selectedByGoal])
-  const checkoutUrl = useMemo(
-    () => buildHotmartWidgetUrl(selectedAmount),
-    [selectedAmount]
+  const checkoutPresentation = useMemo(
+    () =>
+      getHotmartCheckoutPresentation({
+        amount: selectedAmount,
+        scriptStatus,
+        attachedAmountId,
+        failedAmountIds: failedOverlayAmountIds,
+      }),
+    [
+      selectedAmount,
+      scriptStatus,
+      attachedAmountId,
+      failedOverlayAmountIds,
+    ]
   )
+  const hasOverlayCandidates = useMemo(
+    () =>
+      goals.some((goal) =>
+        goal.amounts.some((amount) => Boolean(getHotmartOfferCode(amount)))
+      ),
+    [goals]
+  )
+
+  useEffect(() => {
+    overlayInstanceRef.current = null
+
+    if (
+      scriptStatus !== 'ready' ||
+      !selectedAmount ||
+      failedOverlayAmountIds.has(selectedAmount.id)
+    ) {
+      return
+    }
+
+    const offerCode = getHotmartOfferCode(selectedAmount)
+    const api = window.checkoutElements
+    if (!offerCode || !api) return
+
+    const amountId = selectedAmount.id
+    const buttonId = `hotmart-support-${amountId}`
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        overlayInstanceRef.current = attachHotmartOverlay({
+          api,
+          selector: `#${buttonId}`,
+          offerCode,
+        })
+        setAttachedAmountId(amountId)
+      } catch {
+        setFailedOverlayAmountIds((current) => {
+          const next = new Set(current)
+          next.add(amountId)
+          return next
+        })
+      }
+    })
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      overlayInstanceRef.current = null
+    }
+  }, [scriptStatus, selectedAmount, failedOverlayAmountIds])
 
   const trackEvent = useCallback(
     (
@@ -95,13 +170,14 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
   )
 
   function handleGoalToggle(goalId: string) {
-    if (redirectLockRef.current) return
+    if (checkoutLockRef.current) return
     setUrlError(null)
+    setAttachedAmountId(null)
     setOpenGoalId((current) => (current === goalId ? null : goalId))
   }
 
   function handleAmountSelect(goalId: string, amountId: string) {
-    if (redirectLockRef.current) return
+    if (checkoutLockRef.current) return
     const goal = goals.find((item) => item.id === goalId)
     const amount = goal?.amounts.find((item) => item.id === amountId)
     if (
@@ -113,6 +189,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
     }
 
     setSelectedByGoal((current) => ({ ...current, [goalId]: amountId }))
+    setAttachedAmountId(null)
     setUrlError(null)
     void trackEvent('amount_selected', amountId)
   }
@@ -157,41 +234,71 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
     handleAmountSelect(goalId, next.dataset.amountId ?? amountId)
   }
 
-  function handleSupport(event: React.MouseEvent<HTMLAnchorElement>) {
+  function beginCheckoutActivation() {
     if (
-      !canStartSupportRedirect({
-        locked: redirectLockRef.current,
+      !canStartSupportCheckout({
+        locked: checkoutLockRef.current,
         amount: selectedAmount,
-        checkoutUrl,
+        checkoutUrl: checkoutPresentation.checkoutUrl,
       })
     ) {
-      event.preventDefault()
-      if (!redirectLockRef.current) {
+      if (!checkoutLockRef.current) {
         setUrlError(
           'Este nivel no tiene un checkout válido. Elige otro nivel o contacta al creador.'
         )
       }
-      return
+      return false
     }
 
-    redirectLockRef.current = true
+    checkoutLockRef.current = true
     setUrlError(null)
-    setIsRedirecting(true)
+    setIsActivatingCheckout(true)
     void trackEvent('hotmart_redirect', selectedAmount!.id)
 
-    redirectTimeoutRef.current = window.setTimeout(() => {
-      redirectLockRef.current = false
-      setIsRedirecting(false)
-      redirectTimeoutRef.current = null
-    }, 4000)
+    checkoutTimeoutRef.current = window.setTimeout(() => {
+      checkoutLockRef.current = false
+      setIsActivatingCheckout(false)
+      checkoutTimeoutRef.current = null
+    }, 1500)
+
+    return true
+  }
+
+  function handleOverlaySupport(
+    event: React.MouseEvent<HTMLButtonElement>
+  ) {
+    if (checkoutPresentation.kind !== 'overlay' || !beginCheckoutActivation()) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }
+
+  function handleFallbackSupport(event: React.MouseEvent<HTMLAnchorElement>) {
+    if (
+      checkoutPresentation.kind !== 'fallback' ||
+      !beginCheckoutActivation()
+    ) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
   }
 
   return (
     <>
-      <Script
-        src="https://static.hotmart.com/checkout/widget.min.js"
-        strategy="afterInteractive"
-      />
+      {hasOverlayCandidates && (
+        <Script
+          id="hotmart-checkout-elements"
+          src={HOTMART_CHECKOUT_ELEMENTS_SRC}
+          strategy="afterInteractive"
+          onLoad={() =>
+            setScriptStatus(window.checkoutElements ? 'ready' : 'error')
+          }
+          onReady={() =>
+            setScriptStatus(window.checkoutElements ? 'ready' : 'error')
+          }
+          onError={() => setScriptStatus('error')}
+        />
+      )}
 
       <div className="divide-y divide-slate-200/80 overflow-hidden rounded-2xl border border-slate-200/90 bg-white/70 dark:divide-slate-800 dark:border-slate-800 dark:bg-slate-900/45">
         {goals.map((goal) => {
@@ -270,7 +377,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                           aria-pressed={isSelected}
                           data-amount-id={amount.id}
                           tabIndex={isSelected ? 0 : -1}
-                          disabled={!isAvailable || isRedirecting}
+                          disabled={!isAvailable || isActivatingCheckout}
                           onClick={() =>
                             handleAmountSelect(goal.id, amount.id)
                           }
@@ -344,29 +451,73 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                     </div>
                   )}
 
-                  {selectedAmount && checkoutUrl ? (
-                    <a
-                      href={checkoutUrl}
-                      onClick={handleSupport}
-                      aria-disabled={isRedirecting}
-                      aria-label={
-                        isRedirecting
-                          ? 'Abriendo Hotmart'
-                          : `${getSupportCtaLabel(
-                              selectedAmount
-                            )} mediante Hotmart`
-                      }
-                      className={`hotmart-fb hotmart__button-checkout mt-2.5 flex min-h-11 w-full items-center justify-center gap-2 rounded-[0.625rem] bg-emerald-500 px-4 py-2 text-center text-sm font-semibold text-white transition-[background-color,transform,opacity] duration-150 ease-out hover:-translate-y-px hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 active:translate-y-0 dark:text-slate-950 dark:focus-visible:ring-offset-slate-900 ${
-                        isRedirecting ? 'pointer-events-none opacity-70' : ''
-                      }`}
+                  {selectedAmount &&
+                  checkoutPresentation.kind === 'overlay' ? (
+                    <button
+                      key={selectedAmount.id}
+                      id={`hotmart-support-${selectedAmount.id}`}
+                      type="button"
+                      disabled={isActivatingCheckout}
+                      onClickCapture={handleOverlaySupport}
+                      aria-describedby={`hotmart-payment-note-${goal.id}`}
+                      aria-label={`${getSupportCtaLabel(
+                        selectedAmount
+                      )} mediante Hotmart`}
+                      className={SUPPORT_CTA_CLASS}
                     >
-                      {isRedirecting ? (
+                      {isActivatingCheckout ? (
                         <LoaderCircle
                           className="size-4 animate-spin motion-reduce:animate-none"
                           aria-hidden="true"
                         />
                       ) : null}
-                      {isRedirecting
+                      {isActivatingCheckout
+                        ? 'Abriendo Hotmart…'
+                        : getSupportCtaLabel(selectedAmount)}
+                    </button>
+                  ) : selectedAmount &&
+                    checkoutPresentation.kind === 'loading' ? (
+                    <button
+                      key={selectedAmount.id}
+                      id={`hotmart-support-${selectedAmount.id}`}
+                      type="button"
+                      disabled
+                      aria-describedby={`hotmart-payment-note-${goal.id}`}
+                      className={SUPPORT_CTA_CLASS}
+                    >
+                      <LoaderCircle
+                        className="size-4 animate-spin motion-reduce:animate-none"
+                        aria-hidden="true"
+                      />
+                      Preparando pago seguro…
+                    </button>
+                  ) : selectedAmount &&
+                    checkoutPresentation.kind === 'fallback' ? (
+                    <a
+                      href={checkoutPresentation.checkoutUrl}
+                      onClick={handleFallbackSupport}
+                      aria-disabled={isActivatingCheckout}
+                      aria-describedby={`hotmart-payment-note-${goal.id}`}
+                      aria-label={
+                        isActivatingCheckout
+                          ? 'Abriendo Hotmart'
+                          : `${getSupportCtaLabel(
+                              selectedAmount
+                            )} mediante Hotmart`
+                      }
+                      className={`${SUPPORT_CTA_CLASS} ${
+                        isActivatingCheckout
+                          ? 'pointer-events-none opacity-70'
+                          : ''
+                      }`}
+                    >
+                      {isActivatingCheckout ? (
+                        <LoaderCircle
+                          className="size-4 animate-spin motion-reduce:animate-none"
+                          aria-hidden="true"
+                        />
+                      ) : null}
+                      {isActivatingCheckout
                         ? 'Abriendo Hotmart…'
                         : getSupportCtaLabel(selectedAmount)}
                     </a>
@@ -378,6 +529,19 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                     >
                       No hay niveles disponibles
                     </button>
+                  )}
+
+                  {checkoutPresentation.kind !== 'unavailable' && (
+                    <p
+                      id={`hotmart-payment-note-${goal.id}`}
+                      role="status"
+                      aria-live="polite"
+                      className="mt-2 px-1 text-[11px] leading-4 text-slate-500 dark:text-slate-400"
+                    >
+                      {checkoutPresentation.kind === 'fallback'
+                        ? 'Continuarás en Hotmart para completar el pago.'
+                        : 'Pago gestionado por Hotmart sin salir de esta página. DonacionesSaaS no almacena tus datos de pago.'}
+                    </p>
                   )}
                 </div>
               )}

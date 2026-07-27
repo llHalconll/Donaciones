@@ -1,11 +1,19 @@
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { PublicSupportGoals } from '../src/app/[username]/support-goals.js'
 import {
-  buildHotmartWidgetUrl,
-  canStartSupportRedirect,
+  attachHotmartOverlay,
+  getHotmartCheckoutPresentation,
+  getHotmartCheckoutUrl,
+  HOTMART_CHECKOUT_ELEMENTS_SRC,
+  type HotmartCheckoutElementsApi,
+} from '../src/lib/hotmart-checkout.js'
+import {
+  canStartSupportCheckout,
   getFeaturedSupportAmountId,
   getInitialSupportAmountId,
   getSelectedSupportAmount,
@@ -16,6 +24,7 @@ import {
   type PublicSupportAmount,
   type PublicSupportGoal,
 } from '../src/lib/support-goals.js'
+import { validateHotmartOfferCode } from '../src/lib/validations/hotmart.js'
 
 function makeAmounts(
   count: number,
@@ -27,6 +36,7 @@ function makeAmounts(
     amount: (index + 1) * 5,
     currency: 'USD',
     hotmart_checkout_url: `https://pay.hotmart.com/LEVEL-${index + 1}`,
+    hotmart_offer_code: null,
     button_label: null,
     is_featured: false,
     order_index: index,
@@ -132,32 +142,204 @@ describe('support level selection and checkout association', () => {
 
   it('derives CTA and checkout from exactly the same selected level', () => {
     const amounts = makeAmounts(2)
+    amounts[1].hotmart_offer_code = 'offerLevel2'
     const selected = getSelectedSupportAmount(amounts, 'amount-2')
     const storedUrl = selected?.hotmart_checkout_url
-    const widgetUrl = buildHotmartWidgetUrl(selected)
+    const presentation = getHotmartCheckoutPresentation({
+      amount: selected,
+      scriptStatus: 'ready',
+      attachedAmountId: 'amount-2',
+      failedAmountIds: new Set(),
+    })
 
     assert.equal(selected?.amount, 10)
     assert.match(getSupportCtaLabel(selected), /10/)
     assert.equal(selected?.hotmart_checkout_url, storedUrl)
-    assert.equal(new URL(widgetUrl!).pathname, '/LEVEL-2')
-    assert.equal(new URL(widgetUrl!).searchParams.get('checkoutMode'), '2')
+    assert.equal(presentation.kind, 'overlay')
+    assert.equal(presentation.offerCode, 'offerLevel2')
+    assert.equal(new URL(presentation.checkoutUrl!).pathname, '/LEVEL-2')
   })
 
   it('rejects invalid URLs and a second locked activation', () => {
     const amount = makeAmounts(1)[0]
-    const checkoutUrl = buildHotmartWidgetUrl(amount)
+    const checkoutUrl = getHotmartCheckoutUrl(amount)
 
     assert.equal(
-      canStartSupportRedirect({ locked: false, amount, checkoutUrl }),
+      canStartSupportCheckout({ locked: false, amount, checkoutUrl }),
       true
     )
     assert.equal(
-      canStartSupportRedirect({ locked: true, amount, checkoutUrl }),
+      canStartSupportCheckout({ locked: true, amount, checkoutUrl }),
       false
     )
 
     amount.hotmart_checkout_url = 'javascript:alert(1)'
-    assert.equal(buildHotmartWidgetUrl(amount), null)
+    assert.equal(getHotmartCheckoutUrl(amount), null)
+    assert.equal(
+      canStartSupportCheckout({
+        locked: false,
+        amount,
+        checkoutUrl: getHotmartCheckoutUrl(amount),
+      }),
+      false
+    )
+  })
+})
+
+describe('Hotmart Checkout Elements', () => {
+  it('accepts a structured public offer code and rejects unsafe values', () => {
+    assert.equal(
+      validateHotmartOfferCode('  kjl7fk5t  ').normalizedCode,
+      'kjl7fk5t'
+    )
+    assert.equal(validateHotmartOfferCode('').ok, true)
+    assert.equal(validateHotmartOfferCode('<script>').ok, false)
+    assert.equal(validateHotmartOfferCode('offer code').ok, false)
+  })
+
+  it('uses fallback when a level has no explicit offer code', () => {
+    const amount = makeAmounts(1)[0]
+    const presentation = getHotmartCheckoutPresentation({
+      amount,
+      scriptStatus: 'ready',
+      attachedAmountId: null,
+      failedAmountIds: new Set(),
+    })
+
+    assert.equal(presentation.kind, 'fallback')
+    assert.equal(presentation.checkoutUrl, amount.hotmart_checkout_url)
+  })
+
+  it('does not infer an offer code from the checkout URL', () => {
+    const amount = makeAmounts(1)[0]
+    amount.hotmart_checkout_url += '?off=must-be-confirmed'
+    const presentation = getHotmartCheckoutPresentation({
+      amount,
+      scriptStatus: 'ready',
+      attachedAmountId: null,
+      failedAmountIds: new Set(),
+    })
+
+    assert.equal(presentation.kind, 'fallback')
+    assert.equal(presentation.offerCode, null)
+  })
+
+  it('shows a loading state until the exact selected level is attached', () => {
+    const amount = makeAmounts(1)[0]
+    amount.hotmart_offer_code = 'offerOne'
+
+    assert.equal(
+      getHotmartCheckoutPresentation({
+        amount,
+        scriptStatus: 'loading',
+        attachedAmountId: null,
+        failedAmountIds: new Set(),
+      }).kind,
+      'loading'
+    )
+    assert.equal(
+      getHotmartCheckoutPresentation({
+        amount,
+        scriptStatus: 'ready',
+        attachedAmountId: 'another-amount',
+        failedAmountIds: new Set(),
+      }).kind,
+      'loading'
+    )
+  })
+
+  it('opens overlay only for the exact attached selected level', () => {
+    const amounts = makeAmounts(2)
+    amounts[0].hotmart_offer_code = 'offerOne'
+    amounts[1].hotmart_offer_code = 'offerTwo'
+    const selected = getSelectedSupportAmount(amounts, 'amount-2')
+    const presentation = getHotmartCheckoutPresentation({
+      amount: selected,
+      scriptStatus: 'ready',
+      attachedAmountId: 'amount-2',
+      failedAmountIds: new Set(),
+    })
+
+    assert.equal(presentation.kind, 'overlay')
+    assert.equal(presentation.offerCode, 'offerTwo')
+  })
+
+  it('passes the exact offer to the official overlay API', () => {
+    const calls: unknown[][] = []
+    const api: HotmartCheckoutElementsApi = {
+      init(mode, options) {
+        calls.push([mode, options])
+        return {
+          attach(selector) {
+            calls.push(['attach', selector])
+          },
+        }
+      },
+    }
+
+    attachHotmartOverlay({
+      api,
+      selector: '#hotmart-support-amount-2',
+      offerCode: 'offerTwo',
+    })
+
+    assert.deepEqual(calls, [
+      ['overlayCheckout', { offer: 'offerTwo' }],
+      ['attach', '#hotmart-support-amount-2'],
+    ])
+  })
+
+  it('falls back when the official script fails', () => {
+    const amount = makeAmounts(1)[0]
+    amount.hotmart_offer_code = 'offerOne'
+    assert.equal(
+      getHotmartCheckoutPresentation({
+        amount,
+        scriptStatus: 'error',
+        attachedAmountId: null,
+        failedAmountIds: new Set(),
+      }).kind,
+      'fallback'
+    )
+  })
+
+  it('falls back only for an amount whose overlay initialization failed', () => {
+    const amounts = makeAmounts(2)
+    amounts.forEach((amount, index) => {
+      amount.hotmart_offer_code = `offer${index + 1}`
+    })
+
+    assert.equal(
+      getHotmartCheckoutPresentation({
+        amount: amounts[0],
+        scriptStatus: 'ready',
+        attachedAmountId: null,
+        failedAmountIds: new Set(['amount-1']),
+      }).kind,
+      'fallback'
+    )
+    assert.equal(
+      getHotmartCheckoutPresentation({
+        amount: amounts[1],
+        scriptStatus: 'ready',
+        attachedAmountId: 'amount-2',
+        failedAmountIds: new Set(['amount-1']),
+      }).kind,
+      'overlay'
+    )
+  })
+
+  it('allows reopening after the activation lock is released', () => {
+    const amount = makeAmounts(1)[0]
+    const checkoutUrl = getHotmartCheckoutUrl(amount)
+    assert.equal(
+      canStartSupportCheckout({ locked: true, amount, checkoutUrl }),
+      false
+    )
+    assert.equal(
+      canStartSupportCheckout({ locked: false, amount, checkoutUrl }),
+      true
+    )
   })
 })
 
@@ -231,6 +413,50 @@ describe('public support goals markup', () => {
     assert.equal((markup.match(/role="group"/g) ?? []).length, 1)
   })
 
+  it('loads the official Elements script once for several compatible goals', () => {
+    const first = makeGoal(1, 'goal-1')
+    const second = makeGoal(1, 'goal-2')
+    first.amounts[0].hotmart_offer_code = 'offerOne'
+    second.amounts[0].hotmart_offer_code = 'offerTwo'
+
+    const markup = renderToStaticMarkup(
+      React.createElement(PublicSupportGoals, {
+        goals: [first, second],
+        profileId: 'profile-1',
+      })
+    )
+
+    assert.match(markup, /Preparando pago seguro/)
+    assert.match(markup, /type="button"/)
+
+    const source = readFileSync(
+      join(process.cwd(), 'src/app/[username]/support-goals.tsx'),
+      'utf8'
+    )
+    assert.equal(
+      (source.match(/id="hotmart-checkout-elements"/g) ?? []).length,
+      1
+    )
+    assert.ok(source.includes('src={HOTMART_CHECKOUT_ELEMENTS_SRC}'))
+    assert.equal(
+      HOTMART_CHECKOUT_ELEMENTS_SRC,
+      'https://checkout.hotmart.com/lib/hotmart-checkout-elements.js'
+    )
+  })
+
+  it('keeps the normal Hotmart link and fallback copy without an offer code', () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(PublicSupportGoals, {
+        goals: [makeGoal(1)],
+        profileId: 'profile-1',
+      })
+    )
+
+    assert.match(markup, /href="https:\/\/pay\.hotmart\.com\/LEVEL-1"/)
+    assert.match(markup, /Continuarás en Hotmart/)
+    assert.doesNotMatch(markup, /checkoutMode=2/)
+  })
+
   it('preserves long, unbroken, special and emoji goal titles', () => {
     const titles = [
       'Café',
@@ -250,6 +476,21 @@ describe('public support goals markup', () => {
         })
       )
       assert.ok(markup.includes(title))
+      assert.match(markup, /line-clamp-2/)
     }
+  })
+
+  it('keeps one analytics activation and removes the legacy widget', () => {
+    const source = readFileSync(
+      join(process.cwd(), 'src/app/[username]/support-goals.tsx'),
+      'utf8'
+    )
+
+    assert.equal(
+      (source.match(/trackEvent\('hotmart_redirect'/g) ?? []).length,
+      1
+    )
+    assert.doesNotMatch(source, /static\.hotmart\.com\/checkout\/widget\.min\.js/)
+    assert.doesNotMatch(source, /hotmart__button-checkout/)
   })
 })

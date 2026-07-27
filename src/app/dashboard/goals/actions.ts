@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { validateHotmartUrl } from '@/lib/validations/url'
+import { validateHotmartOfferCode } from '@/lib/validations/hotmart'
 import {
   MAX_SUPPORT_AMOUNTS_PER_GOAL,
   PLAN_LIMITS,
@@ -337,6 +338,7 @@ export async function duplicateSupportGoalAction(
           amount: amount.amount,
           currency: amount.currency,
           hotmart_checkout_url: amount.hotmart_checkout_url,
+          hotmart_offer_code: amount.hotmart_offer_code,
           button_label: amount.button_label,
           is_featured: amount.is_featured,
           order_index: orderIndex,
@@ -411,6 +413,8 @@ function parseAmountForm(formData: FormData) {
     (formData.get('currency') as string | null)?.trim().toUpperCase() ?? ''
   const hotmartUrl =
     (formData.get('hotmartUrl') as string | null)?.trim() ?? ''
+  const hotmartOfferCode =
+    (formData.get('hotmartOfferCode') as string | null)?.trim() ?? ''
   const buttonLabel =
     (formData.get('buttonLabel') as string | null)?.trim() || null
   const isFeatured = formData.get('isFeatured') === 'true'
@@ -427,11 +431,14 @@ function parseAmountForm(formData: FormData) {
 
   const urlResult = validateHotmartUrl(hotmartUrl)
   if (!urlResult.ok) return { error: urlResult.error } as const
+  const offerCodeResult = validateHotmartOfferCode(hotmartOfferCode)
+  if (!offerCodeResult.ok) return { error: offerCodeResult.error } as const
 
   return {
     amount,
     currency,
     hotmartUrl: urlResult.normalizedUrl ?? hotmartUrl,
+    hotmartOfferCode: offerCodeResult.normalizedCode ?? null,
     buttonLabel,
     isFeatured,
   } as const
@@ -495,6 +502,7 @@ export async function createSupportAmountAction(
     amount: parsed.amount,
     currency: parsed.currency,
     hotmart_checkout_url: parsed.hotmartUrl,
+    hotmart_offer_code: parsed.hotmartOfferCode,
     button_label: parsed.buttonLabel,
     is_featured: parsed.isFeatured,
     order_index: (last?.order_index ?? -1) + 1,
@@ -539,6 +547,7 @@ export async function updateSupportAmountAction(
       amount: parsed.amount,
       currency: parsed.currency,
       hotmart_checkout_url: parsed.hotmartUrl,
+      hotmart_offer_code: parsed.hotmartOfferCode,
       button_label: parsed.buttonLabel,
       is_featured: parsed.isFeatured,
       updated_at: new Date().toISOString(),

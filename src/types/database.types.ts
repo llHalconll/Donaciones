@@ -73,6 +73,7 @@ export interface SupportAmount {
   amount: number
   currency: string
   hotmart_checkout_url: string
+  hotmart_offer_code: string | null
   button_label: string | null
   is_featured: boolean
   order_index: number

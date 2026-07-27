@@ -14,6 +14,7 @@ export type PublicSupportAmount = Pick<
   | 'amount'
   | 'currency'
   | 'hotmart_checkout_url'
+  | 'hotmart_offer_code'
   | 'button_label'
   | 'is_featured'
   | 'order_index'
@@ -89,18 +90,7 @@ export function getVisibleSupportAmounts(
     .slice(0, limit)
 }
 
-export function buildHotmartWidgetUrl(amount: PublicSupportAmount | null) {
-  if (!amount || !isSupportAmountAvailable(amount)) return null
-
-  const result = validateHotmartUrl(amount.hotmart_checkout_url)
-  if (!result.ok || !result.normalizedUrl) return null
-
-  const parsed = new URL(result.normalizedUrl)
-  parsed.searchParams.set('checkoutMode', '2')
-  return parsed.toString()
-}
-
-export function canStartSupportRedirect({
+export function canStartSupportCheckout({
   locked,
   amount,
   checkoutUrl,

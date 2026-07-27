@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { cache, Suspense } from 'react'
-import { ArrowLeft, Globe, Heart, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, Globe, Heart } from 'lucide-react'
 import { createClient, getAuthUser } from '@/lib/supabase/server'
 import { resolveSiteUrl } from '@/lib/site-url'
 import { validateUsernameFormat } from '@/lib/validations/auth'
@@ -140,6 +140,7 @@ async function PublicSupportContent({
           amount,
           currency,
           hotmart_checkout_url,
+          hotmart_offer_code,
           button_label,
           is_featured,
           order_index
@@ -171,6 +172,7 @@ async function PublicSupportContent({
             return {
               ...amount,
               hotmart_checkout_url: urlResult.normalizedUrl ?? '',
+              hotmart_offer_code: amount.hotmart_offer_code ?? null,
             }
           }),
       }
@@ -183,7 +185,6 @@ async function PublicSupportContent({
           validateHotmartUrl(amount.hotmart_checkout_url).ok
       )
     )
-  const hasValidSupportOption = availableGoals.length > 0
   const emptyStateCopy = getSupportEmptyStateCopy(
     creatorName,
     hasWebsite || safeSocialLinks.length > 0
@@ -223,14 +224,6 @@ async function PublicSupportContent({
           />
         )}
 
-        {!goalsError && hasValidSupportOption && (
-          <div className="mt-2.5 flex items-center gap-2 px-1 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
-            <ShieldCheck className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
-            <p>
-              Pago gestionado por Hotmart. DonacionesSaaS no almacena datos de pago.
-            </p>
-          </div>
-        )}
       </section>
 
       {!socialLinksError && safeSocialLinks.length > 0 && (

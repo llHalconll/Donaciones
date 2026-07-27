@@ -357,6 +357,29 @@ function AmountForm({
 
         <div>
           <label
+            htmlFor={`hotmart-offer-${amount?.id ?? 'new'}`}
+            className="mb-1.5 block text-xs font-semibold text-slate-700 dark:text-slate-300"
+          >
+            Código de oferta para overlay (opcional)
+          </label>
+          <input
+            id={`hotmart-offer-${amount?.id ?? 'new'}`}
+            name="hotmartOfferCode"
+            type="text"
+            maxLength={128}
+            autoComplete="off"
+            defaultValue={amount?.hotmart_offer_code ?? ''}
+            placeholder="Ej. kjl7fk5t"
+            className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-950"
+          />
+          <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+            Cópialo desde Hotmart → Fijación de precios y ofertas. Déjalo vacío
+            para continuar por el enlace normal.
+          </p>
+        </div>
+
+        <div>
+          <label
             htmlFor={`label-${amount?.id ?? 'new'}`}
             className="mb-1.5 block text-xs font-semibold text-slate-700 dark:text-slate-300"
           >
