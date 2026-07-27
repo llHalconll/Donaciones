@@ -7,6 +7,7 @@ import {
   RESERVED_USERNAMES,
 } from '../src/lib/validations/auth.js'
 import {
+  validatePublicImageUrl,
   validatePublicUrl,
   validateHotmartUrl,
 } from '../src/lib/validations/url.js'
@@ -106,8 +107,15 @@ describe('validateHotmartUrl', () => {
     assert.equal(validateHotmartUrl('https://pay.hotmart.com/ABC123?off=xyz').ok, true)
   })
 
-  it('accepts hotmart.com', () => {
-    assert.equal(validateHotmartUrl('https://hotmart.com/product/abc').ok, true)
+  it('accepts official checkout and promotional-link hosts', () => {
+    assert.equal(validateHotmartUrl('https://checkout.hotmart.com/ABC123').ok, true)
+    assert.equal(validateHotmartUrl('https://payment.hotmart.com/ABC123').ok, true)
+    assert.equal(validateHotmartUrl('https://www.go.hotmart.com/ABC123').ok, true)
+  })
+
+  it('rejects Hotmart pages that are not payment or promotional links', () => {
+    assert.equal(validateHotmartUrl('https://hotmart.com/product/abc').ok, false)
+    assert.equal(validateHotmartUrl('https://app.hotmart.com/products').ok, false)
   })
 
   it('rejects http (must be HTTPS)', () => {
@@ -139,5 +147,26 @@ describe('validateHotmartUrl', () => {
     assert.equal(validateHotmartUrl('https://www.hotmart.com.phishing.xyz/pay').ok, false)
     assert.equal(validateHotmartUrl('https://fake-hotmart.com/pay').ok, false)
     assert.equal(validateHotmartUrl('https://hotmartcomclone.com/checkout').ok, false)
+  })
+})
+
+describe('validatePublicImageUrl', () => {
+  it('accepts public Supabase Storage images', () => {
+    assert.equal(
+      validatePublicImageUrl(
+        'https://example.supabase.co/storage/v1/object/public/avatars/user/avatar.webp'
+      ).ok,
+      true
+    )
+  })
+
+  it('rejects non-storage and non-https image URLs', () => {
+    assert.equal(validatePublicImageUrl('https://example.com/avatar.webp').ok, false)
+    assert.equal(
+      validatePublicImageUrl(
+        'http://example.supabase.co/storage/v1/object/public/avatars/avatar.webp'
+      ).ok,
+      false
+    )
   })
 })

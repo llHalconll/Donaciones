@@ -1,9 +1,4 @@
-'use client'
-
-import {
-  Globe, MessageCircle, ExternalLink, Send, Video,
-  Camera, Briefcase, Gamepad2,
-} from 'lucide-react'
+import { Globe, ExternalLink, Video, Camera } from 'lucide-react'
 import type { SocialLink } from '@/types/database.types'
 
 // ─── Iconos SVG de marca ───────────────────────────────────────────────────
@@ -176,11 +171,11 @@ export function PublicSocialLinks({ links }: Props) {
             key={link.id}
             href={link.url}
             target="_blank"
-            rel="noreferrer noopener"
-            aria-label={`${displayLabel} (abre en nueva pestaña)`}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-colors ${config.color} ${config.hover}`}
+            rel="noopener noreferrer"
+            aria-label={`${displayLabel} (abre en una pestaña nueva)`}
+            className={`inline-flex min-h-11 items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${config.color} ${config.hover}`}
           >
-            <Icon className="w-3.5 h-3.5" />
+            <Icon className="size-3.5" />
             <span>{displayLabel}</span>
           </a>
         )

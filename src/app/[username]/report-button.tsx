@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Flag, X, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -22,6 +22,20 @@ export function ReportButton({ profileId, profileName }: Props) {
   const [open, setOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<{ error?: string; success?: string } | null>(null)
+
+  useEffect(() => {
+    if (!open) return
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setOpen(false)
+        setResult(null)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [open])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -52,11 +66,12 @@ export function ReportButton({ profileId, profileName }: Props) {
   if (!open) {
     return (
       <button
+        type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 border border-slate-200 dark:border-slate-800 transition-colors"
+        className="flex min-h-11 items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-xs text-slate-500 transition-colors hover:bg-rose-500/10 hover:text-rose-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-slate-800 dark:text-slate-400"
         aria-label={`Reportar perfil de ${profileName}`}
       >
-        <Flag className="w-3.5 h-3.5" />
+        <Flag className="size-3.5" aria-hidden="true" />
         Reportar
       </button>
     )
@@ -73,11 +88,12 @@ export function ReportButton({ profileId, profileName }: Props) {
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-slate-900 dark:text-white">Reportar perfil</h2>
           <button
+            type="button"
             onClick={() => { setOpen(false); setResult(null) }}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition"
+            className="flex size-11 items-center justify-center rounded-lg text-slate-400 transition hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:hover:text-slate-200"
             aria-label="Cerrar"
           >
-            <X className="w-4 h-4" />
+            <X className="size-4" aria-hidden="true" />
           </button>
         </div>
 

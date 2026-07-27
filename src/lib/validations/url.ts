@@ -13,11 +13,10 @@ const BLOCKED_SCHEMES = new Set(['javascript', 'data', 'file', 'vbscript', 'blob
  */
 export const HOTMART_ALLOWED_HOSTS = new Set([
   'pay.hotmart.com',
-  'hotmart.com',
   'checkout.hotmart.com',
-  'app.hotmart.com',
+  'payment.hotmart.com',
   'go.hotmart.com',
-  'hotmart.product.hotmart.com',
+  'www.go.hotmart.com',
 ])
 
 export interface UrlValidationResult {
@@ -111,5 +110,29 @@ export function validateWebsiteUrl(raw: string): UrlValidationResult {
     // Allow http but flag it
     return { ok: true, normalizedUrl: parsed.toString() }
   }
+  return { ok: true, normalizedUrl: parsed.toString() }
+}
+
+/**
+ * Validate image URLs rendered by next/image.
+ * Public profile images are stored in public Supabase Storage buckets.
+ */
+export function validatePublicImageUrl(raw: string): UrlValidationResult {
+  const base = validatePublicUrl(raw)
+  if (!base.ok || !base.normalizedUrl) return base
+
+  const parsed = safeParse(base.normalizedUrl)!
+  const isSupabaseStorage =
+    parsed.protocol === 'https:' &&
+    parsed.hostname.endsWith('.supabase.co') &&
+    parsed.pathname.startsWith('/storage/v1/object/public/')
+
+  if (!isSupabaseStorage) {
+    return {
+      ok: false,
+      error: 'La imagen debe pertenecer al almacenamiento público de la plataforma.',
+    }
+  }
+
   return { ok: true, normalizedUrl: parsed.toString() }
 }

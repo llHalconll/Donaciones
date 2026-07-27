@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { Heart, AlertCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 export default function CreatorNotFound() {
   return (
@@ -14,15 +13,16 @@ export default function CreatorNotFound() {
           Perfil no encontrado
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-          Este usuario no existe o aún no ha activado su perfil público.
+          Este perfil no existe, está inactivo o no se encuentra disponible.
         </p>
       </div>
 
-      <Link href="/">
-        <Button variant="primary" size="sm">
-          <Heart className="w-4 h-4" />
-          Volver a la página principal
-        </Button>
+      <Link
+        href="/"
+        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:text-slate-950 dark:focus-visible:ring-offset-slate-950"
+      >
+        <Heart className="size-4" aria-hidden="true" />
+        Volver a la página principal
       </Link>
     </div>
   )
