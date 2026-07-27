@@ -1,7 +1,12 @@
 -- Harden public-profile read and analytics insert policies.
 -- No columns or existing records are modified.
 
+BEGIN;
+
 DROP POLICY IF EXISTS "Lectura pública de redes sociales"
+  ON public.social_links;
+
+DROP POLICY IF EXISTS "Lectura pública de redes sociales activas"
   ON public.social_links;
 
 CREATE POLICY "Lectura pública de redes sociales activas"
@@ -19,6 +24,12 @@ CREATE POLICY "Lectura pública de redes sociales activas"
 DROP POLICY IF EXISTS "Lectura pública de botones de donación"
   ON public.donation_buttons;
 
+DROP POLICY IF EXISTS "Lectura pública de botones activos"
+  ON public.donation_buttons;
+
+DROP POLICY IF EXISTS "Lectura pública de botones de donación activos"
+  ON public.donation_buttons;
+
 CREATE POLICY "Lectura pública de botones de donación activos"
   ON public.donation_buttons FOR SELECT
   USING (
@@ -32,6 +43,9 @@ CREATE POLICY "Lectura pública de botones de donación activos"
   );
 
 DROP POLICY IF EXISTS "Public insert analytics"
+  ON public.analytics_events;
+
+DROP POLICY IF EXISTS "Public insert validated analytics"
   ON public.analytics_events;
 
 CREATE POLICY "Public insert validated analytics"
@@ -62,3 +76,5 @@ CREATE POLICY "Public insert validated analytics"
       )
     )
   );
+
+COMMIT;
