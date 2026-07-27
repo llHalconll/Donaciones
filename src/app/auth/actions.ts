@@ -27,10 +27,14 @@ type AuthActionState = {
 }
 
 function toAuthActionError(result: RateLimitResult): AuthActionError {
+  if (result.reason === 'unavailable') {
+    return {
+      error: 'El servicio de autenticación no está disponible en este momento. Intenta de nuevo más tarde.',
+      retryAfter: result.retryAfter,
+    }
+  }
   return {
-    error: result.reason === 'unavailable'
-      ? 'El servicio de seguridad no está disponible temporalmente. Intenta de nuevo más tarde.'
-      : 'Demasiados intentos. Espera un momento antes de volver a intentarlo.',
+    error: `Demasiados intentos. Espera ${result.retryAfter ?? 60} segundos antes de volver a intentarlo.`,
     retryAfter: result.retryAfter,
   }
 }
@@ -51,6 +55,9 @@ async function enforceAuthRateLimit(
 
 export async function googleOAuthAction() {
   const rateLimitError = await enforceAuthRateLimit('google-oauth')
+  // For OAuth, rate-limit blocks redirect to /auth/login with a query param
+  // so the page can surface the message — returning an object here would work
+  // but we keep the pattern consistent with the other actions.
   if (rateLimitError) return rateLimitError
 
   const supabase = await createClient()

@@ -17,18 +17,52 @@ export interface RateLimitResult {
   reason?: RateLimitReason
 }
 
+// Returns true only when running in a real production deployment.
+// Vercel preview deployments expose VERCEL_ENV='preview', not 'production'.
+function isProductionDeployment(): boolean {
+  if (process.env.NODE_ENV !== 'production') return false
+  // On Vercel, VERCEL_ENV differentiates production from preview branches.
+  const vercelEnv = process.env.VERCEL_ENV
+  if (vercelEnv !== undefined) return vercelEnv === 'production'
+  // Outside Vercel (Railway, Fly, self-hosted) treat NODE_ENV=production as-is.
+  return true
+}
+
 function createRedis(): Redis | null {
   const url = process.env.UPSTASH_REDIS_REST_URL
   const token = process.env.UPSTASH_REDIS_REST_TOKEN
 
-  if (!url || !token) {
-    if (process.env.NODE_ENV === 'production') {
-      console.warn('[rate-limit] Redis no está configurado; las rutas protegidas responderán 503.')
+  if (!url && !token) {
+    if (isProductionDeployment()) {
+      console.error(
+        '[rate-limit] UPSTASH_REDIS_REST_URL y UPSTASH_REDIS_REST_TOKEN no están configuradas. ' +
+        'La autenticación estará deshabilitada hasta que se configuren en las variables de entorno de producción.'
+      )
+    } else {
+      console.warn(
+        '[rate-limit] UPSTASH_REDIS_REST_URL y UPSTASH_REDIS_REST_TOKEN no están configuradas. ' +
+        'Rate limiting deshabilitado fuera de producción.'
+      )
     }
     return null
   }
 
+  if (!url) {
+    console.error('[rate-limit] Falta UPSTASH_REDIS_REST_URL. Configúrala en las variables de entorno.')
+    return null
+  }
+
+  if (!token) {
+    console.error('[rate-limit] Falta UPSTASH_REDIS_REST_TOKEN. Configúrala en las variables de entorno.')
+    return null
+  }
+
   return new Redis({ url, token })
+}
+
+/** True when both Upstash env vars are present. Use for startup/build validation. */
+export function isRateLimitConfigured(): boolean {
+  return Boolean(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
 }
 
 const redis = createRedis()
@@ -63,11 +97,15 @@ export const authLimiter = redis
 export function getUnavailableRateLimitResult(
   environment = process.env.NODE_ENV
 ): RateLimitResult {
-  if (environment === 'production') {
+  // Fail-closed only in real production deployments.
+  // Preview branches and local dev always fail-open so auth remains testable.
+  if (isProductionDeployment()) {
     return { allowed: false, reason: 'unavailable', retryAfter: 60 }
   }
 
-  console.warn('[rate-limit] Redis no disponible; se permite la solicitud solo fuera de producción.')
+  if (environment !== 'test') {
+    console.warn('[rate-limit] Redis no disponible; se permite la solicitud fuera de producción.')
+  }
   return { allowed: true, reason: 'unavailable' }
 }
 
