@@ -126,140 +126,157 @@ export function GoalsManager({ goals, limit }: Props) {
       ) : (
         <div className="space-y-3">
           {goals.map((goal, index) => (
-            <Card
-              key={goal.id}
-              className="p-4 sm:p-5"
-            >
-              <div className="flex items-start gap-3">
-                <div
-                  className="flex shrink-0 flex-col gap-1"
-                  role="group"
-                  aria-label={`Orden de ${goal.title}`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => handleMove(goal.id, 'up')}
-                    disabled={pending || index === 0}
-                    className="flex size-11 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-30 dark:hover:bg-slate-800"
-                    aria-label={`Mover "${goal.title}" arriba`}
+            <div key={goal.id} className="space-y-3">
+              <Card className="p-4 sm:p-5">
+                <div className="flex items-start gap-3">
+                  <div
+                    className="flex shrink-0 flex-col gap-1"
+                    role="group"
+                    aria-label={`Orden de ${goal.title}`}
                   >
-                    <ArrowUp className="size-4" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleMove(goal.id, 'down')}
-                    disabled={pending || index === goals.length - 1}
-                    className="flex size-11 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-30 dark:hover:bg-slate-800"
-                    aria-label={`Mover "${goal.title}" abajo`}
-                  >
-                    <ArrowDown className="size-4" aria-hidden="true" />
-                  </button>
-                </div>
-
-                {goal.cover_url ? (
-                  <div className="relative hidden size-20 shrink-0 overflow-hidden rounded-xl bg-slate-100 sm:block dark:bg-slate-800">
-                    <Image
-                      src={goal.cover_url}
-                      alt=""
-                      fill
-                      sizes="80px"
-                      className="object-cover"
-                    />
+                    <button
+                      type="button"
+                      onClick={() => handleMove(goal.id, 'up')}
+                      disabled={pending || index === 0}
+                      className="flex size-11 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-30 dark:hover:bg-slate-800"
+                      aria-label={`Mover "${goal.title}" arriba`}
+                    >
+                      <ArrowUp className="size-4" aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMove(goal.id, 'down')}
+                      disabled={pending || index === goals.length - 1}
+                      className="flex size-11 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-30 dark:hover:bg-slate-800"
+                      aria-label={`Mover "${goal.title}" abajo`}
+                    >
+                      <ArrowDown className="size-4" aria-hidden="true" />
+                    </button>
                   </div>
-                ) : (
-                  <span
-                    className="hidden size-20 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-3xl sm:flex"
-                    aria-hidden="true"
-                  >
-                    {goal.emoji || '♥'}
-                  </span>
-                )}
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-lg" aria-hidden="true">
+                  {goal.cover_url ? (
+                    <div className="relative hidden size-20 shrink-0 overflow-hidden rounded-xl bg-slate-100 sm:block dark:bg-slate-800">
+                      <Image
+                        src={goal.cover_url}
+                        alt=""
+                        fill
+                        sizes="80px"
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <span
+                      className="hidden size-20 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-3xl sm:flex"
+                      aria-hidden="true"
+                    >
                       {goal.emoji || '♥'}
                     </span>
-                    <h2 className="break-words font-bold text-slate-900 dark:text-white">
-                      {goal.title}
-                    </h2>
-                    <Badge variant={goal.is_active ? 'emerald' : 'slate'}>
-                      {goal.is_active ? 'Activo' : 'Borrador'}
-                    </Badge>
-                  </div>
-                  {goal.description && (
-                    <p className="mt-1 line-clamp-2 text-sm text-slate-500 dark:text-slate-400">
-                      {goal.description}
-                    </p>
                   )}
-                  <p className="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                    {goal.amount_count}{' '}
-                    {goal.amount_count === 1 ? 'nivel configurado' : 'niveles configurados'}
-                  </p>
 
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <Link
-                      href={`/dashboard/goals/${goal.id}`}
-                      className={buttonStyles({ size: 'sm' })}
-                    >
-                      Administrar niveles
-                      <ArrowRight className="size-4" aria-hidden="true" />
-                    </Link>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setEditing(goal)}
-                      disabled={pending}
-                    >
-                      <Edit3 className="size-4" aria-hidden="true" />
-                      Editar
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="ghost"
-                      onClick={() =>
-                        run(() => duplicateSupportGoalAction(goal.id))
-                      }
-                      disabled={pending || atLimit}
-                    >
-                      <Copy className="size-4" aria-hidden="true" />
-                      Duplicar
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="ghost"
-                      onClick={() =>
-                        run(() =>
-                          toggleSupportGoalAction(goal.id, !goal.is_active)
-                        )
-                      }
-                      disabled={pending}
-                    >
-                      {goal.is_active ? (
-                        <EyeOff className="size-4" aria-hidden="true" />
-                      ) : (
-                        <Eye className="size-4" aria-hidden="true" />
-                      )}
-                      {goal.is_active ? 'Ocultar' : 'Activar'}
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleDelete(goal)}
-                      disabled={pending}
-                      className="text-rose-600 hover:text-rose-700 dark:text-rose-400"
-                    >
-                      <Trash2 className="size-4" aria-hidden="true" />
-                      Eliminar
-                    </Button>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-lg" aria-hidden="true">
+                        {goal.emoji || '♥'}
+                      </span>
+                      <h2 className="break-words font-bold text-slate-900 dark:text-white">
+                        {goal.title}
+                      </h2>
+                      <Badge variant={goal.is_active ? 'emerald' : 'slate'}>
+                        {goal.is_active ? 'Activo' : 'Borrador'}
+                      </Badge>
+                    </div>
+                    {goal.description && (
+                      <p className="mt-1 line-clamp-2 text-sm text-slate-500 dark:text-slate-400">
+                        {goal.description}
+                      </p>
+                    )}
+                    <p className="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                      {goal.amount_count}{' '}
+                      {goal.amount_count === 1 ? 'nivel configurado' : 'niveles configurados'}
+                    </p>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Link
+                        href={`/dashboard/goals/${goal.id}`}
+                        className={buttonStyles({ size: 'sm' })}
+                      >
+                        Administrar niveles
+                        <ArrowRight className="size-4" aria-hidden="true" />
+                      </Link>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          setEditing(editing?.id === goal.id ? null : goal)
+                        }
+                        disabled={pending}
+                        aria-expanded={editing?.id === goal.id}
+                        aria-controls={`edit-form-${goal.id}`}
+                      >
+                        <Edit3 className="size-4" aria-hidden="true" />
+                        {editing?.id === goal.id ? 'Cerrar editor' : 'Editar'}
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        onClick={() =>
+                          run(() => duplicateSupportGoalAction(goal.id))
+                        }
+                        disabled={pending || atLimit}
+                      >
+                        <Copy className="size-4" aria-hidden="true" />
+                        Duplicar
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        onClick={() =>
+                          run(() =>
+                            toggleSupportGoalAction(goal.id, !goal.is_active)
+                          )
+                        }
+                        disabled={pending}
+                      >
+                        {goal.is_active ? (
+                          <EyeOff className="size-4" aria-hidden="true" />
+                        ) : (
+                          <Eye className="size-4" aria-hidden="true" />
+                        )}
+                        {goal.is_active ? 'Ocultar' : 'Activar'}
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleDelete(goal)}
+                        disabled={pending}
+                        className="text-rose-600 hover:text-rose-700 dark:text-rose-400"
+                      >
+                        <Trash2 className="size-4" aria-hidden="true" />
+                        Eliminar
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+
+              {editing?.id === goal.id && (
+                <div id={`edit-form-${goal.id}`} role="region" aria-label={`Editor de: ${goal.title}`}>
+                  <GoalForm
+                    key={goal.id}
+                    title={`Editar: ${editing.title}`}
+                    submitLabel="Guardar cambios"
+                    pending={pending}
+                    goal={editing}
+                    onSubmit={handleUpdate}
+                    onCancel={() => setEditing(null)}
+                  />
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}
@@ -283,17 +300,6 @@ export function GoalsManager({ goals, limit }: Props) {
           pending={pending}
           onSubmit={handleCreate}
           onCancel={() => setShowCreate(false)}
-        />
-      )}
-
-      {editing && (
-        <GoalForm
-          title={`Editar: ${editing.title}`}
-          submitLabel="Guardar cambios"
-          pending={pending}
-          goal={editing}
-          onSubmit={handleUpdate}
-          onCancel={() => setEditing(null)}
         />
       )}
     </div>
