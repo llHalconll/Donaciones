@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import { Heart } from 'lucide-react'
 import { getAuthUser } from '@/lib/supabase/server'
+import { getDemoUsername } from '@/lib/public-config'
 
 export async function PublicFooter() {
   const { user } = await getAuthUser()
   const isLoggedIn = !!user
+  const demoUsername = getDemoUsername()
 
   return (
     <footer className="w-full border-t border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950 py-10 transition-colors">
@@ -16,7 +18,9 @@ export async function PublicFooter() {
 
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
           <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">Inicio</Link>
-          <Link href="/demo" className="hover:text-slate-900 dark:hover:text-white transition-colors">Ejemplo</Link>
+          {demoUsername && (
+            <Link href="/demo" className="hover:text-slate-900 dark:hover:text-white transition-colors">Ejemplo</Link>
+          )}
           <Link href="/pricing" className="hover:text-slate-900 dark:hover:text-white transition-colors">Precios</Link>
 
           {/* Show Dashboard link for logged-in users, Register link for guests */}

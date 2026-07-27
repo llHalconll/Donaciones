@@ -18,11 +18,10 @@ import { buttonStyles } from '@/components/ui/button'
 import { CopyUrlButton } from './copy-url-button'
 import { getDashboardProfile } from '@/lib/dashboard-profile'
 import { isoDaysAgo, PLAN_LABELS } from '@/lib/presentation'
+import { resolveSiteUrl } from '@/lib/site-url'
 import type { PlanType } from '@/types/database.types'
 
 export const metadata = { title: 'Panel del creador | DonacionesSaaS' }
-
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://donacionessaas.com'
 
 type ProfileSummary = {
   display_name: string
@@ -146,7 +145,7 @@ export default async function DashboardPage() {
       .gte('created_at', since),
   ])
 
-  const publicUrl = `${BASE_URL.replace(/\/$/, '')}/${profile.username}`
+  const publicUrl = `${resolveSiteUrl()}/${profile.username}`
   const activeSocial = activeSocialCount ?? 0
   const activeButtons = activeButtonCount ?? 0
   const planLabel = PLAN_LABELS[profile.plan as PlanType] ?? 'Plan'

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { analyticsLimiter, checkRateLimit } from '@/lib/rate-limit'
+import {
+  analyticsLimiter,
+  buildRateLimitKey,
+  checkRateLimit,
+  getTrustedClientIp,
+} from '@/lib/rate-limit'
 import type { EventType } from '@/types/database.types'
 
 const VALID_EVENTS: Set<EventType> = new Set(['profile_view', 'amount_selected', 'hotmart_redirect'])
@@ -26,20 +31,27 @@ export async function POST(req: NextRequest) {
 
     const safeSession = typeof session_id === 'string' ? session_id.slice(0, 64) : null
 
-    // ─── Persistent rate limiting (Upstash Redis) ───
-    // Key: session_id if available, else IP. Both scoped to profile_id.
-    const rateLimitKey = safeSession
-      ? `session:${safeSession}:${profile_id}`
-      : `ip:${req.headers.get('x-forwarded-for')?.split(',')[0] ?? 'unknown'}:${profile_id}`
+    const trustedIp = getTrustedClientIp(req.headers)
+    const rateLimitKey = buildRateLimitKey('analytics', [
+      profile_id,
+      safeSession,
+      trustedIp,
+    ])
 
     const rateResult = await checkRateLimit(analyticsLimiter, rateLimitKey)
     if (!rateResult.allowed) {
       const headers: Record<string, string> = { 'Content-Type': 'application/json' }
       if (rateResult.retryAfter) headers['Retry-After'] = String(rateResult.retryAfter)
-      return new NextResponse(
-        JSON.stringify({ ok: true }), // Silent 200 — don't alert scrapers
-        { status: 200, headers }
-      )
+
+      const unavailable = rateResult.reason === 'unavailable'
+      return new NextResponse(JSON.stringify({
+        error: unavailable
+          ? 'Servicio temporalmente no disponible.'
+          : 'Demasiados eventos. Intenta más tarde.',
+      }), {
+        status: unavailable ? 503 : 429,
+        headers,
+      })
     }
 
     const supabase = await createClient()

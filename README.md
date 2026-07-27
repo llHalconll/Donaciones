@@ -38,13 +38,27 @@ npm run dev
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key
-NEXT_PUBLIC_SITE_URL=https://tudominio.com
+NEXT_PUBLIC_SITE_URL=https://dominio-real.example
+NEXT_PUBLIC_SUPPORT_EMAIL=
+NEXT_PUBLIC_DEMO_USERNAME=
 
-# Webhook (no activo todavía)
+# Privadas y sensibles; obligatorias en producción para rate limiting
+UPSTASH_REDIS_REST_URL=https://tu-redis.upstash.io
+UPSTASH_REDIS_REST_TOKEN=reemplazar-con-token-real
+
+# Webhook no implementado y no activo
 HOTMART_WEBHOOK_ENABLED=false
 ```
 
-> ⚠️ Nunca pongas `SUPABASE_SERVICE_ROLE_KEY` en `.env.local` del cliente.
+Las variables con prefijo `NEXT_PUBLIC_` son públicas y pueden llegar al navegador.
+`UPSTASH_REDIS_REST_TOKEN`, `HOTMART_WEBHOOK_SECRET`, `HOTMART_TOKEN` y
+`SUPABASE_SERVICE_ROLE_KEY` son privadas y sensibles: nunca deben usar ese prefijo
+ni almacenarse en código. Reemplaza `https://dominio-real.example` por el dominio
+canónico antes de desplegar. En producción no se permite usar `localhost`.
+
+Si `NEXT_PUBLIC_SUPPORT_EMAIL` no contiene un correo válido, la interfaz oculta los
+enlaces `mailto:`. Si `NEXT_PUBLIC_DEMO_USERNAME` está vacío o no es válido, la demo
+se oculta y `/demo` responde como ruta no disponible.
 
 ---
 
@@ -67,7 +81,15 @@ Ejecuta el esquema base:
 -- 4. supabase/migrations/004_analytics_events.sql
 -- 5. supabase/migrations/005_profile_reports.sql
 -- 6. supabase/migrations/006_webhook_events.sql
+-- 7. supabase/migrations/007_donation_buttons_emoji.sql
+-- 8. supabase/migrations/008_oauth_handle_new_user.sql
+-- 9. supabase/migrations/009_performance_indexes.sql
+-- 10. supabase/migrations/010_public_profile_rls_hardening.sql
 ```
+
+La migración 010 requiere reconciliación de historial antes de cualquier nuevo
+`db push`. Consulta [docs/supabase-migration-reconciliation.md](docs/supabase-migration-reconciliation.md);
+no la reapliques únicamente porque el archivo exista.
 
 ### 3. Ejecuta Storage (buckets)
 
@@ -135,6 +157,8 @@ src/
 - **RLS activo** en todas las tablas.
 - **`is_admin`** solo se puede leer, nunca modificar por formulario normal.
 - **URLs de Hotmart** validadas por hostname exacto (no `includes()`).
+- **Rate limiting distribuido** con cierre seguro (`503`) en producción si Redis no está disponible.
+- **Acciones de autenticación** protegidas sin incluir correos en las claves persistidas.
 - **Storage** organizado por `{user_id}/` — RLS previene acceso cruzado.
 - **No se usa `service_role`** en ningún cliente del navegador.
 - **`user_metadata` no se usa** para permisos — siempre se consulta `profiles`.
@@ -152,7 +176,9 @@ Visitante → selecciona monto → clic en "Apoyar"
   → Visitante llega al checkout de Hotmart
 ```
 
-> ⚠️ Un clic a Hotmart **no confirma** un pago. La confirmación requiere integración con webhook de Hotmart (Fase 12 del roadmap — preparada pero no activa).
+> ⚠️ Un clic a Hotmart **no confirma** un pago. El endpoint de webhook responde `503`
+> y no procesa eventos, incluso si se solicita habilitarlo, hasta implementar y probar
+> firma HMAC, validación del payload e idempotencia.
 
 ---
 
@@ -187,10 +213,17 @@ Los límites se validan **del lado del servidor** en cada Server Action.
 
 ```bash
 # 1. Conecta tu repositorio a Vercel
-# 2. Configura las variables de entorno en el dashboard de Vercel
-# 3. Vercel detecta Next.js automáticamente
-# 4. Deploy
+# 2. Configura NEXT_PUBLIC_SITE_URL con el dominio canónico real
+# 3. Configura las variables públicas opcionales de soporte y demo
+# 4. Configura las credenciales privadas de Upstash
+# 5. Mantén HOTMART_WEBHOOK_ENABLED=false
+# 6. Ejecuta lint, typecheck, tests y build antes del deploy
 ```
+
+La cuenta indicada por `NEXT_PUBLIC_DEMO_USERNAME` debe crearse manualmente mediante
+el flujo normal de registro, quedar bajo control de la plataforma y contener solo
+datos públicos preparados para demostración. No uses una cuenta personal ni insertes
+datos simulados desde el código.
 
 ---
 

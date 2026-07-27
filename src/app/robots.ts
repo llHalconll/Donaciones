@@ -1,7 +1,10 @@
 import { MetadataRoute } from 'next'
+import { resolveSiteUrl } from '@/lib/site-url'
+
+export const dynamic = 'force-dynamic'
 
 export default function robots(): MetadataRoute.Robots {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || 'https://donacionessaas.com'
+  const base = resolveSiteUrl()
   return {
     rules: [
       {

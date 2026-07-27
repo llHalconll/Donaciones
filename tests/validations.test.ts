@@ -113,6 +113,13 @@ describe('validateHotmartUrl', () => {
     assert.equal(validateHotmartUrl('https://www.go.hotmart.com/ABC123').ok, true)
   })
 
+  it('rejects official hosts without a checkout or promotional resource', () => {
+    assert.equal(validateHotmartUrl('https://pay.hotmart.com').ok, false)
+    assert.equal(validateHotmartUrl('https://checkout.hotmart.com/').ok, false)
+    assert.equal(validateHotmartUrl('https://payment.hotmart.com?off=xyz').ok, false)
+    assert.equal(validateHotmartUrl('https://go.hotmart.com/#offer').ok, false)
+  })
+
   it('rejects Hotmart pages that are not payment or promotional links', () => {
     assert.equal(validateHotmartUrl('https://hotmart.com/product/abc').ok, false)
     assert.equal(validateHotmartUrl('https://app.hotmart.com/products').ok, false)

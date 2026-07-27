@@ -5,6 +5,7 @@ import { PublicHeader } from '@/components/shared/header'
 import { PublicFooter } from '@/components/shared/footer'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
+import { getSupportEmail } from '@/lib/public-config'
 
 export const metadata: Metadata = {
   title: 'Planes y Precios | DonacionesSaaS',
@@ -56,7 +57,7 @@ const PLANS = [
       'Próximamente: dominio personalizado',
     ],
     cta: 'Solicitar plan Pro',
-    ctaHref: 'mailto:hola@donacionessaas.com?subject=Solicitud%20Plan%20Pro',
+    ctaSubject: 'Solicitud Plan Pro',
     ctaVariant: 'primary',
   },
   {
@@ -80,12 +81,14 @@ const PLANS = [
       'Informes exportables CSV (próximo)',
     ],
     cta: 'Contactar ventas',
-    ctaHref: 'mailto:hola@donacionessaas.com?subject=Solicitud%20Plan%20Organizaci%C3%B3n',
+    ctaSubject: 'Solicitud Plan Organización',
     ctaVariant: 'outline',
   },
 ] as const
 
 export default function PricingPage() {
+  const supportEmail = getSupportEmail()
+
   return (
     <div className="min-h-screen flex flex-col">
       <PublicHeader />
@@ -108,6 +111,11 @@ export default function PricingPage() {
             {PLANS.map((plan) => {
               const Icon = plan.icon
               const isPopular = plan.badge !== null
+              const ctaHref = 'ctaHref' in plan
+                ? plan.ctaHref
+                : supportEmail
+                  ? `mailto:${supportEmail}?subject=${encodeURIComponent(plan.ctaSubject)}`
+                  : null
               return (
                 <Card
                   key={plan.key}
@@ -150,17 +158,23 @@ export default function PricingPage() {
                     ))}
                   </ul>
 
-                  <Link
-                    href={plan.ctaHref}
-                    className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition ${
-                      plan.ctaVariant === 'primary'
-                        ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm'
-                        : 'border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 text-slate-700 dark:text-slate-300'
-                    }`}
-                  >
-                    {plan.cta}
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  {ctaHref ? (
+                    <Link
+                      href={ctaHref}
+                      className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition ${
+                        plan.ctaVariant === 'primary'
+                          ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm'
+                          : 'border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 text-slate-700 dark:text-slate-300'
+                      }`}
+                    >
+                      {plan.cta}
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  ) : (
+                    <span className="w-full flex items-center justify-center px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-sm font-semibold text-slate-500 dark:text-slate-400">
+                      Contacto no configurado
+                    </span>
+                  )}
                 </Card>
               )
             })}
@@ -203,13 +217,19 @@ export default function PricingPage() {
             <p className="text-sm text-slate-500 dark:text-slate-400">
               Escríbenos para resolver dudas sobre el plan adecuado.
             </p>
-            <a
-              href="mailto:hola@donacionessaas.com"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm transition"
-            >
-              <Mail className="w-4 h-4" />
-              Contactar soporte
-            </a>
+            {supportEmail ? (
+              <a
+                href={`mailto:${supportEmail}`}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm transition"
+              >
+                <Mail className="w-4 h-4" />
+                Contactar soporte
+              </a>
+            ) : (
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                El canal de soporte todavía no está configurado.
+              </p>
+            )}
           </div>
         </div>
       </main>

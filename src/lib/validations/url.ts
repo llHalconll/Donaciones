@@ -90,7 +90,25 @@ export function validateHotmartUrl(raw: string): UrlValidationResult {
     }
   }
 
-  // Block fragment-only or empty path that looks suspicious
+  // A valid Hotmart link must identify a checkout or promotional resource.
+  const hasResourcePath = parsed.pathname
+    .split('/')
+    .filter(Boolean)
+    .some((segment) => {
+      try {
+        return /[a-z0-9]/i.test(decodeURIComponent(segment))
+      } catch {
+        return false
+      }
+    })
+
+  if (!hasResourcePath) {
+    return {
+      ok: false,
+      error: 'El enlace de Hotmart debe incluir un identificador válido.',
+    }
+  }
+
   const scheme = parsed.protocol.replace(':', '').toLowerCase()
   if (BLOCKED_SCHEMES.has(scheme))
     return { ok: false, error: `El esquema "${scheme}:" no está permitido.` }

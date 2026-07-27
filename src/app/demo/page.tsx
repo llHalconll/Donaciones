@@ -1,5 +1,9 @@
-import { redirect } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { getDemoUsername } from '@/lib/public-config'
 
 export default function DemoPage() {
-  redirect('/victor')
+  const demoUsername = getDemoUsername()
+  if (!demoUsername) notFound()
+
+  redirect(`/${demoUsername}`)
 }

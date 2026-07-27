@@ -7,7 +7,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { updatePasswordAction, updateEmailAction, deleteAccountAction } from './actions'
 
-export function SettingsForm({ userEmail }: { userEmail?: string }) {
+export function SettingsForm({
+  userEmail,
+  supportEmail,
+}: {
+  userEmail?: string
+  supportEmail: string | null
+}) {
   const [pwState, pwAction, pwPending] = useActionState(updatePasswordAction, null)
   const [emailState, emailAction, emailPending] = useActionState(updateEmailAction, null)
   const [deleteState, deleteAction, deletePending] = useActionState(deleteAccountAction, null)
@@ -107,7 +113,12 @@ export function SettingsForm({ userEmail }: { userEmail?: string }) {
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <p className="font-semibold">Esta acción desactiva tu cuenta.</p>
-                  <p className="text-xs">Tu perfil público será ocultado inmediatamente. Para la eliminación definitiva de datos, contáctanos a hola@donacionessaas.com.</p>
+                  <p className="text-xs">
+                    Tu perfil público será ocultado inmediatamente.{' '}
+                    {supportEmail
+                      ? `Para la eliminación definitiva de datos, contáctanos a ${supportEmail}.`
+                      : 'El canal para solicitar la eliminación definitiva todavía no está configurado.'}
+                  </p>
                 </div>
               </div>
               <form action={deleteAction} className="space-y-4">

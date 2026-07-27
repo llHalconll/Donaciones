@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { cache, Suspense } from 'react'
 import { ArrowLeft, Globe, Heart, ShieldCheck } from 'lucide-react'
 import { createClient, getAuthUser } from '@/lib/supabase/server'
+import { resolveSiteUrl } from '@/lib/site-url'
 import { validateUsernameFormat } from '@/lib/validations/auth'
 import {
   validateHotmartUrl,
@@ -38,17 +39,6 @@ const getPublicProfile = cache(async (username: string) => {
     .maybeSingle()
 })
 
-function getSiteUrl() {
-  const fallback = 'https://donacionessaas.com'
-  const configured = process.env.NEXT_PUBLIC_SITE_URL ?? fallback
-
-  try {
-    return new URL(configured).toString().replace(/\/$/, '')
-  } catch {
-    return fallback
-  }
-}
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { username } = await params
   const canonicalUsername = username.toLowerCase()
@@ -56,7 +46,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!profile) notFound()
 
-  const base = getSiteUrl()
+  const base = resolveSiteUrl()
   const description = (
     profile.bio ?? `Apoya a ${profile.display_name} y contribuye a que siga creando.`
   ).slice(0, 160)
@@ -244,7 +234,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
   }
   if (!profile) notFound()
 
-  const base = getSiteUrl()
+  const base = resolveSiteUrl()
   const profileUrl = `${base}/${profile.username}`
   const initials = profile.display_name.slice(0, 2).toUpperCase()
   const safeWebsite = profile.website_url

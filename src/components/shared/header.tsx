@@ -3,11 +3,13 @@ import { LayoutDashboard } from 'lucide-react'
 import { ThemeToggle } from '../theme-toggle'
 import { buttonStyles } from '../ui/button'
 import { getAuthUser } from '@/lib/supabase/server'
+import { getDemoUsername } from '@/lib/public-config'
 import { BrandLink } from './brand-link'
 
 export async function PublicHeader() {
   const { user } = await getAuthUser()
   const isLoggedIn = !!user
+  const demoUsername = getDemoUsername()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md transition-colors">
@@ -16,7 +18,9 @@ export async function PublicHeader() {
 
         {/* Nav */}
         <nav className="hidden md:flex items-center gap-6 text-sm text-slate-600 dark:text-slate-400">
-          <Link href="/demo" className="rounded-lg px-2 py-2 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:hover:text-white">Ejemplo</Link>
+          {demoUsername && (
+            <Link href="/demo" className="rounded-lg px-2 py-2 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:hover:text-white">Ejemplo</Link>
+          )}
           <Link href="/pricing" className="hover:text-slate-900 dark:hover:text-white transition-colors">Precios</Link>
         </nav>
 

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { reportLimiter, checkRateLimit } from '@/lib/rate-limit'
+import {
+  buildRateLimitKey,
+  checkRateLimit,
+  getTrustedClientIp,
+  reportLimiter,
+} from '@/lib/rate-limit'
 
 const VALID_REASONS = new Set(['fraud', 'impersonation', 'prohibited_content', 'suspicious_link', 'spam', 'other'])
 
@@ -22,17 +27,24 @@ export async function POST(req: NextRequest) {
     if (reporter_email && typeof reporter_email === 'string' && reporter_email.length > 254)
       return NextResponse.json({ error: 'Email inválido.' }, { status: 400 })
 
-    // ─── Persistent rate limiting (Upstash Redis) ───
-    // Key: IP address — 5 reports per hour per IP
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
-    const rateResult = await checkRateLimit(reportLimiter, `ip:${ip}`)
+    const trustedIp = getTrustedClientIp(req.headers)
+    const rateResult = await checkRateLimit(
+      reportLimiter,
+      buildRateLimitKey('reports', [trustedIp])
+    )
 
     if (!rateResult.allowed) {
       const headers: Record<string, string> = { 'Content-Type': 'application/json' }
       if (rateResult.retryAfter) headers['Retry-After'] = String(rateResult.retryAfter)
+
+      const unavailable = rateResult.reason === 'unavailable'
       return new NextResponse(
-        JSON.stringify({ error: 'Demasiados reportes. Intenta más tarde.' }),
-        { status: 429, headers }
+        JSON.stringify({
+          error: unavailable
+            ? 'Servicio temporalmente no disponible.'
+            : 'Demasiados reportes. Intenta más tarde.',
+        }),
+        { status: unavailable ? 503 : 429, headers }
       )
     }
 

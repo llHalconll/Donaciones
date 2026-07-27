@@ -1,55 +1,38 @@
-/**
- * Rate Limiting — Upstash Redis + @upstash/ratelimit
- *
- * For production (Vercel serverless), in-memory Maps are NOT shared between
- * instances. This module uses Upstash Redis for persistent, distributed rate
- * limiting that works across all serverless instances.
- *
- * Required environment variables:
- *   UPSTASH_REDIS_REST_URL   — REST URL from Upstash console
- *   UPSTASH_REDIS_REST_TOKEN — Token from Upstash console
- *
- * Behavior when Redis is NOT configured (variables missing):
- *   - Falls back to a permissive mode (allows all requests) with a console warning.
- *   - This ensures the app does not break during local dev or if Redis is misconfigured.
- *   - Change RATE_LIMIT_FAIL_OPEN = false to block all requests when Redis is unavailable.
- */
-
+import { createHash } from 'node:crypto'
+import { isIP } from 'node:net'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 
-/** If true, requests are allowed when Redis is unavailable. Set false for strict mode. */
-const RATE_LIMIT_FAIL_OPEN = true
+interface RateLimiterLike {
+  limit(identifier: string): Promise<{ success: boolean; reset: number }>
+}
 
-// ─────────────────────────────────────────────
-// Redis client (lazy — only if env vars exist)
-// ─────────────────────────────────────────────
+type ProxyEnvironment = Readonly<Record<string, string | undefined>>
+
+export type RateLimitReason = 'limited' | 'unavailable'
+
+export interface RateLimitResult {
+  allowed: boolean
+  retryAfter?: number
+  reason?: RateLimitReason
+}
 
 function createRedis(): Redis | null {
   const url = process.env.UPSTASH_REDIS_REST_URL
   const token = process.env.UPSTASH_REDIS_REST_TOKEN
+
   if (!url || !token) {
     if (process.env.NODE_ENV === 'production') {
-      console.warn(
-        '[rate-limit] UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN not set. ' +
-        'Rate limiting is DISABLED. Configure Upstash Redis for production.'
-      )
+      console.warn('[rate-limit] Redis no está configurado; las rutas protegidas responderán 503.')
     }
     return null
   }
+
   return new Redis({ url, token })
 }
 
 const redis = createRedis()
 
-// ─────────────────────────────────────────────
-// Rate limiter instances
-// ─────────────────────────────────────────────
-
-/**
- * Analytics events — 30 events per 60s per session
- * Prevents event flood from a single visitor
- */
 export const analyticsLimiter = redis
   ? new Ratelimit({
       redis,
@@ -59,10 +42,6 @@ export const analyticsLimiter = redis
     })
   : null
 
-/**
- * Report submissions — 5 reports per hour per IP
- * Prevents report spam
- */
 export const reportLimiter = redis
   ? new Ratelimit({
       redis,
@@ -72,10 +51,6 @@ export const reportLimiter = redis
     })
   : null
 
-/**
- * Auth actions (login, register, forgot-password) — 10 per 10 minutes per IP
- * Prevents credential stuffing and brute force
- */
 export const authLimiter = redis
   ? new Ratelimit({
       redis,
@@ -85,39 +60,93 @@ export const authLimiter = redis
     })
   : null
 
-// ─────────────────────────────────────────────
-// Helper: check rate limit and return result
-// ─────────────────────────────────────────────
+export function getUnavailableRateLimitResult(
+  environment = process.env.NODE_ENV
+): RateLimitResult {
+  if (environment === 'production') {
+    return { allowed: false, reason: 'unavailable', retryAfter: 60 }
+  }
 
-export interface RateLimitResult {
-  /** true = request is allowed */
-  allowed: boolean
-  /** Seconds until the window resets (for Retry-After header) */
-  retryAfter?: number
+  console.warn('[rate-limit] Redis no disponible; se permite la solicitud solo fuera de producción.')
+  return { allowed: true, reason: 'unavailable' }
 }
 
-/**
- * Check a rate limiter with the given identifier.
- * Returns { allowed: true } when Redis is not configured (fail-open).
- */
 export async function checkRateLimit(
-  limiter: Ratelimit | null,
-  identifier: string
+  limiter: RateLimiterLike | null,
+  identifier: string,
+  environment = process.env.NODE_ENV
 ): Promise<RateLimitResult> {
-  if (!limiter) {
-    // Fail-open: no Redis configured
-    return { allowed: RATE_LIMIT_FAIL_OPEN }
-  }
+  if (!limiter) return getUnavailableRateLimitResult(environment)
 
   try {
     const result = await limiter.limit(identifier)
     if (result.success) return { allowed: true }
 
     const retryAfter = Math.ceil((result.reset - Date.now()) / 1000)
-    return { allowed: false, retryAfter: Math.max(retryAfter, 1) }
-  } catch (err) {
-    console.error('[rate-limit] Redis error:', err)
-    // Fail-open on Redis errors to avoid blocking legitimate users
-    return { allowed: RATE_LIMIT_FAIL_OPEN }
+    return {
+      allowed: false,
+      reason: 'limited',
+      retryAfter: Math.max(retryAfter, 1),
+    }
+  } catch {
+    console.error('[rate-limit] Redis no respondió; se aplicó el modo seguro del entorno.')
+    return getUnavailableRateLimitResult(environment)
   }
+}
+
+function normalizeIpCandidate(rawValue: string | null): string | null {
+  const firstValue = rawValue?.split(',')[0]?.trim()
+  if (!firstValue) return null
+
+  const bracketedIpv6 = firstValue.match(/^\[([^\]]+)\](?::\d+)?$/)
+  if (bracketedIpv6 && isIP(bracketedIpv6[1])) return bracketedIpv6[1]
+
+  if (isIP(firstValue)) return firstValue
+
+  const ipv4WithPort = firstValue.match(/^(\d{1,3}(?:\.\d{1,3}){3}):\d+$/)
+  if (ipv4WithPort && isIP(ipv4WithPort[1])) return ipv4WithPort[1]
+
+  return null
+}
+
+export function getTrustedClientIp(
+  headers: Pick<Headers, 'get'>,
+  env: ProxyEnvironment = process.env
+): string {
+  const isTrustedVercelProxy = env.VERCEL === '1' || Boolean(env.VERCEL_ENV)
+  if (!isTrustedVercelProxy) return 'unknown'
+
+  return (
+    normalizeIpCandidate(headers.get('x-vercel-forwarded-for')) ??
+    normalizeIpCandidate(headers.get('x-forwarded-for')) ??
+    'unknown'
+  )
+}
+
+function hashRateLimitValue(value: string) {
+  return createHash('sha256').update(value).digest('hex').slice(0, 32)
+}
+
+export function buildRateLimitKey(scope: string, values: Array<string | null | undefined>) {
+  const normalizedValues = values.map((value) => value?.trim() || 'unknown')
+  return `${scope}:${hashRateLimitValue(normalizedValues.join('|'))}`
+}
+
+export type AuthRateLimitAction =
+  | 'google-oauth'
+  | 'register'
+  | 'login'
+  | 'forgot-password'
+  | 'reset-password'
+
+export function normalizeRateLimitEmail(email: string | undefined) {
+  return email?.trim().toLowerCase() || null
+}
+
+export function buildAuthRateLimitKey(
+  action: AuthRateLimitAction,
+  email: string | undefined,
+  ip: string
+) {
+  return buildRateLimitKey(`auth:${action}`, [normalizeRateLimitEmail(email), ip])
 }

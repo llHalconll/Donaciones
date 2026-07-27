@@ -19,36 +19,40 @@ import { buttonStyles } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { getAuthUser } from '@/lib/supabase/server'
+import { getDemoUsername } from '@/lib/public-config'
 import { formatSupportAmount } from '@/lib/presentation'
+import { formatPublicProfileUrl, resolveSiteUrl } from '@/lib/site-url'
 import { validatePublicImageUrl } from '@/lib/validations/url'
-
-const EXAMPLE_USERNAME = 'victor'
 
 export default async function HomePage() {
   const { user, supabase } = await getAuthUser()
   const isLoggedIn = Boolean(user)
+  const demoUsername = getDemoUsername()
+  const siteUrl = resolveSiteUrl()
 
-  const { data: exampleProfile } = await supabase
-    .from('profiles')
-    .select(`
-      display_name,
-      username,
-      bio,
-      avatar_url,
-      donation_buttons (
-        id,
-        title,
-        emoji,
-        amount,
-        currency,
-        is_active,
-        is_featured,
-        order_index
-      )
-    `)
-    .eq('username', EXAMPLE_USERNAME)
-    .eq('is_active', true)
-    .maybeSingle()
+  const { data: exampleProfile } = demoUsername
+    ? await supabase
+        .from('profiles')
+        .select(`
+          display_name,
+          username,
+          bio,
+          avatar_url,
+          donation_buttons (
+            id,
+            title,
+            emoji,
+            amount,
+            currency,
+            is_active,
+            is_featured,
+            order_index
+          )
+        `)
+        .eq('username', demoUsername)
+        .eq('is_active', true)
+        .maybeSingle()
+    : { data: null }
 
   const exampleButtons = (exampleProfile?.donation_buttons ?? [])
     .filter((button) => button.is_active)
@@ -90,18 +94,23 @@ export default async function HomePage() {
                   <ArrowRight className="size-5" aria-hidden="true" />
                 </Link>
               )}
-              <Link href="/demo" className={buttonStyles({ variant: 'outline', size: 'lg', className: 'w-full sm:w-auto' })}>
-                Ver perfil de ejemplo
-              </Link>
+              {exampleProfile && (
+                <Link href="/demo" className={buttonStyles({ variant: 'outline', size: 'lg', className: 'w-full sm:w-auto' })}>
+                  Ver perfil de ejemplo
+                </Link>
+              )}
             </div>
 
-            <div className="mx-auto mt-6 inline-flex max-w-full items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 font-mono text-xs font-semibold text-emerald-700 dark:bg-slate-900 dark:text-emerald-400 sm:text-sm">
-              <Globe className="size-4 shrink-0" aria-hidden="true" />
-              <span className="truncate">donacionessaas.com/{EXAMPLE_USERNAME}</span>
-            </div>
+            {exampleProfile && (
+              <div className="mx-auto mt-6 inline-flex max-w-full items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 font-mono text-xs font-semibold text-emerald-700 dark:bg-slate-900 dark:text-emerald-400 sm:text-sm">
+                <Globe className="size-4 shrink-0" aria-hidden="true" />
+                <span className="truncate">{formatPublicProfileUrl(siteUrl, exampleProfile.username)}</span>
+              </div>
+            )}
           </div>
         </section>
 
+        {exampleProfile && (
         <section className="py-14 sm:py-20" aria-labelledby="product-preview-title">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="mx-auto mb-8 max-w-2xl text-center">
@@ -114,14 +123,13 @@ export default async function HomePage() {
               </p>
             </div>
 
-            {exampleProfile && (
-              <div className="mx-auto max-w-5xl overflow-hidden rounded-3xl border border-slate-200 bg-slate-100 shadow-xl shadow-slate-900/5 dark:border-slate-800 dark:bg-slate-950 dark:shadow-black/20">
+            <div className="mx-auto max-w-5xl overflow-hidden rounded-3xl border border-slate-200 bg-slate-100 shadow-xl shadow-slate-900/5 dark:border-slate-800 dark:bg-slate-950 dark:shadow-black/20">
                 <div className="flex min-h-12 items-center gap-2 border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-900">
                   <span className="size-2.5 rounded-full bg-slate-300 dark:bg-slate-700" />
                   <span className="size-2.5 rounded-full bg-slate-300 dark:bg-slate-700" />
                   <span className="size-2.5 rounded-full bg-slate-300 dark:bg-slate-700" />
                   <span className="ml-3 truncate rounded-lg bg-slate-100 px-3 py-1.5 font-mono text-[11px] text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                    donacionessaas.com/{exampleProfile.username}
+                    {formatPublicProfileUrl(siteUrl, exampleProfile.username)}
                   </span>
                 </div>
                 <div className="grid gap-8 p-5 sm:p-8 lg:grid-cols-[0.8fr_1.2fr] lg:p-10">
@@ -175,8 +183,7 @@ export default async function HomePage() {
                     </Link>
                   </div>
                 </div>
-              </div>
-            )}
+            </div>
 
             <div className="mt-6 text-center">
               <Link href="/demo" className={buttonStyles({ variant: 'outline' })}>
@@ -186,6 +193,7 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
+        )}
 
         <section className="border-y border-slate-200 bg-slate-100/70 py-14 dark:border-slate-800 dark:bg-slate-900/40" aria-labelledby="how-it-works-title">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
