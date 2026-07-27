@@ -52,8 +52,6 @@ const PLANS = [
       'Hasta 15 redes sociales',
       'Estadísticas avanzadas (30 días)',
       'Soporte prioritario por email',
-      'Prioridad en búsquedas internas',
-      'Badge verificado en tu perfil',
       'Próximamente: dominio personalizado',
     ],
     cta: 'Solicitar plan Pro',
@@ -77,7 +75,6 @@ const PLANS = [
       'Estadísticas completas (1 año)',
       'Soporte dedicado',
       'Múltiples administradores (próximo)',
-      'Integración webhook Hotmart',
       'Informes exportables CSV (próximo)',
     ],
     cta: 'Contactar ventas',
@@ -120,12 +117,12 @@ export default function PricingPage() {
                 <Card
                   key={plan.key}
                   className={`p-6 space-y-6 relative ${
-                    isPopular ? `${plan.borderColor} border-2 shadow-lg shadow-emerald-500/10` : ''
+                    isPopular ? `${plan.borderColor} border-2` : ''
                   }`}
                 >
                   {plan.badge && (
                     <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                      <Badge variant="emerald" className="px-3 py-1 text-xs shadow-sm">
+                      <Badge variant="emerald" className="px-3 py-1 text-xs">
                         {plan.badge}
                       </Badge>
                     </div>
@@ -163,7 +160,7 @@ export default function PricingPage() {
                       href={ctaHref}
                       className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition ${
                         plan.ctaVariant === 'primary'
-                          ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm'
+                          ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
                           : 'border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 text-slate-700 dark:text-slate-300'
                       }`}
                     >

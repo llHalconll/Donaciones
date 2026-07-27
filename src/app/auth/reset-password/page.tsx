@@ -27,7 +27,7 @@ export default function ResetPasswordPage() {
           </p>
         </div>
 
-        <Card className="shadow-lg border-slate-200 dark:border-slate-800">
+        <Card className="border-slate-200 dark:border-slate-800">
           <CardHeader>
             <CardTitle className="text-base text-center">Nueva Contraseña</CardTitle>
           </CardHeader>

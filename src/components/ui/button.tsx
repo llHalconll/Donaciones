@@ -12,12 +12,12 @@ export type ButtonSize = 'sm' | 'md' | 'lg'
 const baseStyles = 'inline-flex items-center justify-center rounded-xl font-semibold transition-[background-color,border-color,color,box-shadow,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:translate-y-px disabled:pointer-events-none disabled:opacity-50'
 
 const variants: Record<ButtonVariant, string> = {
-  primary: 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20 hover:bg-emerald-600 focus-visible:ring-emerald-500 dark:text-slate-950 dark:hover:bg-emerald-400 dark:focus-visible:ring-offset-slate-950',
-  secondary: 'bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 focus-visible:ring-indigo-500 dark:hover:bg-indigo-500 dark:focus-visible:ring-offset-slate-950',
-  outline: 'border border-slate-300 bg-white text-slate-800 shadow-sm hover:border-slate-400 hover:bg-slate-100 focus-visible:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950',
+  primary: 'bg-emerald-500 text-white hover:bg-emerald-600 focus-visible:ring-emerald-500 dark:text-slate-950 dark:hover:bg-emerald-400 dark:focus-visible:ring-offset-slate-950',
+  secondary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-indigo-500 dark:hover:bg-indigo-500 dark:focus-visible:ring-offset-slate-950',
+  outline: 'border border-slate-300 bg-white text-slate-800 hover:border-slate-400 hover:bg-slate-100 focus-visible:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950',
   ghost: 'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-slate-400 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 dark:focus-visible:ring-offset-slate-950',
-  destructive: 'bg-rose-600 text-white shadow-sm hover:bg-rose-700 focus-visible:ring-rose-500 dark:focus-visible:ring-offset-slate-950',
-  danger: 'bg-rose-600 text-white shadow-sm hover:bg-rose-700 focus-visible:ring-rose-500 dark:focus-visible:ring-offset-slate-950',
+  destructive: 'bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-500 dark:focus-visible:ring-offset-slate-950',
+  danger: 'bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-500 dark:focus-visible:ring-offset-slate-950',
 }
 
 const sizes: Record<ButtonSize, string> = {

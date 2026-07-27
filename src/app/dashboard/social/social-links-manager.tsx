@@ -4,11 +4,12 @@ import { useState, useTransition, useActionState, useRef, useEffect } from 'reac
 import Link from 'next/link'
 import {
   Plus, Trash2, GripVertical, Eye, EyeOff,
-  CheckCircle2, AlertCircle, ExternalLink,
+  CheckCircle2, AlertCircle, ExternalLink, Link2,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { EmptyState } from '@/components/ui/empty-state'
 import {
   addSocialLinkAction, deleteSocialLinkAction, toggleSocialLinkAction, reorderSocialLinksAction,
 } from './actions'
@@ -82,10 +83,17 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
   return (
     <div className="space-y-4">
       {links.length === 0 && (
-        <Card className="p-8 text-center">
-          <p className="text-sm text-slate-500 dark:text-slate-400">Aún no tienes redes sociales configuradas.</p>
-          <p className="text-xs text-slate-400 mt-1">Agrega tus primeros enlaces para mostrarlos en tu perfil público.</p>
-        </Card>
+        <EmptyState
+          icon={Link2}
+          title="Conecta el lugar donde ya te sigue tu comunidad"
+          description="Un enlace es suficiente para que quien visita tu perfil pueda conocerte mejor y seguir tu trabajo."
+          action={
+            <Button size="sm" onClick={() => setShowForm(true)}>
+              <Plus className="size-4" aria-hidden="true" />
+              Añadir mi primer enlace
+            </Button>
+          }
+        />
       )}
 
       <div className="space-y-2">
@@ -137,7 +145,7 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
         ))}
       </div>
 
-      {!showForm && !atLimit && (
+      {!showForm && !atLimit && links.length > 0 && (
         <Button variant="outline" size="sm" onClick={() => setShowForm(true)} className="w-full sm:w-auto">
           <Plus className="w-4 h-4" /> Agregar red social
         </Button>

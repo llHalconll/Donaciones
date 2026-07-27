@@ -18,7 +18,7 @@ export function BrandLink({
       className={`group inline-flex min-h-11 items-center gap-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 ${className}`}
       aria-label="DonacionesSaaS, ir al inicio"
     >
-      <span className={`${iconSize} flex shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 transition-transform group-hover:scale-105`}>
+      <span className={`${iconSize} flex shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-500`}>
         <Heart className={`${heartSize} fill-emerald-500/20`} aria-hidden="true" />
       </span>
       <span className={`${textSize} font-extrabold tracking-tight text-slate-900 dark:text-white`}>

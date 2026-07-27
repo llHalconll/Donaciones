@@ -49,6 +49,7 @@ function ProfileCompleteness({
   const done = checks.filter((check) => check.done).length
   const percentage = Math.round((done / checks.length) * 100)
   const pending = checks.filter((check) => !check.done)
+  const nextAction = pending[0]
 
   if (percentage === 100) {
     return (
@@ -92,17 +93,22 @@ function ProfileCompleteness({
               />
             </div>
           </div>
-          <div className="grid gap-2 sm:grid-cols-2 lg:min-w-[28rem]">
-            {pending.map((check) => (
-              <Link
-                key={check.label}
-                href={check.href}
-                className="group flex min-h-11 items-center justify-between gap-3 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-emerald-500/40 hover:bg-emerald-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:border-slate-800 dark:text-slate-300"
-              >
-                {check.label}
-                <ArrowRight className="size-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-emerald-500" aria-hidden="true" />
-              </Link>
-            ))}
+          <div className="lg:min-w-72">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
+              Siguiente paso
+            </p>
+            <Link
+              href={nextAction.href}
+              className={buttonStyles({ variant: 'outline', className: 'w-full justify-between' })}
+            >
+              {nextAction.label}
+              <ArrowRight className="size-4 shrink-0" aria-hidden="true" />
+            </Link>
+            {pending.length > 1 && (
+              <p className="mt-2 text-xs text-slate-400">
+                Después quedarán {pending.length - 1} pasos para publicar con confianza.
+              </p>
+            )}
           </div>
         </div>
       </Card>
@@ -183,7 +189,7 @@ export default async function DashboardPage() {
       </div>
 
       <section aria-labelledby="public-url-title">
-        <Card className="p-5">
+        <div className="border-y border-slate-200 py-5 dark:border-slate-800">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
             <div className="min-w-0 flex-1">
               <p id="public-url-title" className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
@@ -209,7 +215,7 @@ export default async function DashboardPage() {
               </Link>
             </div>
           </div>
-        </Card>
+        </div>
       </section>
 
       <ProfileCompleteness profile={profile} socialCount={activeSocial} buttonCount={activeButtons} />
@@ -224,14 +230,13 @@ export default async function DashboardPage() {
             Ver estadísticas <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 border-y border-slate-200 dark:border-slate-800 xl:grid-cols-4">
           {stats.map((stat) => {
             const Icon = stat.icon
             return (
-              <Link key={stat.label} href={stat.href} className="group rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950">
-                <Card className="flex min-h-40 h-full flex-col p-5 transition-[border-color,box-shadow,transform] group-hover:-translate-y-0.5 group-hover:border-emerald-500/30 group-hover:shadow-md">
+              <Link key={stat.label} href={stat.href} className="group flex min-h-36 flex-col border-b border-r border-slate-200 p-4 transition-colors hover:bg-white focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:border-slate-800 dark:hover:bg-slate-900 sm:p-5 xl:border-b-0">
                   <div className="flex items-start justify-between gap-3">
-                    <p className="text-4xl font-black tabular-nums tracking-tight text-slate-900 dark:text-white">
+                    <p className="text-3xl font-black tabular-nums tracking-tight text-slate-900 dark:text-white sm:text-4xl">
                       {stat.value.toLocaleString('es-CO')}
                     </p>
                     <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
@@ -242,7 +247,6 @@ export default async function DashboardPage() {
                   <span className="mt-auto flex items-center gap-1 pt-3 text-xs font-semibold text-slate-400 transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
                     Ver detalle <ArrowRight className="size-3.5" aria-hidden="true" />
                   </span>
-                </Card>
               </Link>
             )
           })}
@@ -251,12 +255,11 @@ export default async function DashboardPage() {
 
       <section aria-labelledby="quick-actions-title">
         <h2 id="quick-actions-title" className="mb-4 text-xl font-bold text-slate-900 dark:text-white">Accesos rápidos</h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="divide-y divide-slate-200 border-y border-slate-200 dark:divide-slate-800 dark:border-slate-800">
           {quickActions.map((action) => {
             const Icon = action.icon
             return (
-              <Link key={action.href} href={action.href} className="group rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950">
-                <Card className="flex h-full min-h-36 items-start gap-4 p-5 transition-[border-color,box-shadow,transform] group-hover:-translate-y-0.5 group-hover:border-emerald-500/30 group-hover:shadow-md">
+              <Link key={action.href} href={action.href} className="group flex min-h-24 items-center gap-4 px-1 py-4 transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:hover:bg-slate-900 sm:px-4">
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition-colors group-hover:bg-emerald-500/10 group-hover:text-emerald-600 dark:bg-slate-800 dark:text-slate-300 dark:group-hover:text-emerald-400">
                     <Icon className="size-5" aria-hidden="true" />
                   </span>
@@ -267,7 +270,6 @@ export default async function DashboardPage() {
                     </span>
                     <span className="mt-1 block text-sm leading-relaxed text-slate-500 dark:text-slate-400">{action.description}</span>
                   </span>
-                </Card>
               </Link>
             )
           })}

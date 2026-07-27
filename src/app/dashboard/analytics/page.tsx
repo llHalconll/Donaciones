@@ -1,7 +1,10 @@
 import { getAuthUser } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { BarChart2, Eye, MousePointerClick, TrendingUp } from 'lucide-react'
 import { Card } from '@/components/ui/card'
+import { EmptyState } from '@/components/ui/empty-state'
+import { buttonStyles } from '@/components/ui/button'
 import { isoDaysAgo } from '@/lib/presentation'
 
 export const metadata = { title: 'Estadísticas | Dashboard' }
@@ -67,6 +70,7 @@ export default async function AnalyticsPage() {
   const views = totalViews ?? 0
   const selections = totalSelections ?? 0
   const redirects = totalRedirects ?? 0
+  const hasActivity = views + selections + redirects > 0
 
   // Top buttons by redirects (from 7-day data)
   const buttonClickMap = new Map<string, number>()
@@ -112,6 +116,7 @@ export default async function AnalyticsPage() {
       </div>
 
       {/* Daily trend (last 7 days) */}
+      {hasActivity ? (
       <Card className="p-5 space-y-4">
         <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Tendencia — últimos 7 días</h2>
         <div className="overflow-x-auto">
@@ -135,9 +140,21 @@ export default async function AnalyticsPage() {
           </table>
         </div>
       </Card>
+      ) : (
+        <EmptyState
+          icon={BarChart2}
+          title="Tu historia empieza con la primera visita"
+          description="Publica tu perfil y compártelo con tu comunidad. Aquí aparecerán las señales que te ayudarán a entender qué opciones generan más interés."
+          action={
+            <Link href="/dashboard" className={buttonStyles({ size: 'sm' })}>
+              Preparar y compartir mi perfil
+            </Link>
+          }
+        />
+      )}
 
       {/* Top buttons */}
-      {topButtons.length > 0 && (
+      {redirects > 0 && topButtons.length > 0 && (
         <Card className="p-5 space-y-4">
           <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Montos con más clics (7 días)</h2>
           <div className="space-y-2">

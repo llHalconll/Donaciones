@@ -41,7 +41,6 @@ export function GoogleButton({ label = 'Continuar con Google' }: Props) {
           transition-all duration-150
           focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500
           disabled:opacity-60 disabled:cursor-not-allowed
-          shadow-sm
         "
         aria-label={label}
       >

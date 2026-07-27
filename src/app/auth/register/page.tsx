@@ -29,7 +29,7 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <Card className="shadow-lg border-slate-200 dark:border-slate-800">
+        <Card className="border-slate-200 dark:border-slate-800">
           <CardHeader>
             <CardTitle className="text-base text-center">Registro de Creador</CardTitle>
           </CardHeader>
@@ -60,10 +60,10 @@ export default function RegisterPage() {
                 required
               />
               <Input
-                label="Usuario deseado (URL)"
+                label="Usuario público"
                 name="username"
                 type="text"
-                prefixText="donaciones.com/"
+                prefixText="@"
                 placeholder="alex"
                 required
               />

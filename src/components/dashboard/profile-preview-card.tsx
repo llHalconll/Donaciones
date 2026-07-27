@@ -21,9 +21,9 @@ export function ProfilePreviewCard({
   const handle = username.trim() || 'tu_usuario'
 
   return (
-    <div className="w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md">
+    <div className="w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
       {/* Banner */}
-      <div className="relative h-24 sm:h-28 w-full bg-gradient-to-r from-emerald-600 via-indigo-600 to-slate-900">
+      <div className="relative h-24 sm:h-28 w-full bg-slate-900">
         {bannerUrl && (
           <Image src={bannerUrl} alt="Banner" fill className="object-cover" sizes="(max-width: 768px) 100vw, 600px" />
         )}
@@ -32,11 +32,11 @@ export function ProfilePreviewCard({
       <div className="px-4 pb-4">
         {/* Avatar */}
         <div className="-mt-9 mb-2">
-          <div className="relative w-14 h-14 rounded-full border-2 border-white dark:border-slate-900 shadow-md overflow-hidden bg-emerald-500/10 flex items-center justify-center">
+          <div className="relative w-14 h-14 rounded-full border-2 border-white dark:border-slate-900 overflow-hidden bg-emerald-500 flex items-center justify-center">
             {avatarUrl ? (
               <Image src={avatarUrl} alt={`Foto de ${name}`} fill className="object-cover" sizes="56px" />
             ) : (
-              <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+              <span className="text-lg font-bold text-white dark:text-slate-950">
                 {name.slice(0, 2).toUpperCase()}
               </span>
             )}

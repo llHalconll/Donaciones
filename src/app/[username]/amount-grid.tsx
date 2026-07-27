@@ -88,7 +88,7 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
       <div className="space-y-4">
         <fieldset id="opciones-apoyo" disabled={isRedirecting}>
           <legend className="sr-only">Opciones de apoyo</legend>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="divide-y divide-slate-200 overflow-hidden rounded-2xl border border-slate-200 dark:divide-slate-800 dark:border-slate-800">
             {buttons.map((button) => {
               const isSelected = selectedId === button.id
               const amount = Number(button.amount)
@@ -104,12 +104,12 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
               return (
                 <label
                   key={button.id}
-                  className={`relative flex min-h-44 cursor-pointer flex-col rounded-2xl border p-4 transition-[border-color,background-color,box-shadow] duration-200 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 dark:focus-within:ring-offset-slate-900 ${
+                  className={`relative flex min-h-32 cursor-pointer flex-col p-4 transition-colors duration-150 focus-within:z-10 focus-within:ring-2 focus-within:ring-emerald-500 ${
                     !isValid
-                      ? 'cursor-not-allowed border-slate-200 bg-slate-100/70 opacity-60 dark:border-slate-800 dark:bg-slate-950/50'
+                      ? 'cursor-not-allowed bg-slate-100/70 opacity-60 dark:bg-slate-950/50'
                       : isSelected
-                        ? 'border-emerald-500 bg-emerald-500/5 shadow-sm'
-                        : 'border-slate-200 bg-transparent hover:border-emerald-400 dark:border-slate-700 dark:hover:border-emerald-700'
+                        ? 'bg-emerald-500/5'
+                        : 'bg-transparent hover:bg-slate-50 dark:hover:bg-slate-950/40'
                   }`}
                 >
                   <input
@@ -137,7 +137,7 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
                   </div>
                   <p
                     id={descriptionId ?? undefined}
-                    className="mt-3 min-h-10 line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400"
+                    className="mt-3 line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400"
                   >
                     {button.description || 'Selecciona esta opción para continuar.'}
                   </p>
@@ -186,7 +186,7 @@ export function PublicAmountGrid({ buttons, profileId }: Props) {
                 ? 'Abriendo Hotmart'
                 : `Apoyar con ${formatSupportAmount(Number(selectedButton.amount), selectedButton.currency)} mediante Hotmart`
             }
-            className={`hotmart-fb hotmart__button-checkout flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-center text-base font-bold text-white shadow-sm transition-colors duration-200 hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:text-slate-950 dark:focus-visible:ring-offset-slate-900 ${isRedirecting ? 'pointer-events-none opacity-70' : ''}`}
+            className={`hotmart-fb hotmart__button-checkout flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-center text-base font-bold text-white transition-colors duration-200 hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:text-slate-950 dark:focus-visible:ring-offset-slate-900 ${isRedirecting ? 'pointer-events-none opacity-70' : ''}`}
           >
             {isRedirecting ? <LoaderCircle className="size-5 animate-spin motion-reduce:animate-none" aria-hidden="true" /> : <ExternalLink className="size-5" aria-hidden="true" />}
             {isRedirecting ? 'Abriendo Hotmart…' : `Apoyar con ${formatSupportAmount(Number(selectedButton.amount), selectedButton.currency)}`}

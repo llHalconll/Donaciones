@@ -9,6 +9,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { EmptyState } from '@/components/ui/empty-state'
 import { EmojiTitleInput } from '@/components/emoji-picker-input'
 import {
   createButtonAction, deleteButtonAction, toggleButtonAction, updateButtonAction,
@@ -121,11 +122,17 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
     <div className="space-y-4">
       {/* Empty state */}
       {buttons.length === 0 && (
-        <Card className="p-8 text-center space-y-2">
-          <CreditCard className="w-10 h-10 text-slate-300 mx-auto" />
-          <p className="text-sm text-slate-500 dark:text-slate-400">Aún no tienes montos configurados.</p>
-          <p className="text-xs text-slate-400">Crea tu primer botón para empezar a recibir apoyos.</p>
-        </Card>
+        <EmptyState
+          icon={CreditCard}
+          title="Define la primera forma de apoyarte"
+          description="Cada opción conecta una intención concreta de tu audiencia con un checkout de Hotmart."
+          action={
+            <Button size="sm" onClick={openCreate}>
+              <Plus className="size-4" aria-hidden="true" />
+              Crear mi primera opción
+            </Button>
+          }
+        />
       )}
 
       {/* Button list */}
@@ -183,7 +190,7 @@ export function ButtonsManager({ buttons: initialButtons, limit, presetAmounts }
       </div>
 
       {/* Add button CTA */}
-      {!showForm && !atLimit && (
+      {!showForm && !atLimit && buttons.length > 0 && (
         <Button variant="outline" size="sm" onClick={openCreate} className="w-full sm:w-auto">
           <Plus className="w-4 h-4" /> Crear nuevo monto
         </Button>

@@ -16,7 +16,6 @@ import {
 import { PublicHeader } from '@/components/shared/header'
 import { PublicFooter } from '@/components/shared/footer'
 import { buttonStyles } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { getAuthUser } from '@/lib/supabase/server'
 import { getDemoUsername } from '@/lib/public-config'
@@ -71,15 +70,15 @@ export default async function HomePage() {
           <div className="mx-auto max-w-6xl px-4 text-center sm:px-6">
             <Badge variant="emerald" className="px-3 py-1">
               <Sparkles className="mr-1 size-3.5" aria-hidden="true" />
-              Perfiles de apoyo para creadores
+              Tu trabajo, sostenido por tu comunidad
             </Badge>
 
             <h1 className="mx-auto mt-6 max-w-5xl text-4xl font-black leading-[1.05] tracking-[-0.035em] text-slate-900 dark:text-white sm:text-6xl lg:text-7xl">
-              Crea tu perfil de apoyo conectado con <span className="text-emerald-500">Hotmart</span>
+              Una página para que tu comunidad apoye <span className="text-emerald-500">lo que haces</span>
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400 sm:text-xl">
-              Crea una página personalizada, añade tus enlaces de Hotmart y comparte una sola URL con tu audiencia.
+              Reúne tu historia y tus opciones de apoyo en un perfil propio. Tu audiencia elige cómo ayudarte y continúa el pago en Hotmart.
             </p>
 
             <div className="mx-auto mt-8 flex max-w-lg flex-col items-stretch justify-center gap-3 sm:flex-row">
@@ -90,7 +89,7 @@ export default async function HomePage() {
                 </Link>
               ) : (
                 <Link href="/auth/register" className={buttonStyles({ size: 'lg', className: 'w-full sm:w-auto' })}>
-                  Crear mi perfil gratis
+                  Crear mi página gratis
                   <ArrowRight className="size-5" aria-hidden="true" />
                 </Link>
               )}
@@ -114,16 +113,16 @@ export default async function HomePage() {
         <section className="py-14 sm:py-20" aria-labelledby="product-preview-title">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="mx-auto mb-8 max-w-2xl text-center">
-              <Badge variant="slate">El producto, en contexto</Badge>
+              <Badge variant="slate">Una experiencia centrada en la persona</Badge>
               <h2 id="product-preview-title" className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-                Todo tu perfil en una sola página
+                Así se siente apoyar a un creador
               </h2>
               <p className="mt-3 text-slate-600 dark:text-slate-400">
-                Presenta quién eres, organiza tus opciones de apoyo y envía a tu audiencia al checkout de Hotmart.
+                Primero tu identidad y tu trabajo. Después, una decisión de apoyo clara y conectada con Hotmart.
               </p>
             </div>
 
-            <div className="mx-auto max-w-5xl overflow-hidden rounded-3xl border border-slate-200 bg-slate-100 shadow-xl shadow-slate-900/5 dark:border-slate-800 dark:bg-slate-950 dark:shadow-black/20">
+            <div className="mx-auto max-w-5xl overflow-hidden rounded-3xl border border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-950">
                 <div className="flex min-h-12 items-center gap-2 border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-900">
                   <span className="size-2.5 rounded-full bg-slate-300 dark:bg-slate-700" />
                   <span className="size-2.5 rounded-full bg-slate-300 dark:bg-slate-700" />
@@ -140,7 +139,7 @@ export default async function HomePage() {
                         alt={`Foto de ${exampleProfile.display_name}`}
                         width={80}
                         height={80}
-                        className="size-20 rounded-full border-4 border-white object-cover shadow-md dark:border-slate-900"
+                        className="size-20 rounded-full border-4 border-white object-cover dark:border-slate-900"
                       />
                     ) : (
                       <span className="flex size-20 items-center justify-center rounded-full bg-emerald-500/10 text-2xl font-black text-emerald-600 dark:text-emerald-400">
@@ -155,9 +154,9 @@ export default async function HomePage() {
                     <p className="mt-5 text-xs font-semibold text-slate-400">Vista con datos públicos reales</p>
                   </div>
 
-                  <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+                  <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 sm:p-6">
                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-emerald-400">Apoyo directo</p>
-                    <h3 className="mt-2 text-xl font-extrabold text-slate-900 dark:text-white">Apoya mi trabajo</h3>
+                    <h3 className="mt-2 text-xl font-extrabold text-slate-900 dark:text-white">Apoya a {exampleProfile.display_name}</h3>
                     <div className="mt-5 grid gap-3 sm:grid-cols-2">
                       {exampleButtons.map((button) => (
                         <div key={button.id} className="flex min-h-28 flex-col rounded-xl border border-slate-200 p-3 dark:border-slate-700">
@@ -212,7 +211,7 @@ export default async function HomePage() {
                 const Icon = step.icon
                 return (
                   <li key={step.title}>
-                    <Card className="h-full p-6">
+                    <div className="h-full border-t border-slate-200 pt-5 dark:border-slate-800">
                       <div className="flex items-center justify-between">
                         <span className="flex size-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                           <Icon className="size-5" aria-hidden="true" />
@@ -221,7 +220,7 @@ export default async function HomePage() {
                       </div>
                       <h3 className="mt-5 text-lg font-bold text-slate-900 dark:text-white">{step.title}</h3>
                       <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{step.text}</p>
-                    </Card>
+                    </div>
                   </li>
                 )
               })}
@@ -241,7 +240,7 @@ export default async function HomePage() {
                   DonacionesSaaS organiza tu perfil y registra visitas y clics. El checkout y el pago continúan en Hotmart.
                 </p>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="divide-y divide-slate-200 border-y border-slate-200 dark:divide-slate-800 dark:border-slate-800">
                 {[
                   { icon: UserRound, text: 'Configura tu perfil en pocos pasos.' },
                   { icon: MousePointerClick, text: 'Envía a tu audiencia directamente a Hotmart.' },
@@ -249,7 +248,7 @@ export default async function HomePage() {
                   { icon: BarChart2, text: 'Consulta visitas y clics de los últimos 30 días.' },
                   { icon: Globe, text: 'Comparte una sola URL pública.' },
                 ].map(({ icon: Icon, text }) => (
-                  <div key={text} className="flex min-h-20 items-center gap-3 rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
+                  <div key={text} className="flex min-h-20 items-center gap-3 py-4">
                     <Icon className="size-5 shrink-0 text-emerald-500" aria-hidden="true" />
                     <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{text}</p>
                   </div>
@@ -263,7 +262,7 @@ export default async function HomePage() {
           <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
             <Badge variant="emerald">Empieza gratis</Badge>
             <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-              Crea tu perfil y escala cuando lo necesites
+              Haz que apoyar tu trabajo sea sencillo
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-400">
               DonacionesSaaS no añade comisión por cada apoyo. Hotmart puede aplicar sus propias tarifas según tu cuenta y producto.
@@ -274,7 +273,7 @@ export default async function HomePage() {
                 <ArrowRight className="size-5" aria-hidden="true" />
               </Link>
               <Link href={isLoggedIn ? '/dashboard' : '/auth/register'} className={buttonStyles({ variant: 'outline', size: 'lg' })}>
-                {isLoggedIn ? 'Ir a mi panel' : 'Empezar gratis'}
+                {isLoggedIn ? 'Ir a mi panel' : 'Crear mi página'}
               </Link>
             </div>
             <div className="mt-6 flex flex-col items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400 sm:flex-row sm:gap-6">
