@@ -214,7 +214,7 @@ describe('public support goals markup', () => {
     assert.match(markup, /aria-pressed="true"/)
     assert.doesNotMatch(markup, /role="radio"/)
     assert.doesNotMatch(markup, /type="radio"/)
-    assert.match(markup, /Ver todos los niveles \(9\)/)
+    assert.match(markup, /\+1 nivel más/)
     assert.match(markup, /Apoyar con/)
   })
 

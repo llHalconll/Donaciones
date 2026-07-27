@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import Script from 'next/script'
 import {
   useCallback,
@@ -13,7 +12,6 @@ import {
   AlertCircle,
   ChevronDown,
   ChevronUp,
-  ExternalLink,
   LoaderCircle,
   Star,
   X,
@@ -195,7 +193,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
         strategy="afterInteractive"
       />
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {goals.map((goal) => {
           const isOpen = goal.id === openGoalId
           const selectedId =
@@ -206,15 +204,17 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
             selectedId,
             isExpanded
           )
+          const hiddenAmountCount =
+            goal.amounts.length - visibleAmounts.length
           const featuredId = getFeaturedSupportAmountId(goal.amounts)
 
           return (
             <section
               key={goal.id}
-              className={`overflow-hidden rounded-2xl border bg-white transition-colors dark:bg-slate-950/30 ${
+              className={`overflow-hidden rounded-[1.25rem] border transition-[border-color,background-color] duration-200 ${
                 isOpen
-                  ? 'border-emerald-500/50'
-                  : 'border-slate-200 dark:border-slate-800'
+                  ? 'border-emerald-500/35 bg-white dark:border-emerald-400/30 dark:bg-slate-900/80'
+                  : 'border-slate-200/90 bg-white/65 hover:border-slate-300 hover:bg-white dark:border-slate-800 dark:bg-slate-900/35 dark:hover:border-slate-700 dark:hover:bg-slate-900/55'
               }`}
             >
               <h3>
@@ -223,56 +223,42 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                   onClick={() => handleGoalToggle(goal.id)}
                   aria-expanded={isOpen}
                   aria-controls={`support-goal-panel-${goal.id}`}
-                  className="flex min-h-20 w-full items-center gap-3 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500"
+                  className="flex min-h-[4.75rem] w-full items-center gap-3 px-3.5 py-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500 sm:px-4"
                 >
-                  {goal.cover_url ? (
-                    <span className="relative size-12 shrink-0 overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800">
-                      <Image
-                        src={goal.cover_url}
-                        alt=""
-                        fill
-                        sizes="48px"
-                        className="object-cover"
-                      />
-                    </span>
-                  ) : (
-                    <span
-                      className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-2xl"
-                      aria-hidden="true"
-                    >
-                      {goal.emoji || '♥'}
-                    </span>
-                  )}
+                  <span
+                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/12 text-xl ring-1 ring-inset ring-emerald-500/15"
+                    aria-hidden="true"
+                  >
+                    {goal.emoji || '♥'}
+                  </span>
                   <span className="min-w-0 flex-1">
-                    <span className="line-clamp-2 break-words font-bold text-slate-900 [overflow-wrap:anywhere] dark:text-white">
-                      {goal.emoji && goal.cover_url ? `${goal.emoji} ` : ''}
+                    <span className="line-clamp-2 break-words text-[15px] font-semibold leading-5 text-slate-900 [overflow-wrap:anywhere] dark:text-white">
                       {goal.title}
                     </span>
                     {goal.description && (
-                      <span className="mt-0.5 line-clamp-2 break-words text-xs leading-relaxed text-slate-500 [overflow-wrap:anywhere] dark:text-slate-400">
+                      <span className="mt-0.5 line-clamp-1 break-words text-[12px] leading-4 text-slate-500 [overflow-wrap:anywhere] dark:text-slate-400">
                         {goal.description}
                       </span>
                     )}
                   </span>
-                  <span className="shrink-0 text-slate-400" aria-hidden="true">
-                    {isOpen ? (
-                      <ChevronUp className="size-5" />
-                    ) : (
-                      <ChevronDown className="size-5" />
-                    )}
-                  </span>
+                  <ChevronDown
+                    className={`size-4 shrink-0 text-slate-400 transition-transform duration-200 ${
+                      isOpen ? 'rotate-180' : ''
+                    }`}
+                    aria-hidden="true"
+                  />
                 </button>
               </h3>
 
               {isOpen && (
                 <div
                   id={`support-goal-panel-${goal.id}`}
-                  className="border-t border-slate-200 px-4 py-4 dark:border-slate-800"
+                  className="border-t border-slate-100 px-3.5 pb-4 pt-3 dark:border-slate-800 sm:px-4"
                 >
                   <div
                     role="group"
                     aria-label={`Niveles de apoyo para ${goal.title}`}
-                    className="grid grid-cols-2 gap-2 min-[390px]:grid-cols-3 sm:grid-cols-4"
+                    className="flex flex-wrap gap-1.5"
                   >
                     {visibleAmounts.map((amount) => {
                       const isSelected = amount.id === selectedId
@@ -291,10 +277,10 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                           onKeyDown={(event) =>
                             handleAmountKeyDown(event, goal.id, amount.id)
                           }
-                          className={`relative flex h-12 min-w-0 items-center justify-center rounded-full px-2 text-center text-sm font-extrabold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 dark:focus-visible:ring-offset-slate-950 ${
+                          className={`relative inline-flex min-h-10 min-w-[4.5rem] flex-none items-center justify-center rounded-full border px-3 text-center text-[13px] font-semibold transition-[border-color,background-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 dark:focus-visible:ring-offset-slate-950 ${
                             isSelected
-                              ? 'bg-emerald-500 text-white dark:text-slate-950'
-                              : 'bg-slate-100 text-slate-700 hover:bg-emerald-500/10 hover:text-emerald-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:text-emerald-300'
+                              ? 'border-emerald-500 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-400/10 dark:text-emerald-300'
+                              : 'border-slate-200 bg-white text-slate-700 hover:border-emerald-500/45 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-emerald-400/45 dark:hover:text-emerald-300'
                           }`}
                         >
                           <span className="truncate">
@@ -306,7 +292,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                           {amount.id === featuredId && (
                             <>
                               <Star
-                                className="ml-1 size-3 shrink-0 fill-current"
+                                className="ml-1 size-2.5 shrink-0 fill-current"
                                 aria-hidden="true"
                               />
                               <span className="sr-only">Recomendado</span>
@@ -322,11 +308,13 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                       type="button"
                       onClick={() => toggleAllAmounts(goal.id)}
                       aria-expanded={isExpanded}
-                      className="mt-2 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-slate-300 dark:hover:bg-slate-800"
+                      className="mt-2 inline-flex min-h-10 items-center gap-1 rounded-lg px-1 text-xs font-semibold text-slate-500 transition-colors hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-slate-400 dark:hover:text-emerald-300"
                     >
                       {isExpanded
                         ? 'Ver menos'
-                        : `Ver todos los niveles (${goal.amounts.length})`}
+                        : `+${hiddenAmountCount} ${
+                            hiddenAmountCount === 1 ? 'nivel' : 'niveles'
+                          } más`}
                       {isExpanded ? (
                         <ChevronUp className="size-4" aria-hidden="true" />
                       ) : (
@@ -338,7 +326,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                   {urlError && openGoalId === goal.id && (
                     <div
                       role="alert"
-                      className="mt-3 flex items-start gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-700 dark:text-rose-300"
+                      className="mt-2 flex items-start gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-700 dark:text-rose-300"
                     >
                       <AlertCircle
                         className="mt-0.5 size-4 shrink-0"
@@ -368,21 +356,16 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                               selectedAmount
                             )} mediante Hotmart`
                       }
-                      className={`hotmart-fb hotmart__button-checkout mt-4 flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-center text-base font-bold text-white transition-colors hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:text-slate-950 dark:focus-visible:ring-offset-slate-900 ${
+                      className={`hotmart-fb hotmart__button-checkout mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:text-slate-950 dark:focus-visible:ring-offset-slate-900 ${
                         isRedirecting ? 'pointer-events-none opacity-70' : ''
                       }`}
                     >
                       {isRedirecting ? (
                         <LoaderCircle
-                          className="size-5 animate-spin motion-reduce:animate-none"
+                          className="size-4 animate-spin motion-reduce:animate-none"
                           aria-hidden="true"
                         />
-                      ) : (
-                        <ExternalLink
-                          className="size-5"
-                          aria-hidden="true"
-                        />
-                      )}
+                      ) : null}
                       {isRedirecting
                         ? 'Abriendo Hotmart…'
                         : getSupportCtaLabel(selectedAmount)}
@@ -391,7 +374,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                     <button
                       type="button"
                       disabled
-                      className="mt-4 flex min-h-14 w-full items-center justify-center rounded-2xl bg-slate-300 px-5 py-3 text-base font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300"
+                      className="mt-3 flex min-h-12 w-full items-center justify-center rounded-xl bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400"
                     >
                       No hay niveles disponibles
                     </button>

@@ -87,19 +87,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 function PublicSupportLoading() {
   return (
     <section
-      className="rounded-3xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900/70 sm:p-6"
+      className="border-t border-slate-200 pt-6 dark:border-slate-800"
       aria-busy="true"
       aria-label="Cargando opciones de apoyo"
     >
       <div className="animate-pulse">
-        <div className="h-3 w-24 rounded bg-emerald-500/20" />
-        <div className="mt-3 h-7 w-44 rounded bg-slate-200 dark:bg-slate-800" />
-        <div className="mt-3 h-4 w-full rounded bg-slate-200 dark:bg-slate-800" />
-        <div className="mt-6 space-y-2">
-          <div className="h-20 rounded-2xl bg-slate-100 dark:bg-slate-800" />
-          <div className="h-20 rounded-2xl bg-slate-100 dark:bg-slate-800" />
+        <div className="h-6 w-40 rounded bg-slate-200 dark:bg-slate-800" />
+        <div className="mt-2 h-4 w-56 rounded bg-slate-200 dark:bg-slate-800" />
+        <div className="mt-4 space-y-2">
+          <div className="h-[4.75rem] rounded-[1.25rem] bg-slate-100 dark:bg-slate-900" />
+          <div className="h-[4.75rem] rounded-[1.25rem] bg-slate-100 dark:bg-slate-900" />
         </div>
-        <div className="mt-5 h-14 rounded-2xl bg-slate-200 dark:bg-slate-800" />
       </div>
       <span className="sr-only">Cargando las opciones del creador…</span>
     </section>
@@ -196,29 +194,21 @@ async function PublicSupportContent({
       <section
         id="apoyar"
         aria-labelledby="support-title"
-        className="rounded-3xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 sm:p-6"
+        className="border-t border-slate-200 pt-6 dark:border-slate-800"
       >
-        <div className="mb-5">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-600 dark:text-emerald-400">
-            Apoyo directo
-          </p>
-          <h2 id="support-title" className="mt-2 text-xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-2xl">
-            Apoya a {creatorName}
+        <div className="mb-4">
+          <h2 id="support-title" className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white sm:text-xl">
+            Objetivos de apoyo
           </h2>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            Si este trabajo te aporta valor, puedes ayudar a que continúe. Elige la opción que tenga sentido para ti.
+          <p className="mt-1 text-sm leading-5 text-slate-500 dark:text-slate-400">
+            Elige cómo quieres impulsar el trabajo de {creatorName}.
           </p>
-          {!goalsError && hasValidSupportOption && (
-            <p className="mt-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-              Elige una causa y después el nivel que tenga sentido para ti.
-            </p>
-          )}
         </div>
 
         {goalsError ? (
           <div
             role="alert"
-            className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-5 text-sm text-rose-700 dark:text-rose-300"
+            className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-700 dark:text-rose-300"
           >
             No pudimos cargar las opciones de apoyo. Intenta nuevamente más tarde.
           </div>
@@ -234,23 +224,18 @@ async function PublicSupportContent({
         )}
 
         {!goalsError && hasValidSupportOption && (
-          <div className="mt-4 flex items-start gap-2.5 px-1 text-slate-500 dark:text-slate-400">
-            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
-            <div>
-              <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-                Continuarás en Hotmart para completar el pago.
-              </p>
-              <p className="mt-0.5 text-xs leading-relaxed">
-                DonacionesSaaS no almacena tus datos de pago.
-              </p>
-            </div>
+          <div className="mt-3 flex items-center gap-2 px-1 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
+            <ShieldCheck className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+            <p>
+              Pago gestionado por Hotmart. DonacionesSaaS no almacena datos de pago.
+            </p>
           </div>
         )}
       </section>
 
       {!socialLinksError && safeSocialLinks.length > 0 && (
-        <section className="mt-12 px-1" aria-labelledby="social-title">
-          <h2 id="social-title" className="text-sm font-bold text-slate-700 dark:text-slate-300">
+        <section className="mt-8 px-1" aria-labelledby="social-title">
+          <h2 id="social-title" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
             Encuéntrame también en
           </h2>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -289,7 +274,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
     : null
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen overflow-x-hidden bg-[#f7f8f6] dark:bg-slate-950">
       <div className="mx-auto max-w-2xl px-4 pt-4">
         <Link
           href={user ? '/dashboard' : '/'}
@@ -300,8 +285,8 @@ export default async function PublicProfilePage({ params }: PageProps) {
         </Link>
       </div>
 
-      <main className="mx-auto max-w-2xl px-4 pb-20">
-        <div className="relative h-44 w-full overflow-hidden rounded-2xl bg-slate-900 sm:h-56">
+      <main className="mx-auto max-w-2xl px-4 pb-16">
+        <div className="relative h-36 w-full overflow-hidden rounded-3xl bg-slate-900 sm:h-44">
           {safeBanner ? (
             <Image
               src={safeBanner}
@@ -319,30 +304,30 @@ export default async function PublicProfilePage({ params }: PageProps) {
           {safeBanner && <div className="absolute inset-0 bg-slate-950/20" />}
         </div>
 
-        <div className="relative -mt-10 mb-4 px-4">
-          <div className="relative flex size-20 items-center justify-center overflow-hidden rounded-full border-4 border-slate-50 bg-emerald-500 dark:border-slate-950">
+        <div className="relative -mt-9 mb-3 px-3">
+          <div className="relative flex size-[4.5rem] items-center justify-center overflow-hidden rounded-full border-4 border-[#f7f8f6] bg-emerald-500 dark:border-slate-950">
             {safeAvatar ? (
               <Image
                 src={safeAvatar}
                 alt={`Foto de ${profile.display_name}`}
                 fill
                 className="object-cover"
-                sizes="80px"
+                sizes="72px"
                 priority
               />
             ) : (
-              <span className="text-2xl font-extrabold text-white">{initials}</span>
+              <span className="text-xl font-bold text-white">{initials}</span>
             )}
           </div>
         </div>
 
-        <section className="mb-7 space-y-2 px-1" aria-labelledby="creator-name">
+        <section className="mb-6 space-y-1.5 px-1" aria-labelledby="creator-name">
           <div className="flex flex-col items-start justify-between gap-3 sm:flex-row">
             <div className="min-w-0">
-              <h1 id="creator-name" className="break-words text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              <h1 id="creator-name" className="break-words text-[1.75rem] font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
                 {profile.display_name}
               </h1>
-              <p className="break-all font-mono text-sm text-slate-500 dark:text-slate-400">
+              <p className="mt-0.5 break-all text-sm text-slate-500 dark:text-slate-400">
                 @{profile.username}
               </p>
             </div>
@@ -353,7 +338,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
           </div>
 
           {profile.bio && (
-            <p className="pt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+            <p className="max-w-prose pt-2 text-[15px] leading-6 text-slate-600 dark:text-slate-400">
               {profile.bio}
             </p>
           )}
@@ -380,7 +365,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
           />
         </Suspense>
 
-        <div className="mt-10 text-center">
+        <div className="mt-8 text-center">
           <Link
             href="/"
             className="inline-flex min-h-11 items-center gap-1.5 rounded-lg text-xs text-slate-400 transition-colors hover:text-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
