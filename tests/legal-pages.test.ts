@@ -121,9 +121,12 @@ describe('legal page integration', () => {
   })
 
   it('links both policies from the global footer and login', () => {
+    assert.match(footer, /href: '\/terms'/)
+    assert.match(footer, /href: '\/privacy'/)
+    assert.match(loginPage, /href="\/terms"/)
+    assert.match(loginPage, /href="\/privacy"/)
+
     for (const source of [footer, loginPage]) {
-      assert.match(source, /href="\/terms"/)
-      assert.match(source, /href="\/privacy"/)
       assert.match(source, /Términos y Condiciones/)
       assert.match(source, /Política de Privacidad/)
     }
@@ -132,7 +135,8 @@ describe('legal page integration', () => {
   it('mounts one fixed footer globally without authentication queries', () => {
     assert.match(rootLayout, /<PublicFooter \/>/)
     assert.match(footer, /fixed inset-x-0 bottom-0/)
-    assert.match(footer, /href="\/dashboard"/)
+    assert.match(footer, /href: '\/dashboard'/)
+    assert.match(footer, /aria-hidden="true"[\s\S]*·/)
     assert.doesNotMatch(footer, /getAuthUser|supabase/)
   })
 })
