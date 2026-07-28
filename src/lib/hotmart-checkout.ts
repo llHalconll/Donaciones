@@ -54,6 +54,38 @@ export function getHotmartCheckoutUrl(
   return result.ok ? result.normalizedUrl ?? null : null
 }
 
+/**
+ * Returns the canonical checkout URL combining the stored URL and the offer
+ * code. If an offer code is provided it is appended as `?off={code}`,
+ * replacing any existing `off` parameter so the result is always canonical.
+ *
+ * This lets creators enter a plain base URL like:
+ *   https://pay.hotmart.com/B106880282V
+ * and a separate offer code like:
+ *   y058gaqy
+ * and the system automatically constructs:
+ *   https://pay.hotmart.com/B106880282V?off=y058gaqy
+ */
+export function getEffectiveCheckoutUrl(
+  amount: HotmartCheckoutAmount | null
+): string | null {
+  const rawUrl = getHotmartCheckoutUrl(amount)
+  if (!rawUrl) return null
+
+  const offerCode = getHotmartOfferCode(amount)
+  if (!offerCode) return rawUrl
+
+  try {
+    const url = new URL(rawUrl)
+    // Always set the canonical `off` param from the explicit offer code field,
+    // replacing any value the user may have embedded in the URL itself.
+    url.searchParams.set('off', offerCode)
+    return url.toString()
+  } catch {
+    return rawUrl
+  }
+}
+
 export function getHotmartOfferCode(
   amount: HotmartCheckoutAmount | null
 ) {
@@ -74,7 +106,9 @@ export function getHotmartCheckoutPresentation({
   attachedAmountId: string | null
   failedAmountIds: ReadonlySet<string>
 }): HotmartCheckoutPresentation {
-  const checkoutUrl = getHotmartCheckoutUrl(amount)
+  // Use getEffectiveCheckoutUrl so the offer code is always appended to the
+  // base URL — even if the creator entered the URL and code in separate fields.
+  const checkoutUrl = getEffectiveCheckoutUrl(amount)
   if (!amount || !checkoutUrl) {
     return { kind: 'unavailable', checkoutUrl: null, offerCode: null }
   }

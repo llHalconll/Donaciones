@@ -346,12 +346,12 @@ function AmountForm({
             type="url"
             required
             defaultValue={amount?.hotmart_checkout_url ?? ''}
-            placeholder="https://pay.hotmart.com/..."
+            placeholder="https://pay.hotmart.com/XXXXXXXXX"
             className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-950"
           />
           <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
-            Este nivel abrirá exactamente este checkout. El importe no se
-            modifica en el navegador.
+            Pega el enlace de tu producto en Hotmart. No necesitas incluir el código
+            de oferta en la URL, el campo de abajo lo agrega automáticamente.
           </p>
         </div>
 
@@ -373,8 +373,12 @@ function AmountForm({
             className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-950"
           />
           <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
-            Cópialo desde Hotmart → Fijación de precios y ofertas. Déjalo vacío
-            para continuar por el enlace normal.
+            Cópialo desde Hotmart → Fijación de precios y ofertas.
+            El sistema construye automáticamente el enlace{' '}
+            <code className="rounded bg-slate-100 px-1 py-0.5 font-mono dark:bg-slate-800">
+              ?off=código
+            </code>{' '}
+            con la URL de arriba. Déjalo vacío para usar el enlace sin código de oferta.
           </p>
         </div>
 
