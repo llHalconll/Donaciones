@@ -58,10 +58,16 @@ export default function PrivacyPage() {
     <>
       <LegalLayout
         source={privacySource}
-        relatedDocument={{
-          href: '/terms',
-          label: 'Consultar los Términos y Condiciones',
-        }}
+        relatedDocuments={[
+          {
+            href: '/terms',
+            label: 'Consultar los Términos y Condiciones',
+          },
+          {
+            href: '/cookies',
+            label: 'Consultar la Política de Cookies',
+          },
+        ]}
       />
       <script
         type="application/ld+json"

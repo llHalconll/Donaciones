@@ -1,0 +1,103 @@
+POLÍTICA DE COOKIES
+Versión: 2026-07-28-draft-1
+Última actualización: 28 de julio de 2026
+
+1. OBJETO Y ALCANCE
+La presente Política de Cookies explica el uso de cookies y tecnologías similares en DonacionesSaaS (en adelante, la “Plataforma”), así como las opciones disponibles para aceptarlas, rechazarlas o retirar una decisión previa.
+Esta Política se aplica a las páginas públicas, perfiles de creadores, procesos de autenticación y áreas privadas de la Plataforma. Debe interpretarse conjuntamente con los Términos y Condiciones de Uso y la Política de Privacidad.
+La descripción se basa en la implementación técnica vigente. No se atribuyen a la Plataforma cookies, nombres o duraciones de terceros que no hayan podido verificarse.
+
+2. RESPONSABLE
+El responsable de la Plataforma es:
+Víctor Alfonso Cuadrado Mestra
+Persona natural
+Montería, Córdoba, Colombia
+Correo electrónico: victor.llhalconll@gmail.com
+
+3. QUÉ SON LAS COOKIES
+Las cookies son pequeños archivos de texto que un sitio web o un proveedor relacionado puede guardar en el navegador. Pueden utilizarse para mantener una sesión, reforzar la seguridad, recordar una preferencia o conocer de forma agregada cómo se utiliza un servicio.
+La Plataforma también utiliza tecnologías similares, como LocalStorage y SessionStorage. Estas tecnologías permiten guardar información en el navegador, pero no se transmiten automáticamente con cada solicitud como ocurre con las cookies.
+
+4. CRITERIO DE CONSENTIMIENTO
+Las tecnologías estrictamente necesarias se utilizan porque permiten autenticar al Usuario, proteger la sesión, completar procesos solicitados y conservar la decisión sobre cookies. No pueden desactivarse desde el panel de la Plataforma.
+Las tecnologías de preferencias y analíticas permanecen desactivadas hasta que el visitante las acepta expresamente. La ausencia de respuesta, la mera navegación o el silencio no constituyen consentimiento.
+La Plataforma no utiliza actualmente una categoría propia de publicidad o marketing. Si en el futuro se incorpora una tecnología de esa naturaleza, no deberá activarse antes de informar al Usuario y obtener el consentimiento que corresponda.
+
+5. COOKIES ESTRICTAMENTE NECESARIAS
+La implementación vigente puede utilizar las siguientes cookies necesarias:
+	• Cookies de sesión de Supabase Auth: almacenan los datos técnicos de sesión necesarios para reconocer al Usuario autenticado y renovar su acceso. Sus nombres se generan según el proyecto de Supabase y pueden dividirse en varios fragmentos. La configuración técnica del paquete puede conservarlas en el navegador hasta aproximadamente 400 días, pero la sesión puede renovarse, expirar o revocarse antes según su estado real en Supabase.
+	• dsaas_pending_legal_consent: cookie propia, HttpOnly, utilizada durante un registro nuevo con Google para comprobar que el Usuario aceptó los Términos y la Política de Privacidad antes de completar la cuenta. Dura como máximo 10 minutos y se elimina al regresar del flujo de autenticación.
+	• Cookies técnicas de seguridad de la infraestructura de Supabase o su red de entrega: durante la auditoría se observó, por ejemplo, una cookie de protección frente a tráfico automatizado administrada en el dominio de Supabase con una duración aproximada de 30 minutos. Su nombre y duración pueden cambiar por decisión del proveedor.
+La desactivación de estas cookies desde el navegador puede impedir iniciar o mantener una sesión, completar el acceso con Google, proteger determinadas solicitudes o utilizar áreas privadas.
+
+6. ALMACENAMIENTO DE PREFERENCIAS
+Con autorización expresa, la Plataforma guarda en LocalStorage la clave theme para recordar si el Usuario eligió el modo claro u oscuro.
+Esta preferencia permanece hasta que el Usuario retire su consentimiento, borre los datos del navegador o la reemplace con una nueva elección. Si no existe consentimiento para preferencias, el cambio de tema puede aplicarse durante la visita, pero no se conserva para visitas posteriores.
+
+7. ANALÍTICA PROPIA
+Con autorización expresa, la Plataforma registra eventos técnicos como la visualización de un perfil, la selección de un nivel de apoyo y la salida hacia un checkout de Hotmart.
+Para ello puede utilizar:
+	• dsaas_session en SessionStorage: identificador aleatorio de la pestaña, sin nombre, correo ni cuenta asociada, utilizado para correlacionar eventos durante esa sesión de navegación.
+	• dsaas_profile_view:{profileId}:{ruta} en SessionStorage: marca técnica que evita contar repetidamente la misma vista de perfil dentro de una pestaña.
+	• URL de referencia truncada, identificador del perfil, identificador del nivel de apoyo, tipo de evento y fecha y hora del servidor en la base de datos.
+Los valores de SessionStorage se eliminan normalmente al cerrar la pestaña. Los eventos analíticos almacenados en la base de datos están sujetos a un plazo técnico de retención de 13 meses.
+La Plataforma no instala Google Analytics, Google Tag Manager, Meta Pixel ni una herramienta publicitaria equivalente en la implementación vigente.
+
+8. GOOGLE OAUTH
+Cuando el Usuario elige voluntariamente registrarse o iniciar sesión con Google, el navegador es redirigido a los dominios de Google y Supabase para autenticar la cuenta mediante OAuth.
+Google puede utilizar sus propias cookies de autenticación, seguridad, prevención de fraude y preferencias dentro de sus dominios. La auditoría técnica observó cookies administradas por Google Accounts, pero sus nombres, presencia y duración dependen del estado de la cuenta, del navegador, de la región y de las decisiones de Google.
+La Plataforma solicita los datos básicos de identidad autorizados en el flujo vigente, concretamente correo electrónico y perfil. Las cookies creadas directamente en los dominios de Google son administradas por Google y se rigen por su documentación y configuración de privacidad.
+
+9. SUPABASE
+Supabase presta servicios de autenticación, base de datos y almacenamiento. La integración SSR de la Plataforma conserva la sesión autenticada mediante cookies y rota los tokens de acceso y actualización cuando es necesario.
+Supabase recibe los datos indispensables para autenticar la solicitud, mantener la sesión y aplicar las políticas de acceso a filas. La Plataforma considera estas cookies estrictamente necesarias porque, sin ellas, las páginas privadas y las acciones asociadas a una cuenta no pueden funcionar correctamente.
+Los nombres exactos pueden depender de la referencia técnica del proyecto y de la versión del proveedor. Por ese motivo no se presenta una lista cerrada de nombres que podría resultar inexacta.
+
+10. HOTMART
+Los creadores pueden publicar enlaces de checkout de Hotmart para recibir apoyo. El pago se procesa en la infraestructura de Hotmart; la Plataforma no recibe ni almacena números completos de tarjetas, códigos de seguridad ni credenciales financieras del pagador.
+El widget integrado de Hotmart se considera una tecnología externa no esencial y solo se descarga cuando el Usuario ha aceptado la categoría analítica. Si esa categoría se rechaza, el enlace de apoyo continúa disponible y abre directamente el sitio de Hotmart sin cargar previamente el widget en la Plataforma.
+Al abrir el checkout, Hotmart puede utilizar cookies o tecnologías propias necesarias, funcionales, analíticas o publicitarias según el entorno, la región y sus políticas. Pueden ser de sesión o persistentes. La Plataforma no controla sus nombres ni duraciones exactas y no los declara como propios.
+
+11. REGISTRO DE LA DECISIÓN
+La decisión del visitante se guarda en LocalStorage bajo la clave dsaas_cookie_consent durante un máximo aproximado de 12 meses. Incluye:
+	• versión de esta Política;
+	• categorías aceptadas o rechazadas;
+	• fecha y hora suministradas por el servidor;
+	• fecha de expiración;
+	• método utilizado para comunicar la decisión.
+Cuando el Usuario está autenticado, se conserva además una evidencia mínima en la base de datos con su identificador de usuario, versión de la Política, categorías elegidas, método y fecha y hora del servidor.
+Para visitantes sin cuenta no se crea un identificador persistente ni se registra la dirección IP completa como evidencia de consentimiento. Su decisión permanece únicamente en el navegador.
+
+12. CÓMO ACEPTAR, RECHAZAR O RETIRAR EL CONSENTIMIENTO
+El aviso inicial ofrece opciones equivalentes para aceptar todas las categorías no esenciales, rechazarlas o configurar cada categoría.
+El Usuario puede cambiar su decisión posteriormente mediante el enlace “Configurar cookies” disponible de forma permanente en el pie de página. Al retirar una categoría, la Plataforma elimina sus claves propias asociadas de LocalStorage o SessionStorage cuando están disponibles.
+Retirar el consentimiento no afecta la licitud del tratamiento realizado antes de la retirada. Las tecnologías necesarias continúan activas mientras sean indispensables para prestar la función solicitada.
+
+13. CONFIGURACIÓN DEL NAVEGADOR
+La mayoría de los navegadores permite consultar, bloquear o eliminar cookies y datos de sitios desde su configuración de privacidad.
+El procedimiento depende del navegador y del dispositivo. El Usuario puede consultar la ayuda oficial de Chrome, Firefox, Safari, Edge u otro navegador que utilice.
+Bloquear todas las cookies desde el navegador puede cerrar sesiones, impedir el acceso con Google, interrumpir la renovación de credenciales o impedir el funcionamiento de áreas privadas.
+
+14. TERCEROS Y TRANSFERENCIAS INTERNACIONALES
+Supabase, Google y Hotmart pueden tratar información técnica en países distintos de Colombia, de acuerdo con la ubicación de su infraestructura, sus subencargados y sus propias condiciones.
+La información que puede transmitirse incluye identificadores de sesión, datos técnicos del navegador y dispositivo, información de autenticación, la URL solicitada y los datos necesarios para abrir o procesar un checkout.
+La Plataforma procurará utilizar proveedores con medidas contractuales y técnicas apropiadas. El Usuario debe consultar también las políticas vigentes de cada proveedor, especialmente cuando abandone la Plataforma y acceda a sus dominios.
+
+15. SEGURIDAD Y MINIMIZACIÓN
+La Plataforma aplica separación entre tecnologías necesarias y opcionales, bloqueo previo de categorías no esenciales, almacenamiento mínimo de la decisión, cookies seguras en producción cuando corresponde y políticas de acceso restringido en la base de datos.
+El identificador analítico de pestaña es aleatorio y no contiene directamente el nombre o correo del visitante. Los sistemas de limitación de solicitudes pueden derivar claves técnicas mediante funciones criptográficas sin guardar la dirección IP completa en la tabla analítica o en el registro de consentimiento.
+Ningún mecanismo técnico permite garantizar una seguridad absoluta. Las medidas deben revisarse cuando cambien los proveedores, el dominio o la arquitectura.
+
+16. CAMBIOS EN ESTA POLÍTICA
+La Plataforma podrá actualizar esta Política cuando cambien las tecnologías utilizadas, los proveedores o las obligaciones aplicables.
+La versión vigente y su fecha de actualización se mostrarán en esta página. Cuando el cambio afecte las categorías opcionales o sus finalidades, la Plataforma podrá invalidar la decisión anterior y solicitar una nueva elección.
+
+17. CONTACTO
+Las consultas sobre esta Política o sobre el uso de cookies y tecnologías similares pueden dirigirse a:
+Víctor Alfonso Cuadrado Mestra
+Persona natural
+Montería, Córdoba, Colombia
+Correo electrónico: victor.llhalconll@gmail.com
+
+DISPOSICIÓN FINAL
+Esta Política describe la configuración técnica auditada a la fecha de su última actualización. Debe revisarse nuevamente en el dominio de producción, con sesiones autenticadas y un checkout real de Hotmart, antes de un lanzamiento internacional.

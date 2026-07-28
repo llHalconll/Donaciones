@@ -414,7 +414,7 @@ describe('public support goals markup', () => {
     assert.equal((markup.match(/role="group"/g) ?? []).length, 1)
   })
 
-  it('loads the widget script once for goals with valid checkout URLs', () => {
+  it('does not render the Hotmart widget before analytics consent', () => {
     const first = makeGoal(1, 'goal-1')
     const second = makeGoal(1, 'goal-2')
     first.amounts[0].hotmart_offer_code = 'offerOne'
@@ -427,10 +427,11 @@ describe('public support goals markup', () => {
       })
     )
 
-    // CTA renders as a link, not a disabled button, while script loads
-    assert.match(markup, /hotmart-fb/)
-    assert.match(markup, /hotmart__button-checkout/)
-    assert.match(markup, /checkoutMode=2/)
+    // The checkout remains available as a direct external link.
+    assert.match(markup, /pay\.hotmart\.com\/LEVEL-1/)
+    assert.match(markup, /target="_blank"/)
+    assert.doesNotMatch(markup, /id="hotmart-widget"/)
+    assert.doesNotMatch(markup, /<a[^>]+class="[^"]*hotmart-fb/)
 
     const source = readFileSync(
       join(process.cwd(), 'src/app/[username]/support-goals.tsx'),
@@ -441,13 +442,14 @@ describe('public support goals markup', () => {
       1
     )
     assert.ok(source.includes('src={HOTMART_WIDGET_SCRIPT_SRC}'))
+    assert.match(source, /hasValidCheckouts && analyticsAllowed/)
     assert.equal(
       HOTMART_WIDGET_SCRIPT_SRC,
       'https://static.hotmart.com/checkout/widget.min.js'
     )
   })
 
-  it('includes checkoutMode=2 in the link even without an offer code', () => {
+  it('uses a direct Hotmart link before analytics consent', () => {
     const markup = renderToStaticMarkup(
       React.createElement(PublicSupportGoals, {
         goals: [makeGoal(1)],
@@ -457,10 +459,11 @@ describe('public support goals markup', () => {
 
     // URL must contain the base checkout URL
     assert.match(markup, /pay\.hotmart\.com\/LEVEL-1/)
-    // checkoutMode=2 enables the popup overlay
-    assert.match(markup, /checkoutMode=2/)
-    // Widget CSS class must be present for the JS to intercept the click
-    assert.match(markup, /hotmart__button-checkout/)
+    assert.doesNotMatch(markup, /checkoutMode=2/)
+    assert.doesNotMatch(
+      markup,
+      /<a[^>]+class="[^"]*hotmart__button-checkout/
+    )
   })
 
   it('preserves long, unbroken, special and emoji goal titles', () => {
@@ -486,7 +489,7 @@ describe('public support goals markup', () => {
     }
   })
 
-  it('uses the widget script and fires analytics exactly once per click', () => {
+  it('gates the widget script and fires analytics exactly once per click', () => {
     const source = readFileSync(
       join(process.cwd(), 'src/app/[username]/support-goals.tsx'),
       'utf8'
@@ -499,6 +502,7 @@ describe('public support goals markup', () => {
     )
     // Widget script is used (not the legacy Elements script for the CTA)
     assert.ok(source.includes('HOTMART_WIDGET_SCRIPT_SRC'))
+    assert.match(source, /hasValidCheckouts && analyticsAllowed/)
     // Widget CSS class required for popup interception
     assert.ok(source.includes('hotmart__button-checkout'))
   })

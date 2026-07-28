@@ -21,7 +21,7 @@ export type ReportReason =
   | 'suspicious_link'
   | 'spam'
   | 'other'
-export type LegalDocumentType = 'terms' | 'privacy'
+export type LegalDocumentType = 'terms' | 'privacy' | 'cookies'
 export type LegalAcceptanceMethod =
   | 'email_password'
   | 'google_oauth'
@@ -123,6 +123,22 @@ export interface LegalAcceptance {
   document_version: string
   acceptance_method: LegalAcceptanceMethod
   accepted_at: string
+}
+
+export interface CookieConsentRecord {
+  id: string
+  user_id: string
+  document_type: 'cookies'
+  cookie_policy_version: string
+  necessary: true
+  preferences: boolean
+  analytics: boolean
+  consent_method:
+    | 'banner_accept_all'
+    | 'banner_reject_nonessential'
+    | 'preferences_save'
+    | 'footer_preferences'
+  consented_at: string
 }
 
 // ─────────────────────────────────────────────

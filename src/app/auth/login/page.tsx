@@ -104,6 +104,14 @@ export default function LoginPage() {
               >
                 Política de Privacidad
               </Link>
+              <Link
+                href="/cookies"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-500 hover:text-emerald-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-slate-400 dark:hover:text-emerald-400"
+              >
+                Política de Cookies
+              </Link>
             </nav>
           </CardContent>
 

@@ -1,11 +1,13 @@
 'use client'
 
 import type { EventType } from '@/types/database.types'
+import { hasCookieCategoryConsent } from '@/lib/cookie-consent'
 
 const SESSION_ID_KEY = 'dsaas_session'
 
 export function getOrCreatePublicSessionId() {
   if (typeof window === 'undefined') return null
+  if (!hasCookieCategoryConsent('analytics')) return null
 
   let id = sessionStorage.getItem(SESSION_ID_KEY)
   if (!id) {
@@ -32,6 +34,8 @@ export async function trackPublicEvent({
   supportAmountId,
   keepalive = false,
 }: TrackPublicEventInput) {
+  if (!hasCookieCategoryConsent('analytics')) return
+
   try {
     await fetch('/api/analytics', {
       method: 'POST',

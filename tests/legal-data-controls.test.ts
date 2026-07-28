@@ -13,6 +13,7 @@ const retentionSql = read('supabase/migrations/015_data_retention.sql')
 const functionPrivilegesSql = read(
   'supabase/migrations/016_function_privileges.sql'
 )
+const cookieConsentSql = read('supabase/migrations/017_cookie_consent.sql')
 const registerPage = read('src/app/auth/register/page.tsx')
 const settingsForm = read(
   'src/app/dashboard/settings/settings-form.tsx'
@@ -41,6 +42,33 @@ describe('legal acceptance evidence', () => {
     assert.match(registerPage, /Términos y Condiciones/)
     assert.match(registerPage, /Política de Privacidad/)
     assert.match(registerPage, /requireLegalAcceptance/)
+  })
+})
+
+describe('cookie consent evidence', () => {
+  it('registers the cookie policy version and authenticated choices', () => {
+    assert.match(cookieConsentSql, /'terms', 'privacy', 'cookies'/)
+    assert.match(
+      cookieConsentSql,
+      /CREATE TABLE IF NOT EXISTS public\.cookie_consent_records/
+    )
+    assert.match(cookieConsentSql, /consented_at\s+TIMESTAMPTZ NOT NULL DEFAULT NOW\(\)/)
+    assert.match(cookieConsentSql, /record_current_cookie_consent/)
+  })
+
+  it('blocks direct public access and exposes only the authenticated RPC', () => {
+    assert.match(
+      cookieConsentSql,
+      /REVOKE ALL ON public\.cookie_consent_records FROM PUBLIC, anon, authenticated/
+    )
+    assert.match(
+      cookieConsentSql,
+      /GRANT EXECUTE ON FUNCTION public\.record_current_cookie_consent[\s\S]*TO authenticated/
+    )
+    assert.doesNotMatch(
+      cookieConsentSql,
+      /CREATE POLICY[\s\S]*cookie_consent_records/
+    )
   })
 })
 

@@ -13,6 +13,7 @@ Versión: 2026-07-28.
 | Metadatos de webhooks | 13 meses | Eliminación de la fila |
 | Perfil, redes, objetivos e imágenes | Mientras exista la cuenta | Eliminación al tramitar una solicitud verificada |
 | Aceptaciones legales | Mientras exista el usuario de Auth | Eliminación en cascada con el usuario |
+| Evidencias de consentimiento de cookies | Mientras exista el usuario de Auth | Eliminación en cascada con el usuario |
 
 Los reportes pendientes o todavía en investigación no se purgan
 automáticamente. La desactivación del perfil no inicia un plazo de eliminación:

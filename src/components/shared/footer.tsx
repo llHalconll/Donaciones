@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Heart } from 'lucide-react'
+import { CookieSettingsButton } from '@/components/cookies/cookie-settings-button'
 
 const FOOTER_LINKS = [
   { href: '/', label: 'Inicio' },
@@ -7,6 +8,7 @@ const FOOTER_LINKS = [
   { href: '/dashboard', label: 'Mi panel' },
   { href: '/terms', label: 'Términos y Condiciones' },
   { href: '/privacy', label: 'Política de Privacidad' },
+  { href: '/cookies', label: 'Política de Cookies' },
 ] as const
 
 export function PublicFooter() {
@@ -43,6 +45,12 @@ export function PublicFooter() {
                 </Link>
               </span>
             ))}
+            <span className="inline-flex items-center">
+              <span aria-hidden="true" className="mx-3 text-slate-300 dark:text-slate-700">
+                ·
+              </span>
+              <CookieSettingsButton className="transition-colors hover:text-slate-900 hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:hover:text-white" />
+            </span>
           </nav>
         </div>
       </footer>

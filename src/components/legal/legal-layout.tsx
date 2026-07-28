@@ -4,10 +4,10 @@ import { parseLegalDocument, type LegalBlock } from '@/lib/legal-document'
 
 interface LegalLayoutProps {
   source: string
-  relatedDocument: {
-    href: '/terms' | '/privacy'
+  relatedDocuments: {
+    href: '/terms' | '/privacy' | '/cookies'
     label: string
-  }
+  }[]
 }
 
 function LegalBlockContent({ block }: { block: LegalBlock }) {
@@ -76,7 +76,7 @@ function TableOfContents({
 
 export function LegalLayout({
   source,
-  relatedDocument,
+  relatedDocuments,
 }: LegalLayoutProps) {
   const document = parseLegalDocument(source)
 
@@ -158,12 +158,20 @@ export function LegalLayout({
           </div>
 
           <footer className="mt-10 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-slate-100/70 p-5 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-300 sm:flex-row sm:items-center sm:justify-between">
-            <Link
-              href={relatedDocument.href}
-              className="font-semibold text-emerald-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-emerald-400"
+            <nav
+              aria-label="Documentos legales relacionados"
+              className="flex flex-col gap-3"
             >
-              {relatedDocument.label}
-            </Link>
+              {relatedDocuments.map((relatedDocument) => (
+                <Link
+                  key={relatedDocument.href}
+                  href={relatedDocument.href}
+                  className="font-semibold text-emerald-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-emerald-400"
+                >
+                  {relatedDocument.label}
+                </Link>
+              ))}
+            </nav>
             <a
               href="#legal-document-title"
               className="inline-flex min-h-11 items-center gap-2 self-start rounded-lg px-2 font-semibold text-slate-500 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-slate-400 dark:hover:text-white sm:self-auto"

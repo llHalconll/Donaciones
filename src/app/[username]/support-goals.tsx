@@ -12,6 +12,7 @@ import {
   X,
 } from 'lucide-react'
 import { trackPublicEvent } from '@/lib/analytics/public-client'
+import { useCookieConsent } from '@/components/cookies/cookie-consent-provider'
 import {
   HOTMART_WIDGET_SCRIPT_SRC,
   getHotmartWidgetUrl,
@@ -34,9 +35,11 @@ interface Props {
 }
 
 const SUPPORT_CTA_CLASS =
-  'hotmart-fb hotmart__button-checkout mt-2.5 flex min-h-11 w-full items-center justify-center gap-2 rounded-[0.625rem] bg-emerald-500 px-4 py-2 text-center text-sm font-semibold text-white no-underline transition-[background-color,transform,opacity] duration-150 ease-out hover:-translate-y-px hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 active:translate-y-0 dark:text-slate-950 dark:focus-visible:ring-offset-slate-900 lg:min-h-12 lg:rounded-xl lg:px-5 lg:text-base'
+  'mt-2.5 flex min-h-11 w-full items-center justify-center gap-2 rounded-[0.625rem] bg-emerald-500 px-4 py-2 text-center text-sm font-semibold text-white no-underline transition-[background-color,transform,opacity] duration-150 ease-out hover:-translate-y-px hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 active:translate-y-0 dark:text-slate-950 dark:focus-visible:ring-offset-slate-900 lg:min-h-12 lg:rounded-xl lg:px-5 lg:text-base'
 
 export function PublicSupportGoals({ goals, profileId }: Props) {
+  const { hasConsent } = useCookieConsent()
+  const analyticsAllowed = hasConsent('analytics')
   const [openGoalId, setOpenGoalId] = useState<string | null>(
     goals[0]?.id ?? null
   )
@@ -73,6 +76,11 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
     () => getHotmartWidgetUrl(selectedAmount),
     [selectedAmount]
   )
+  const directCheckoutUrl = useMemo(
+    () => getHotmartCheckoutUrl(selectedAmount),
+    [selectedAmount]
+  )
+  const checkoutUrl = analyticsAllowed ? widgetUrl : directCheckoutUrl
 
   // Whether any goal has at least one amount with a valid checkout URL.
   // We only load the widget script when there is something to pay for.
@@ -171,7 +179,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
       {/* Load Hotmart widget script once — it intercepts clicks on elements
           with class "hotmart-fb hotmart__button-checkout" and opens the
           checkout as a popup overlay (checkoutMode=2) without leaving the page. */}
-      {hasValidCheckouts && (
+      {hasValidCheckouts && analyticsAllowed && (
         <Script
           id="hotmart-widget"
           src={HOTMART_WIDGET_SCRIPT_SRC}
@@ -347,7 +355,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                   )}
 
                   {/* ── CTA ───────────────────────────────────────────── */}
-                  {widgetUrl && selectedAmount ? (
+                  {checkoutUrl && selectedAmount ? (
                     /**
                      * Hotmart widget mode:
                      * - class "hotmart-fb hotmart__button-checkout" is required
@@ -358,13 +366,15 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                      * - onClick fires analytics tracking before Hotmart takes over.
                      */
                     <a
-                      href={widgetUrl}
+                      href={checkoutUrl}
+                      target={analyticsAllowed ? undefined : '_blank'}
+                      rel={analyticsAllowed ? undefined : 'noopener noreferrer'}
                       onClick={() =>
                         void trackEvent('hotmart_redirect', selectedAmount.id)
                       }
                       aria-describedby={`hotmart-payment-note-${goal.id}`}
                       aria-label={`${getSupportCtaLabel(selectedAmount)} mediante Hotmart`}
-                      className={SUPPORT_CTA_CLASS}
+                      className={`${analyticsAllowed ? 'hotmart-fb hotmart__button-checkout ' : ''}${SUPPORT_CTA_CLASS}`}
                     >
                       {getSupportCtaLabel(selectedAmount)}
                     </a>
@@ -379,12 +389,14 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                   )}
 
                   {/* ── Payment note ──────────────────────────────────── */}
-                  {widgetUrl && (
+                  {checkoutUrl && (
                     <p
                       id={`hotmart-payment-note-${goal.id}`}
                       className="mt-2 px-1 text-[11px] leading-4 text-slate-500 dark:text-slate-400"
                     >
-                      El checkout de Hotmart se abre en esta misma página.
+                      {analyticsAllowed
+                        ? 'El checkout de Hotmart se abre en esta misma página.'
+                        : 'El checkout se abre directamente en Hotmart en una pestaña nueva.'}
                       <ExternalLink
                         className="ml-1 inline size-3 opacity-60"
                         aria-hidden="true"

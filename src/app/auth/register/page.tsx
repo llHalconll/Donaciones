@@ -65,6 +65,19 @@ export default function RegisterPage() {
                 .
               </span>
             </label>
+            <p className="text-center text-[11px] leading-5 text-slate-500 dark:text-slate-400">
+              Las preferencias de cookies se administran por separado. Consulta
+              la{' '}
+              <Link
+                href="/cookies"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-emerald-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-emerald-400"
+              >
+                Política de Cookies
+              </Link>
+              .
+            </p>
 
             {/* Google OAuth — fastest path */}
             <GoogleButton

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useCookieConsent } from '@/components/cookies/cookie-consent-provider'
 import { trackPublicEvent } from '@/lib/analytics/public-client'
 
 interface Props {
@@ -8,7 +9,12 @@ interface Props {
 }
 
 export function ProfileViewTracker({ profileId }: Props) {
+  const { hasConsent } = useCookieConsent()
+  const analyticsAllowed = hasConsent('analytics')
+
   useEffect(() => {
+    if (!analyticsAllowed) return
+
     const viewKey = `dsaas_profile_view:${profileId}:${window.location.pathname}`
 
     try {
@@ -23,7 +29,7 @@ export function ProfileViewTracker({ profileId }: Props) {
       eventType: 'profile_view',
       keepalive: true,
     })
-  }, [profileId])
+  }, [analyticsAllowed, profileId])
 
   return null
 }

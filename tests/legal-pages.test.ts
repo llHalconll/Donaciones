@@ -41,12 +41,17 @@ function parsedDocumentLines(source: string) {
 
 const termsSource = read('src/content/legal/terms.txt')
 const privacySource = read('src/content/legal/privacy.txt')
+const cookiesSource = read('src/content/legal/cookies.txt')
 const termsPage = read('src/app/(legal)/terms/page.tsx')
 const privacyPage = read('src/app/(legal)/privacy/page.tsx')
+const cookiesPage = read('src/app/(legal)/cookies/page.tsx')
 const legalLayout = read('src/components/legal/legal-layout.tsx')
 const legalRoutesLayout = read('src/app/(legal)/layout.tsx')
 const rootLayout = read('src/app/layout.tsx')
 const footer = read('src/components/shared/footer.tsx')
+const cookieSettingsButton = read(
+  'src/components/cookies/cookie-settings-button.tsx'
+)
 const loginPage = read('src/app/auth/login/page.tsx')
 
 describe('legal document integrity', () => {
@@ -67,6 +72,7 @@ describe('legal document integrity', () => {
   it('parses every numbered section and preserves document metadata', () => {
     const terms = parseLegalDocument(termsSource)
     const privacy = parseLegalDocument(privacySource)
+    const cookies = parseLegalDocument(cookiesSource)
 
     assert.equal(terms.title, 'TÉRMINOS Y CONDICIONES DE USO')
     assert.equal(terms.versionLine, 'Versión: 2026-07-28-draft-1')
@@ -77,6 +83,10 @@ describe('legal document integrity', () => {
     assert.equal(privacy.versionLine, 'Versión: 2026-07-28-draft-1')
     assert.equal(privacy.sections.length, 31)
     assert.equal(privacy.sections.at(-1)?.heading, 'DISPOSICIÓN FINAL')
+    assert.equal(cookies.title, 'POLÍTICA DE COOKIES')
+    assert.equal(cookies.versionLine, 'Versión: 2026-07-28-draft-1')
+    assert.equal(cookies.sections.length, 18)
+    assert.equal(cookies.sections.at(-1)?.heading, 'DISPOSICIÓN FINAL')
   })
 
   it('renders every non-empty legal line in its original order', () => {
@@ -85,12 +95,16 @@ describe('legal document integrity', () => {
       parsedDocumentLines(privacySource),
       normalizedSourceLines(privacySource)
     )
+    assert.deepEqual(
+      parsedDocumentLines(cookiesSource),
+      normalizedSourceLines(cookiesSource)
+    )
   })
 })
 
 describe('legal page integration', () => {
   it('builds both routes as static pages without Supabase access', () => {
-    for (const page of [termsPage, privacyPage]) {
+    for (const page of [termsPage, privacyPage, cookiesPage]) {
       assert.match(page, /export const dynamic = 'force-static'/)
       assert.match(page, /readFileSync/)
       assert.doesNotMatch(page, /supabase|createClient|cookies\(/i)
@@ -98,7 +112,7 @@ describe('legal page integration', () => {
   })
 
   it('defines complete search and social metadata', () => {
-    for (const page of [termsPage, privacyPage]) {
+    for (const page of [termsPage, privacyPage, cookiesPage]) {
       assert.match(page, /alternates: \{ canonical \}/)
       assert.match(page, /robots: \{ index: true, follow: true \}/)
       assert.match(page, /openGraph:/)
@@ -123,12 +137,15 @@ describe('legal page integration', () => {
   it('links both policies from the global footer and login', () => {
     assert.match(footer, /href: '\/terms'/)
     assert.match(footer, /href: '\/privacy'/)
+    assert.match(footer, /href: '\/cookies'/)
     assert.match(loginPage, /href="\/terms"/)
     assert.match(loginPage, /href="\/privacy"/)
+    assert.match(loginPage, /href="\/cookies"/)
 
     for (const source of [footer, loginPage]) {
       assert.match(source, /Términos y Condiciones/)
       assert.match(source, /Política de Privacidad/)
+      assert.match(source, /Política de Cookies/)
     }
   })
 
@@ -136,6 +153,8 @@ describe('legal page integration', () => {
     assert.match(rootLayout, /<PublicFooter \/>/)
     assert.match(footer, /fixed inset-x-0 bottom-0/)
     assert.match(footer, /href: '\/dashboard'/)
+    assert.match(footer, /CookieSettingsButton/)
+    assert.match(cookieSettingsButton, /Configurar cookies/)
     assert.match(footer, /aria-hidden="true"[\s\S]*·/)
     assert.doesNotMatch(footer, /getAuthUser|supabase/)
   })

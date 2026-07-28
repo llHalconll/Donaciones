@@ -78,6 +78,11 @@
 --  16. migrations/016_function_privileges.sql
 --      → Revoca la ejecución anónima de funciones privilegiadas
 --
+--  17. migrations/017_cookie_consent.sql
+--      → Registra la versión de la Política de Cookies
+--      → Crea evidencia privada para usuarios autenticados
+--      → Expone únicamente una función de escritura controlada
+--
 -- ═══════════════════════════════════════════════════════════════════
 -- VERIFICACIÓN DESPUÉS DE APLICAR CADA MIGRACIÓN:
 -- ═══════════════════════════════════════════════════════════════════

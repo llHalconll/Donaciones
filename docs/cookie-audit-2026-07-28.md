@@ -44,12 +44,27 @@ conservan tokens de proveedor y con qué duración.
 | SessionStorage | `dsaas_session` | Correlación anónima de eventos dentro de la pestaña | Sesión de pestaña |
 | SessionStorage | `dsaas_profile_view:{profileId}:{pathname}` | Evitar duplicar una vista en la misma pestaña | Sesión de pestaña |
 
-## Pendientes obligatorios antes de publicar una política de cookies
+## Sistema de consentimiento implementado
+
+- La ruta estática `/cookies` publica la Política de Cookies vigente.
+- El banner permite aceptar todas, rechazar las no esenciales o configurar
+  preferencias y analítica por separado.
+- La clave `dsaas_cookie_consent` conserva en LocalStorage la versión, las
+  categorías, el método y las horas suministradas por el servidor durante
+  un máximo de 12 meses.
+- El tema y la analítica propia no crean sus claves antes del consentimiento.
+- El widget integrado de Hotmart no se descarga antes de aceptar analítica.
+  Si se rechaza, el checkout directo sigue disponible en una pestaña nueva.
+- Los usuarios autenticados generan evidencia privada en
+  `cookie_consent_records`; los visitantes anónimos no generan identificador,
+  fila de base de datos ni registro de IP completa.
+
+## Pendientes antes del lanzamiento internacional
 
 1. Configurar el dominio canónico real.
 2. Repetir la inspección en navegación privada y autenticada.
 3. Completar registro por correo y Google.
 4. Abrir un checkout Hotmart real y revisar cookies, iframes y solicitudes.
 5. Registrar nombre, dominio, finalidad, duración y atributos de cada cookie.
-6. Determinar con el equipo legal qué tecnologías requieren consentimiento
-   previo y bloquear las no necesarias hasta obtenerlo.
+6. Validar con asesoría jurídica la clasificación del widget de Hotmart y los
+   textos de la Política según los países de lanzamiento.
