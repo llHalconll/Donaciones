@@ -212,7 +212,11 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                   className="flex min-h-[4.5rem] w-full items-center gap-2.5 px-3 py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500 sm:px-3.5"
                 >
                   <span
-                    className="relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-emerald-500/12 ring-1 ring-inset ring-emerald-500/15"
+                    className={`relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-inset ${
+                      goal.cover_url
+                        ? 'bg-white ring-slate-200 dark:bg-slate-800 dark:ring-slate-700'
+                        : 'bg-emerald-500/12 ring-emerald-500/15'
+                    }`}
                     aria-hidden="true"
                   >
                     {goal.cover_url ? (
