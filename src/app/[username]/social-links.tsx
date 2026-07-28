@@ -1,4 +1,4 @@
-import { Globe, ExternalLink, Video, Camera } from 'lucide-react'
+import { Globe, ExternalLink, Camera } from 'lucide-react'
 import type { SocialLink } from '@/types/database.types'
 
 // ─── Iconos SVG de marca ───────────────────────────────────────────────────
@@ -67,6 +67,17 @@ function TwitchIcon({ className }: { className?: string }) {
   )
 }
 
+function YouTubeIcon({ className }: { className?: string }) {
+  return (
+    <span
+      className={`inline-flex shrink-0 items-center justify-center rounded-[4px] bg-[#ff0000] ${className ?? ''}`}
+      aria-hidden="true"
+    >
+      <span className="ml-px block h-0 w-0 border-y-[3px] border-l-[5px] border-y-transparent border-l-white" />
+    </span>
+  )
+}
+
 // ─── Config por plataforma ────────────────────────────────────────────────
 
 type PlatformConfig = {
@@ -84,7 +95,7 @@ const PLATFORMS: Record<string, PlatformConfig> = {
     hover: 'hover:text-pink-600 hover:bg-pink-500/10 hover:border-pink-500/30',
   },
   youtube: {
-    icon: Video,
+    icon: YouTubeIcon,
     label: 'YouTube',
     color: 'text-red-500',
     hover: 'hover:text-red-600 hover:bg-red-500/10 hover:border-red-500/30',
@@ -175,7 +186,7 @@ export function PublicSocialLinks({ links }: Props) {
             aria-label={`${displayLabel} (abre en una pestaña nueva)`}
             className={`inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-transparent bg-slate-100/80 px-2.5 py-1.5 text-xs font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:bg-slate-900 ${config.color} ${config.hover}`}
           >
-            <Icon className="size-3.5" />
+            <Icon className={link.platform === 'youtube' ? 'h-3.5 w-5' : 'size-3.5'} />
             <span>{displayLabel}</span>
           </a>
         )
