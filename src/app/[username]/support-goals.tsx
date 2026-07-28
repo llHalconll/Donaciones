@@ -222,7 +222,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                         fill
                         sizes="72px"
                         quality={95}
-                        className="object-cover"
+                        className="object-contain p-0.5"
                       />
                     ) : (
                       <span className="text-xl">{goal.emoji || '♥'}</span>

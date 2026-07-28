@@ -187,7 +187,7 @@ export function GoalsManager({ goals, limit }: Props) {
                             fill
                             sizes="56px"
                             quality={95}
-                            className="object-cover"
+                            className="object-contain p-0.5"
                           />
                         ) : (
                           '♥'
