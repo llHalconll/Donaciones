@@ -177,16 +177,17 @@ export function GoalsManager({ goals, limit }: Props) {
                     <div className="flex flex-wrap items-center gap-2">
                       {/* Mini icon — image if available, heart fallback */}
                       <span
-                        className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-emerald-500/10 ring-1 ring-inset ring-emerald-500/15 text-base"
+                        className="relative flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-emerald-500/10 ring-1 ring-inset ring-emerald-500/15 text-base"
                         aria-hidden="true"
                       >
                         {goal.cover_url ? (
                           <Image
                             src={goal.cover_url}
                             alt=""
-                            width={28}
-                            height={28}
-                            className="size-full object-cover"
+                            fill
+                            sizes="56px"
+                            quality={95}
+                            className="object-cover"
                           />
                         ) : (
                           '♥'
