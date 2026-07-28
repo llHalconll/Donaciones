@@ -14,7 +14,6 @@ import {
   UserRound,
 } from 'lucide-react'
 import { PublicHeader } from '@/components/shared/header'
-import { PublicFooter } from '@/components/shared/footer'
 import { buttonStyles } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { getAuthUser } from '@/lib/supabase/server'
@@ -300,8 +299,6 @@ export default async function HomePage() {
           </div>
         </section>
       </main>
-
-      <PublicFooter />
     </div>
   )
 }

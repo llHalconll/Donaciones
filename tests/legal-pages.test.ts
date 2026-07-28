@@ -45,6 +45,7 @@ const termsPage = read('src/app/(legal)/terms/page.tsx')
 const privacyPage = read('src/app/(legal)/privacy/page.tsx')
 const legalLayout = read('src/components/legal/legal-layout.tsx')
 const legalRoutesLayout = read('src/app/(legal)/layout.tsx')
+const rootLayout = read('src/app/layout.tsx')
 const footer = read('src/components/shared/footer.tsx')
 const loginPage = read('src/app/auth/login/page.tsx')
 
@@ -126,5 +127,12 @@ describe('legal page integration', () => {
       assert.match(source, /Términos y Condiciones/)
       assert.match(source, /Política de Privacidad/)
     }
+  })
+
+  it('mounts one fixed footer globally without authentication queries', () => {
+    assert.match(rootLayout, /<PublicFooter \/>/)
+    assert.match(footer, /fixed inset-x-0 bottom-0/)
+    assert.match(footer, /href="\/dashboard"/)
+    assert.doesNotMatch(footer, /getAuthUser|supabase/)
   })
 })

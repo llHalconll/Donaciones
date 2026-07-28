@@ -1,11 +1,8 @@
 import Link from 'next/link'
 import { Heart } from 'lucide-react'
-import { getAuthUser } from '@/lib/supabase/server'
 import { getDemoUsername } from '@/lib/public-config'
 
-export async function PublicFooter() {
-  const { user } = await getAuthUser()
-  const isLoggedIn = !!user
+export function PublicFooter() {
   const demoUsername = getDemoUsername()
 
   return (
@@ -25,16 +22,9 @@ export async function PublicFooter() {
             )}
             <Link href="/pricing" className="hover:text-slate-900 dark:hover:text-white transition-colors">Precios</Link>
 
-            {/* Show Dashboard link for logged-in users, Register link for guests */}
-            {isLoggedIn ? (
-              <Link href="/dashboard" className="hover:text-slate-900 dark:hover:text-white transition-colors font-medium text-emerald-600 dark:text-emerald-400">
-                Mi panel
-              </Link>
-            ) : (
-              <Link href="/auth/register" className="hover:text-slate-900 dark:hover:text-white transition-colors">
-                Registro
-              </Link>
-            )}
+            <Link href="/dashboard" className="hover:text-slate-900 dark:hover:text-white transition-colors font-medium text-emerald-600 dark:text-emerald-400">
+              Mi panel
+            </Link>
 
             <Link href="/terms" className="hover:text-slate-900 dark:hover:text-white transition-colors">Términos y Condiciones</Link>
             <Link href="/privacy" className="hover:text-slate-900 dark:hover:text-white transition-colors">Política de Privacidad</Link>

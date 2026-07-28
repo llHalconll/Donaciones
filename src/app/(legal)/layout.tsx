@@ -39,20 +39,6 @@ export default function LegalRoutesLayout({ children }: { children: React.ReactN
       <main id="legal-main-content" tabIndex={-1} className="flex-1">
         {children}
       </main>
-
-      <footer className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <span>© 2026 DonacionesSaaS. Todos los derechos reservados.</span>
-          <nav aria-label="Documentos legales" className="flex flex-wrap gap-x-5 gap-y-2">
-            <Link href="/terms" className="hover:text-slate-950 hover:underline dark:hover:text-white">
-              Términos y Condiciones
-            </Link>
-            <Link href="/privacy" className="hover:text-slate-950 hover:underline dark:hover:text-white">
-              Política de Privacidad
-            </Link>
-          </nav>
-        </div>
-      </footer>
     </div>
   )
 }

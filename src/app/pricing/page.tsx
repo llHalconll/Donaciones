@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle2, Zap, Building2, Heart, ArrowRight, Mail } from 'lucide-react'
 import { PublicHeader } from '@/components/shared/header'
-import { PublicFooter } from '@/components/shared/footer'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { getSupportEmail } from '@/lib/public-config'
@@ -230,7 +229,6 @@ export default function PricingPage() {
           </div>
         </div>
       </main>
-      <PublicFooter />
     </div>
   )
 }
