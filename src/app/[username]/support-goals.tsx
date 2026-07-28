@@ -759,18 +759,18 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
         }
 
         /* ── Checkout modal backdrop ───────────────────────────────── */
-        .checkout-modal-backdrop {
-          position: fixed;
-          inset: 0;
-          z-index: 9000;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 1.25rem;
-          background: rgba(0, 0, 0, 0.68);
-          backdrop-filter: blur(4px);
-          animation: backdrop-in 200ms ease-out;
-        }
+.checkout-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+  animation: backdrop-in 200ms ease-out;
+}
 
         @keyframes backdrop-in {
           from { opacity: 0; }
@@ -778,20 +778,20 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
         }
 
         /* ── Checkout modal panel ──────────────────────────────────── */
-        .checkout-modal-panel {
-          position: relative;
-          width: min(92vw, 880px);
-          max-height: 88vh;
-          display: flex;
-          flex-direction: column;
-          background: #ffffff;
-          border-radius: 1.125rem;
-          box-shadow:
-            0 25px 60px rgba(0, 0, 0, 0.35),
-            0 8px 24px rgba(0, 0, 0, 0.18);
-          overflow: hidden;
-          animation: modal-in 250ms cubic-bezier(0.22, 1, 0.36, 1);
-        }
+.checkout-modal-panel {
+  position: relative;
+  width: min(94vw, 680px);
+  max-height: 86dvh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.35),
+    0 8px 24px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  animation: modal-in 250ms cubic-bezier(0.22, 1, 0.36, 1);
+}
 
         @media (prefers-color-scheme: dark) {
           .checkout-modal-panel {
@@ -864,26 +864,35 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
         }
 
         /* Hotmart inline checkout iframe fills the container */
-        #hotmart-inline-checkout-container iframe {
-          width: 100% !important;
-          min-height: 560px;
-          border: none;
-          display: block;
-        }
+#hotmart-inline-checkout-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+#hotmart-inline-checkout-container iframe {
+  display: block;
+  width: 100% !important;
+  min-height: 720px;
+  border: 0;
+}
 
         /* Mobile: occupy most of the viewport */
-        @media (max-width: 640px) {
-          .checkout-modal-backdrop {
-            padding: 0;
-            align-items: flex-end;
-          }
+@media (max-width: 640px) {
+  .checkout-modal-backdrop {
+    padding: 0.75rem;
+    align-items: center;
+  }
 
-          .checkout-modal-panel {
-            width: 100vw;
-            max-height: 96dvh;
-            border-radius: 1.25rem 1.25rem 0 0;
-          }
-        }
+  .checkout-modal-panel {
+    width: 100%;
+    max-height: 94dvh;
+    border-radius: 1rem;
+  }
+
+  #hotmart-inline-checkout-container iframe {
+    min-height: 760px;
+  }
+}
       `}</style>
     </>
   )
