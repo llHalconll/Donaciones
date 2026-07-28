@@ -2,10 +2,24 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { validatePublicUrl } from '@/lib/validations/url'
-import { PLAN_LIMITS } from '@/types/database.types'
+import { PLAN_LIMITS, SOCIAL_PLATFORMS } from '@/types/database.types'
 import { revalidatePath } from 'next/cache'
 
-interface ActionResult { error?: string; success?: string }
+interface ActionResult {
+  error?: string
+  success?: string
+  link?: {
+    id: string
+    platform: string
+    label: string | null
+    url: string
+    is_active: boolean
+  }
+}
+
+const SOCIAL_PLATFORM_VALUES = new Set<string>(
+  SOCIAL_PLATFORMS.map((platform) => platform.value)
+)
 
 async function getUser() {
   const supabase = await createClient()
@@ -25,6 +39,9 @@ export async function addSocialLinkAction(
   const label = (formData.get('label') as string | null)?.trim() || null
 
   if (!platform) return { error: 'Selecciona una plataforma.' }
+  if (!SOCIAL_PLATFORM_VALUES.has(platform)) {
+    return { error: 'Selecciona una plataforma válida.' }
+  }
   if (!url) return { error: 'El enlace es obligatorio.' }
 
   const urlCheck = validatePublicUrl(url)
@@ -78,12 +95,16 @@ export async function updateSocialLinkAction(
   if (!user) return { error: 'No estás autenticado.' }
 
   const id = (formData.get('id') as string | null)?.trim() ?? ''
+  const platform = (formData.get('platform') as string | null)?.trim() ?? ''
   const url = (formData.get('url') as string | null)?.trim() ?? ''
   const label = (formData.get('label') as string | null)?.trim() || null
   const isActiveRaw = formData.get('isActive')
   const isActive = isActiveRaw === 'true'
 
   if (!id) return { error: 'ID inválido.' }
+  if (!platform || !SOCIAL_PLATFORM_VALUES.has(platform)) {
+    return { error: 'Selecciona una plataforma válida.' }
+  }
   if (!url) return { error: 'El enlace es obligatorio.' }
 
   const urlCheck = validatePublicUrl(url)
@@ -100,13 +121,28 @@ export async function updateSocialLinkAction(
 
   const { error } = await supabase
     .from('social_links')
-    .update({ url: urlCheck.normalizedUrl ?? url, label, is_active: isActive, updated_at: new Date().toISOString() })
+    .update({
+      platform,
+      url: urlCheck.normalizedUrl ?? url,
+      label,
+      is_active: isActive,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', id)
     .eq('profile_id', user.id)
 
   if (error) return { error: error.message }
   revalidatePath('/dashboard/social')
-  return { success: 'Enlace actualizado.' }
+  return {
+    success: 'Enlace actualizado.',
+    link: {
+      id,
+      platform,
+      label,
+      url: urlCheck.normalizedUrl ?? url,
+      is_active: isActive,
+    },
+  }
 }
 
 export async function deleteSocialLinkAction(id: string): Promise<ActionResult> {

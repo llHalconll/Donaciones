@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { FormEvent, useRef, useState, useTransition } from 'react'
+import { FormEvent, useEffect, useRef, useState, useTransition } from 'react'
 import {
   ArrowDown,
   ArrowRight,
@@ -79,6 +79,25 @@ export function GoalsManager({ goals, limit }: Props) {
     formData.set('id', editing!.id)
     run(() => updateSupportGoalAction(formData), () => setEditing(null))
   }
+
+  function openEditor(goal: ManagedGoal) {
+    setMessage(null)
+    setEditing(goal)
+  }
+
+  useEffect(() => {
+    if (!editing) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setEditing(null)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = prev
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [editing])
 
   function handleDelete(goal: ManagedGoal) {
     if (
@@ -226,15 +245,11 @@ export function GoalsManager({ goals, limit }: Props) {
                         type="button"
                         size="sm"
                         variant="outline"
-                        onClick={() =>
-                          setEditing(editing?.id === goal.id ? null : goal)
-                        }
+                        onClick={() => openEditor(goal)}
                         disabled={pending}
-                        aria-expanded={editing?.id === goal.id}
-                        aria-controls={`edit-form-${goal.id}`}
                       >
                         <Edit3 className="size-4" aria-hidden="true" />
-                        {editing?.id === goal.id ? 'Cerrar editor' : 'Editar'}
+                        Editar
                       </Button>
                       <Button
                         type="button"
@@ -281,22 +296,51 @@ export function GoalsManager({ goals, limit }: Props) {
                   </div>
                 </div>
               </Card>
-
-              {editing?.id === goal.id && (
-                <div id={`edit-form-${goal.id}`} role="region" aria-label={`Editor de: ${goal.title}`}>
-                  <GoalForm
-                    key={goal.id}
-                    title={`Editar: ${editing.title}`}
-                    submitLabel="Guardar cambios"
-                    pending={pending}
-                    goal={editing}
-                    onSubmit={handleUpdate}
-                    onCancel={() => setEditing(null)}
-                  />
-                </div>
-              )}
             </div>
           ))}
+        </div>
+      )}
+
+      {editing && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Editor de: ${editing.title}`}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setEditing(null) }}
+        >
+          <div
+            className="max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-2xl shadow-2xl"
+            style={{ animation: 'goal-modal-in 220ms cubic-bezier(0.22,1,0.36,1)' }}
+          >
+            {message?.error && (
+              <div
+                role="alert"
+                className="mb-3 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-700 dark:text-rose-300"
+              >
+                {message.error}
+              </div>
+            )}
+            <GoalForm
+              key={editing.id}
+              title={`Editar: ${editing.title}`}
+              submitLabel="Guardar cambios"
+              pending={pending}
+              goal={editing}
+              onSubmit={handleUpdate}
+              onCancel={() => setEditing(null)}
+            />
+          </div>
+          <style>{`
+            @keyframes goal-modal-in {
+              from { opacity: 0; transform: translateY(1rem) scale(0.97); }
+              to   { opacity: 1; transform: translateY(0)    scale(1);    }
+            }
+            @media (prefers-reduced-motion: reduce) {
+              @keyframes goal-modal-in { from { opacity:0 } to { opacity:1 } }
+            }
+          `}</style>
         </div>
       )}
 

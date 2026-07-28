@@ -4,14 +4,15 @@ import { useState, useTransition, useActionState, useRef, useEffect } from 'reac
 import Link from 'next/link'
 import {
   Plus, Trash2, GripVertical, Eye, EyeOff,
-  CheckCircle2, AlertCircle, ExternalLink, Link2,
+  CheckCircle2, AlertCircle, ExternalLink, Link2, Edit3, X,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import {
-  addSocialLinkAction, deleteSocialLinkAction, toggleSocialLinkAction, reorderSocialLinksAction,
+  addSocialLinkAction, deleteSocialLinkAction, toggleSocialLinkAction,
+  reorderSocialLinksAction, updateSocialLinkAction,
 } from './actions'
 import type { SocialLink } from '@/types/database.types'
 
@@ -26,6 +27,7 @@ interface Props {
 export function SocialLinksManager({ links: initialLinks, limit, platforms }: Props) {
   const [links, setLinks] = useState(initialLinks)
   const [showForm, setShowForm] = useState(false)
+  const [editing, setEditing] = useState<SocialLink | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [togglingId, setTogglingId] = useState<string | null>(null)
   const [, startTransition] = useTransition()
@@ -40,6 +42,31 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
   useEffect(() => {
     if (addState?.success) window.location.reload()
   }, [addState?.success])
+
+  useEffect(() => {
+    if (!editing) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setEditing(null)
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [editing])
+
+  function handleSavedLink(updatedLink: Pick<SocialLink, 'id' | 'platform' | 'label' | 'url' | 'is_active'>) {
+    setLinks((currentLinks) =>
+      currentLinks.map((link) =>
+        link.id === updatedLink.id ? { ...link, ...updatedLink } : link
+      )
+    )
+    setEditing(null)
+  }
 
   async function handleDelete(id: string) {
     if (!confirm('¿Eliminar este enlace?')) return
@@ -124,6 +151,18 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
               </div>
               <div className="flex items-center gap-1 flex-shrink-0">
                 <button
+                  type="button"
+                  onClick={() => {
+                    setShowForm(false)
+                    setEditing(link)
+                  }}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-500/10 transition"
+                  aria-label={`Editar ${platformLabel(link.platform)}`}
+                >
+                  <Edit3 className="w-4 h-4" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
                   onClick={() => handleToggle(link.id, link.is_active)}
                   disabled={togglingId === link.id}
                   className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
@@ -132,6 +171,7 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
                   {link.is_active ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
                 <button
+                  type="button"
                   onClick={() => handleDelete(link.id)}
                   disabled={deletingId === link.id}
                   className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition"
@@ -198,6 +238,171 @@ export function SocialLinksManager({ links: initialLinks, limit, platforms }: Pr
           </CardContent>
         </Card>
       )}
+
+      {editing && (
+        <EditSocialLinkModal
+          key={editing.id}
+          link={editing}
+          platforms={platforms}
+          onClose={() => setEditing(null)}
+          onSaved={handleSavedLink}
+        />
+      )}
+    </div>
+  )
+}
+
+function EditSocialLinkModal({
+  link,
+  platforms,
+  onClose,
+  onSaved,
+}: {
+  link: SocialLink
+  platforms: readonly PlatformOption[]
+  onClose: () => void
+  onSaved: (
+    link: Pick<SocialLink, 'id' | 'platform' | 'label' | 'url' | 'is_active'>
+  ) => void
+}) {
+  const [error, setError] = useState<string | null>(null)
+  const [isSaving, startSaving] = useTransition()
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+    setError(null)
+
+    startSaving(async () => {
+      const result = await updateSocialLinkAction(null, formData)
+      if (result.error) {
+        setError(result.error)
+        return
+      }
+      if (result.link) onSaved(result.link)
+    })
+  }
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="edit-social-link-title"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose()
+      }}
+    >
+      <Card className="max-h-[90dvh] w-full max-w-lg overflow-y-auto p-5 shadow-2xl sm:p-6">
+        <div className="flex items-center justify-between gap-4">
+          <h2
+            id="edit-social-link-title"
+            className="font-bold text-slate-900 dark:text-white"
+          >
+            Editar red social
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex size-11 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:hover:bg-slate-800"
+            aria-label="Cerrar editor"
+          >
+            <X className="size-4" aria-hidden="true" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+          <input type="hidden" name="id" value={link.id} />
+
+          {error && (
+            <div
+              role="alert"
+              className="flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-600 dark:text-rose-300"
+            >
+              <AlertCircle className="size-4 shrink-0" aria-hidden="true" />
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-1.5">
+            <label
+              htmlFor={`edit-platform-${link.id}`}
+              className="block text-xs font-semibold text-slate-700 dark:text-slate-300"
+            >
+              Plataforma
+            </label>
+            <select
+              id={`edit-platform-${link.id}`}
+              name="platform"
+              required
+              defaultValue={link.platform}
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+            >
+              {platforms.map((platform) => (
+                <option key={platform.value} value={platform.value}>
+                  {platform.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label
+              htmlFor={`edit-social-url-${link.id}`}
+              className="block text-xs font-semibold text-slate-700 dark:text-slate-300"
+            >
+              URL
+            </label>
+            <input
+              id={`edit-social-url-${link.id}`}
+              name="url"
+              type="url"
+              required
+              defaultValue={link.url}
+              placeholder="https://..."
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label
+              htmlFor={`edit-social-label-${link.id}`}
+              className="block text-xs font-semibold text-slate-700 dark:text-slate-300"
+            >
+              Etiqueta (opcional)
+            </label>
+            <input
+              id={`edit-social-label-${link.id}`}
+              name="label"
+              type="text"
+              defaultValue={link.label ?? ''}
+              placeholder="Ej: Mi canal de tutoriales"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+            />
+          </div>
+
+          <label className="flex min-h-11 items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+            <input
+              type="checkbox"
+              name="isActive"
+              value="true"
+              defaultChecked={link.is_active}
+              className="size-4 accent-emerald-500"
+            />
+            Mostrar este enlace en el perfil público
+          </label>
+
+          <div className="flex flex-wrap gap-2">
+            <Button type="submit" size="sm" isLoading={isSaving}>
+              Guardar cambios
+            </Button>
+            <Button type="button" variant="ghost" size="sm" onClick={onClose}>
+              Cancelar
+            </Button>
+          </div>
+        </form>
+      </Card>
     </div>
   )
 }
