@@ -1,0 +1,428 @@
+TÉRMINOS Y CONDICIONES DE USO
+Versión: 2026-07-28-draft-1
+Última actualización: 28 de julio de 2026
+
+1. INTRODUCCIÓN
+Bienvenido a la Plataforma.
+Estos Términos y Condiciones regulan el acceso, navegación y uso de la Plataforma por parte de cualquier visitante, usuario registrado, creador de contenido, organización o cualquier otra persona que utilice los servicios ofrecidos.
+Al acceder, registrarse o utilizar la Plataforma, usted declara haber leído, comprendido y aceptado íntegramente estos Términos y Condiciones, así como la Política de Privacidad y los demás documentos que hagan parte del marco legal de la Plataforma.
+Si no está de acuerdo con cualquiera de estas disposiciones, deberá abstenerse de utilizar el Servicio.
+
+2. IDENTIFICACIÓN DEL RESPONSABLE
+La Plataforma es operada por:
+Responsable del servicio
+Víctor Alfonso Cuadrado Mestra
+Persona Natural
+Montería, Córdoba, Colombia
+Correo de contacto:
+victor.llhalconll@gmail.com
+En estos Términos podrá hacerse referencia al responsable como:
+	• La Plataforma
+	• El Operador
+	• Nosotros
+	• Nuestro
+según el contexto.
+
+3. NATURALEZA DEL SERVICIO
+La Plataforma constituye un servicio tecnológico que permite a personas naturales y organizaciones crear perfiles públicos para recibir apoyos económicos mediante proveedores externos de pago.
+La Plataforma no es una entidad financiera.
+La Plataforma no es una pasarela de pagos.
+La Plataforma no procesa pagos.
+La Plataforma no recibe dinero de los apoyos realizados.
+La Plataforma únicamente facilita la creación de perfiles públicos, la publicación de información proporcionada por los usuarios y la integración con servicios externos de pago.
+Los apoyos realizados por terceros se efectúan directamente mediante el proveedor de pagos seleccionado por el creador del perfil.
+Actualmente dicho proveedor es Hotmart.
+En el futuro podrán incorporarse otros proveedores sin necesidad de modificar la esencia de estos Términos.
+
+4. DEFINICIONES
+Para efectos de este documento se entenderá por:
+Plataforma
+El sitio web, aplicaciones, servicios, herramientas y funcionalidades operadas por el Responsable.
+Usuario
+Toda persona que accede al sitio web.
+Usuario Registrado
+Persona que crea una cuenta dentro de la Plataforma.
+Creador
+Usuario que publica un perfil con el fin de recibir apoyos.
+Visitante
+Persona que navega la Plataforma sin crear una cuenta.
+Perfil Público
+Página visible públicamente creada por un usuario registrado.
+Apoyo
+Contribución económica voluntaria realizada por un tercero mediante un proveedor externo de pagos.
+El término oficial utilizado por la Plataforma es "Apoyo". El uso de expresiones como "donación", "contribución" o similares en conversaciones, materiales promocionales o lenguaje coloquial no modifica la naturaleza técnica ni jurídica del servicio.
+Proveedor de Pago
+Servicio externo utilizado para procesar el pago.
+Actualmente la Plataforma integra Hotmart.
+Contenido
+Toda información publicada por un usuario, incluyendo textos, imágenes, fotografías, logotipos, enlaces, nombres, biografías, objetivos, importes sugeridos, redes sociales y cualquier otro material.
+
+5. CAPACIDAD PARA UTILIZAR EL SERVICIO
+Solo podrán crear una cuenta las personas con capacidad legal para celebrar contratos conforme a la legislación aplicable.
+Como regla general, la edad mínima para crear una cuenta es de dieciocho (18) años.
+Los menores de edad únicamente podrán utilizar la Plataforma cuando la legislación aplicable lo permita y cuenten con la autorización de quien ejerza su representación legal.
+La Plataforma podrá solicitar información adicional cuando resulte necesario verificar el cumplimiento de este requisito.
+
+6. ACEPTACIÓN DE LOS TÉRMINOS
+El registro de una cuenta requiere la aceptación expresa de:
+	• Estos Términos y Condiciones.
+	• La Política de Privacidad.
+La aceptación será registrada por la Plataforma junto con la versión vigente del documento y la fecha correspondiente.
+Cada vez que el Usuario continúe utilizando el Servicio después de la entrada en vigor de una modificación de estos Términos, se entenderá que acepta la versión vigente.
+
+7. OBJETO DE LA PLATAFORMA
+La Plataforma ofrece, entre otras, las siguientes funcionalidades:
+	• Registro de usuarios.
+	• Inicio de sesión mediante correo electrónico.
+	• Inicio de sesión mediante Google.
+	• Creación de perfiles públicos.
+	• Gestión de objetivos de apoyo.
+	• Configuración de diferentes niveles de apoyo.
+	• Integración con proveedores externos de pago.
+	• Publicación de enlaces sociales.
+	• Estadísticas de interacción.
+	• Administración del perfil.
+La Plataforma podrá ampliar, modificar, eliminar o sustituir funcionalidades cuando lo considere necesario para mejorar el Servicio.
+
+8. NATURALEZA DE LOS APOYOS
+Los apoyos económicos son gestionados exclusivamente por el proveedor externo de pago seleccionado por el creador.
+La Plataforma no:
+	• recibe dinero;
+	• procesa pagos;
+	• almacena tarjetas bancarias;
+	• administra cuentas bancarias;
+	• confirma pagos realizados;
+	• garantiza la ejecución del pago;
+	• garantiza el éxito de una transacción;
+	• interviene en controversias económicas entre el creador y quien realiza el apoyo.
+La relación económica derivada del apoyo existe entre el creador y la persona que realiza dicho apoyo, conforme a las condiciones del proveedor de pago utilizado.
+
+9. REGISTRO DE CUENTA
+Para utilizar determinadas funcionalidades será necesario crear una cuenta.
+Durante el registro el Usuario deberá proporcionar información veraz, completa y actualizada.
+El Usuario será responsable de mantener dicha información actualizada.
+La Plataforma podrá suspender o limitar cuentas cuando detecte información falsa, engañosa o inconsistente.
+Cada usuario será responsable de mantener la confidencialidad de sus credenciales de acceso y responderá por toda actividad realizada desde su cuenta, salvo que demuestre un acceso no autorizado ajeno a su control.
+
+10. USO CORRECTO DEL SERVICIO
+El Usuario se compromete a utilizar la Plataforma de manera responsable, conforme a la ley, la buena fe, el orden público y estos Términos.
+Queda prohibido utilizar la Plataforma para fines ilícitos, fraudulentos o que puedan afectar los derechos de terceros o el normal funcionamiento del Servicio.
+Asimismo, el Usuario se abstendrá de realizar actividades destinadas a vulnerar la seguridad de la Plataforma, interferir con sus sistemas, obtener accesos no autorizados o utilizar herramientas automatizadas de manera abusiva.
+
+Fin de la Parte 1. Continúa con los capítulos sobre contenido permitido y prohibido, obligaciones de los usuarios, reportes, suspensión de cuentas, reembolsos, propiedad intelectual, limitación de responsabilidad, protección de datos, modificaciones, legislación aplicable y disposiciones finales.
+
+
+TÉRMINOS Y CONDICIONES DE USO
+Continuación
+
+11. CONTENIDO PERMITIDO
+La Plataforma está destinada a facilitar la creación de perfiles públicos para recibir apoyos económicos destinados a proyectos, actividades o iniciativas legales.
+Se permite, entre otros, el contenido relacionado con:
+	• Creadores de contenido.
+	• Artistas.
+	• Streamers.
+	• Desarrolladores.
+	• Proyectos de software.
+	• Educación.
+	• Organizaciones sin ánimo de lucro.
+	• Música.
+	• Fotografía.
+	• Tecnología.
+	• Arte.
+	• Videojuegos.
+	• Investigación.
+	• Ciencia.
+	• Divulgación.
+	• Cultura.
+	• Emprendimientos.
+	• Proyectos personales.
+	• Actividades benéficas legalmente permitidas.
+Todo el contenido deberá respetar la legislación aplicable, los derechos de terceros y estos Términos y Condiciones.
+La publicación de determinado contenido no implica aprobación, respaldo o recomendación por parte de la Plataforma.
+
+12. CONTENIDO PROHIBIDO
+Queda estrictamente prohibido utilizar la Plataforma para publicar, promover, compartir o distribuir contenido relacionado con:
+	• Pornografía cuya producción, distribución o posesión sea ilegal.
+	• Explotación o abuso sexual.
+	• Material relacionado con menores de edad que infrinja la legislación aplicable.
+	• Venta o distribución ilegal de drogas.
+	• Fabricación o comercialización ilegal de armas.
+	• Terrorismo.
+	• Extremismo violento.
+	• Lavado de activos.
+	• Financiación del terrorismo.
+	• Esquemas piramidales.
+	• Estafas.
+	• Fraudes financieros.
+	• Suplantación de identidad.
+	• Phishing.
+	• Malware.
+	• Software malicioso.
+	• Ingeniería social destinada al fraude.
+	• Spam masivo.
+	• Violación de derechos de autor.
+	• Distribución ilegal de contenido protegido.
+	• Juegos de azar cuando sean ilegales conforme a la legislación aplicable.
+	• Contenido que promueva actividades ilícitas.
+	• Cualquier otra actividad prohibida por la legislación vigente.
+La Plataforma podrá retirar cualquier contenido que considere incompatible con estos Términos, incluso antes de concluir una investigación interna, cuando existan motivos razonables para proteger a otros usuarios, cumplir obligaciones legales o preservar la seguridad del servicio.
+
+13. RESPONSABILIDAD SOBRE EL CONTENIDO
+Cada Usuario conserva la propiedad intelectual sobre el contenido que publique.
+No obstante, el Usuario declara que:
+	• posee los derechos necesarios para publicar dicho contenido;
+	• cuenta con las autorizaciones correspondientes cuando sean necesarias;
+	• su contenido no infringe derechos de terceros;
+	• su contenido cumple la legislación aplicable.
+El Usuario será el único responsable por las consecuencias derivadas de la publicación de dicho contenido.
+La Plataforma no asume responsabilidad por la veracidad, exactitud, autenticidad o legalidad del contenido generado por los usuarios.
+
+14. LICENCIA DE USO DEL CONTENIDO
+Al publicar contenido dentro de la Plataforma, el Usuario concede al Operador una licencia no exclusiva, mundial, gratuita y limitada al funcionamiento del Servicio para:
+	• almacenar el contenido;
+	• reproducirlo técnicamente;
+	• mostrarlo públicamente dentro de la Plataforma;
+	• adaptarlo cuando resulte técnicamente necesario para su visualización;
+	• generar copias de seguridad;
+	• procesarlo para el correcto funcionamiento del Servicio.
+Esta licencia permanecerá vigente únicamente mientras el contenido permanezca publicado o sea necesario conservarlo conforme a la Política de Retención y la legislación aplicable.
+La licencia no transfiere la propiedad intelectual del contenido al Operador.
+
+15. PERFILES PÚBLICOS
+Cada Usuario podrá crear un perfil público conforme a las funcionalidades disponibles.
+El Usuario será responsable de toda la información publicada en dicho perfil.
+La Plataforma podrá limitar determinadas funciones, modificar herramientas o introducir nuevas opciones sin previo aviso cuando ello resulte necesario para el correcto funcionamiento del Servicio.
+La existencia de un perfil público no implica aprobación, certificación, patrocinio ni verificación por parte de la Plataforma.
+
+16. APOYOS ECONÓMICOS
+Los apoyos económicos publicados por los creadores constituyen contribuciones voluntarias realizadas por terceros.
+La Plataforma no garantiza:
+	• que un creador reciba apoyos;
+	• que un visitante realice un apoyo;
+	• un determinado volumen de ingresos;
+	• resultados económicos;
+	• crecimiento de audiencia;
+	• éxito comercial.
+Toda decisión de realizar un apoyo corresponde exclusivamente al usuario que efectúa el pago.
+
+17. PROVEEDORES EXTERNOS DE PAGO
+Los pagos realizados desde la Plataforma son procesados exclusivamente por proveedores externos.
+Cada proveedor mantiene sus propios:
+	• términos de uso;
+	• políticas de privacidad;
+	• políticas de reembolso;
+	• medidas de seguridad;
+	• procedimientos de verificación.
+La Plataforma no controla dichos servicios y no será responsable por interrupciones, errores, rechazos, bloqueos, devoluciones, verificaciones, retenciones o decisiones adoptadas por dichos proveedores.
+
+18. REEMBOLSOS
+La Plataforma no procesa pagos y, por tanto, no administra reembolsos.
+Cuando una persona considere procedente solicitar la devolución de un apoyo económico, deberá dirigirse inicialmente al creador correspondiente y, cuando sea aplicable, seguir los procedimientos establecidos por el proveedor externo de pago.
+La Plataforma no garantiza reembolsos, no interviene como parte del contrato económico entre creador y donante y no asume responsabilidad por controversias derivadas de pagos realizados mediante servicios de terceros.
+
+19. REPORTES
+Cualquier persona podrá reportar perfiles o contenidos cuando considere que infringen estos Términos o la legislación aplicable.
+Entre otros motivos, podrán presentarse reportes relacionados con:
+	• fraude;
+	• suplantación de identidad;
+	• contenido ilegal;
+	• spam;
+	• actividad sospechosa;
+	• infracción de derechos de autor;
+	• uso indebido de la Plataforma.
+La presentación de un reporte no implica que el contenido denunciado sea automáticamente eliminado.
+La Plataforma analizará cada caso conforme a sus procedimientos internos y podrá solicitar información adicional cuando resulte necesario.
+
+20. INVESTIGACIÓN DE REPORTES
+La Plataforma podrá:
+	• solicitar información adicional;
+	• revisar registros técnicos;
+	• limitar temporalmente determinadas funciones;
+	• ocultar contenido durante la investigación;
+	• suspender preventivamente una cuenta cuando existan indicios razonables de incumplimiento.
+La adopción de medidas preventivas no constituye una declaración definitiva sobre la responsabilidad del Usuario.
+
+21. SUSPENSIÓN Y TERMINACIÓN DE CUENTAS
+La Plataforma podrá suspender temporal o definitivamente una cuenta cuando, entre otras circunstancias, se verifique:
+	• fraude;
+	• incumplimiento de estos Términos;
+	• uso indebido de proveedores externos de pago;
+	• actividades ilegales;
+	• reclamaciones reiteradas debidamente fundamentadas;
+	• órdenes emitidas por autoridades competentes;
+	• intentos de comprometer la seguridad de la Plataforma;
+	• uso automatizado abusivo del Servicio;
+	• publicación reiterada de contenido prohibido.
+La suspensión podrá implicar la limitación parcial o total del acceso al Servicio.
+Cuando resulte legalmente posible, la Plataforma podrá informar al Usuario sobre la causa general de la medida adoptada, sin estar obligada a revelar información cuya divulgación comprometa la seguridad del sistema, investigaciones internas o derechos de terceros.
+
+22. DESACTIVACIÓN DEL PERFIL
+El Usuario podrá solicitar la desactivación de su perfil conforme a las herramientas disponibles en la Plataforma.
+La desactivación del perfil público no implica la eliminación inmediata de toda la información asociada a la cuenta.
+Determinados datos podrán conservarse durante el tiempo necesario para:
+	• cumplir obligaciones legales;
+	• atender requerimientos de autoridades competentes;
+	• resolver reclamaciones;
+	• proteger la seguridad del Servicio;
+	• cumplir la Política de Retención y Eliminación de Datos.
+La eliminación definitiva de la información se realizará conforme a los procedimientos internos y a la normativa aplicable.
+
+
+TÉRMINOS Y CONDICIONES DE USO
+Continuación
+
+23. PROPIEDAD INTELECTUAL DE LA PLATAFORMA
+Salvo disposición expresa en contrario, todos los derechos de propiedad intelectual relacionados con la Plataforma pertenecen al Operador o a sus respectivos titulares.
+Esto incluye, entre otros:
+	• el software;
+	• el código fuente y código objeto;
+	• la arquitectura del sistema;
+	• las interfaces de usuario;
+	• el diseño gráfico;
+	• la identidad visual;
+	• logotipos;
+	• iconografía;
+	• documentación;
+	• bases de datos cuando estén protegidas por la legislación aplicable;
+	• textos originales desarrollados por la Plataforma;
+	• marcas, nombres comerciales y demás signos distintivos.
+Nada de lo dispuesto en estos Términos transfiere al Usuario derechos de propiedad intelectual sobre dichos elementos.
+
+24. RESTRICCIONES DE USO
+Sin autorización previa y por escrito del Operador, el Usuario no podrá:
+	• copiar total o parcialmente la Plataforma;
+	• modificar el software;
+	• descompilar, desensamblar o realizar ingeniería inversa cuando la legislación no lo permita;
+	• revender el Servicio;
+	• explotar comercialmente funcionalidades exclusivas de la Plataforma;
+	• utilizar robots, scrapers o herramientas automatizadas para extraer información de forma masiva;
+	• intentar acceder a áreas restringidas;
+	• interferir con la infraestructura tecnológica del Servicio;
+	• eludir medidas de seguridad implementadas por la Plataforma.
+
+25. DISPONIBILIDAD DEL SERVICIO
+La Plataforma procurará mantener el Servicio disponible de manera continua.
+Sin embargo, el Usuario reconoce que pueden producirse interrupciones derivadas de:
+	• mantenimiento programado;
+	• actualizaciones;
+	• fallas técnicas;
+	• proveedores externos;
+	• incidentes de seguridad;
+	• causas de fuerza mayor;
+	• hechos imprevisibles fuera del control razonable del Operador.
+La Plataforma no garantiza disponibilidad permanente ni funcionamiento ininterrumpido.
+
+26. MODIFICACIONES DEL SERVICIO
+El Operador podrá, en cualquier momento y sin necesidad de autorización previa de los Usuarios:
+	• incorporar nuevas funcionalidades;
+	• modificar herramientas existentes;
+	• retirar funcionalidades;
+	• actualizar la interfaz;
+	• introducir mejoras de seguridad;
+	• modificar procesos internos.
+Siempre que resulte razonable, estas modificaciones procurarán preservar la continuidad del Servicio.
+
+27. PLANES PREMIUM
+La Plataforma podrá ofrecer planes gratuitos y planes de pago.
+Las características, beneficios, limitaciones, precios y condiciones de los planes Premium serán publicados oportunamente dentro de la Plataforma.
+El Operador podrá crear, modificar o retirar planes comerciales cuando lo considere necesario para la evolución del Servicio.
+Las condiciones particulares de dichos planes complementarán estos Términos.
+
+28. ENLACES A SERVICIOS DE TERCEROS
+La Plataforma podrá contener enlaces o integraciones con servicios de terceros.
+Entre ellos pueden encontrarse:
+	• proveedores de pago;
+	• redes sociales;
+	• servicios de autenticación;
+	• herramientas analíticas;
+	• otros servicios tecnológicos.
+El acceso a dichos servicios se encuentra sujeto a las políticas, términos y condiciones establecidos por sus respectivos proveedores.
+La Plataforma no controla dichos servicios y no será responsable por su disponibilidad, funcionamiento, seguridad o contenido.
+
+29. SEGURIDAD
+La Plataforma implementa medidas técnicas y organizativas destinadas a proteger la información administrada dentro del Servicio.
+No obstante, ningún sistema informático puede garantizar seguridad absoluta.
+El Usuario también es responsable de proteger sus credenciales de acceso y de utilizar contraseñas seguras.
+Cuando el Usuario detecte un acceso no autorizado o sospeche un incidente de seguridad relacionado con su cuenta, deberá informar a la Plataforma tan pronto como sea posible.
+
+30. LIMITACIÓN DE RESPONSABILIDAD
+En la máxima medida permitida por la legislación aplicable, la Plataforma no será responsable por:
+	• pérdidas económicas derivadas del uso del Servicio;
+	• lucro cesante;
+	• pérdida de oportunidades comerciales;
+	• pérdida de reputación;
+	• pérdida de ingresos;
+	• pérdida de información causada por acciones del Usuario;
+	• interrupciones de proveedores externos;
+	• errores en servicios de terceros;
+	• decisiones comerciales adoptadas por los Usuarios;
+	• controversias entre creadores y personas que realicen apoyos;
+	• contenido publicado por los Usuarios.
+La responsabilidad total del Operador frente a un Usuario, cuando legalmente proceda, estará limitada al alcance permitido por la legislación aplicable.
+Nada de lo dispuesto en esta cláusula excluirá responsabilidades cuya exclusión esté prohibida por la ley.
+
+31. INDEMNIDAD
+El Usuario acepta mantener indemne al Operador frente a reclamaciones, demandas, procedimientos administrativos o judiciales, sanciones, multas, daños, perjuicios, costos y gastos razonables derivados de:
+	• incumplimiento de estos Términos;
+	• publicación de contenido ilegal;
+	• infracción de derechos de terceros;
+	• uso indebido de la Plataforma;
+	• incumplimiento de obligaciones legales imputables al Usuario.
+
+32. PROTECCIÓN DE DATOS PERSONALES
+El tratamiento de datos personales se regirá por la Política de Privacidad de la Plataforma.
+Al utilizar el Servicio, el Usuario reconoce haber leído dicha política y comprender la forma en que se recopilan, utilizan, almacenan y protegen sus datos personales.
+La Plataforma implementará medidas razonables para proteger la información tratada, conforme a la legislación aplicable y a sus procedimientos internos.
+
+33. CONSERVACIÓN DE LA INFORMACIÓN
+La información será conservada durante el tiempo necesario para:
+	• prestar el Servicio;
+	• cumplir obligaciones legales;
+	• atender reclamaciones;
+	• proteger la seguridad del sistema;
+	• cumplir la Política de Retención y Eliminación de Datos.
+Una vez finalizadas las finalidades correspondientes, los datos podrán eliminarse o anonimizarse conforme a los procedimientos internos de la Plataforma.
+
+34. MODIFICACIÓN DE LOS TÉRMINOS Y CONDICIONES
+La Plataforma podrá modificar estos Términos y Condiciones cuando resulte necesario por motivos legales, técnicos, comerciales o de seguridad.
+La versión vigente será publicada dentro de la Plataforma indicando su fecha de actualización.
+Cuando la naturaleza de la modificación lo justifique, el Operador podrá informar a los Usuarios mediante los canales disponibles.
+El uso continuado del Servicio después de la entrada en vigor de las modificaciones constituirá aceptación de la versión actualizada.
+
+35. SUSPENSIÓN O TERMINACIÓN DEL SERVICIO
+La Plataforma podrá suspender total o parcialmente el Servicio, o cesar definitivamente su operación, cuando existan razones técnicas, comerciales, legales o de fuerza mayor que así lo requieran.
+Siempre que sea razonablemente posible, se procurará informar previamente a los Usuarios.
+La terminación del Servicio no afectará aquellas obligaciones que, por su naturaleza, deban subsistir, incluyendo las relacionadas con propiedad intelectual, protección de datos, limitación de responsabilidad e indemnidad.
+
+36. LEGISLACIÓN APLICABLE
+Estos Términos y Condiciones se regirán e interpretarán de conformidad con las leyes de la República de Colombia.
+Cuando la normativa imperativa del lugar de residencia del Usuario otorgue derechos adicionales que no puedan ser válidamente renunciados, dichos derechos prevalecerán en la medida exigida por esa legislación.
+
+37. RESOLUCIÓN DE CONTROVERSIAS
+Las partes procurarán resolver de buena fe cualquier controversia relacionada con la interpretación o ejecución de estos Términos.
+Cuando no sea posible alcanzar una solución amistosa, las controversias serán sometidas a las autoridades competentes conforme a la legislación aplicable y a las reglas de competencia que correspondan.
+
+38. NULIDAD PARCIAL
+Si alguna disposición de estos Términos fuera declarada inválida, ilegal o inaplicable por una autoridad competente, dicha circunstancia no afectará la validez de las restantes disposiciones, que continuarán plenamente vigentes.
+La disposición afectada será interpretada o sustituida, en la medida de lo posible, por otra que refleje de la forma más cercana la finalidad originalmente perseguida.
+
+39. CESIÓN
+El Usuario no podrá ceder ni transferir los derechos u obligaciones derivados de estos Términos sin autorización previa y escrita del Operador.
+El Operador podrá ceder o transferir los derechos y obligaciones derivados de estos Términos en caso de reorganización empresarial, fusión, adquisición, venta de activos o cualquier otra operación equivalente, siempre respetando la legislación aplicable.
+
+40. INTEGRIDAD DEL ACUERDO
+Estos Términos y Condiciones, junto con la Política de Privacidad y los demás documentos legales publicados por la Plataforma, constituyen el acuerdo completo entre el Usuario y el Operador respecto del uso del Servicio.
+En caso de contradicción entre estos Términos y un documento específico que regule una funcionalidad determinada, prevalecerá este último únicamente respecto de la materia que regule expresamente.
+
+41. CONTACTO
+Para consultas relacionadas con estos Términos y Condiciones, el Usuario podrá comunicarse a través del siguiente correo electrónico:
+Correo electrónico: victor.llhalconll@gmail.com
+Responsable del Servicio:
+Víctor Alfonso Cuadrado Mestra
+Montería, Córdoba, Colombia.
+
+42. ENTRADA EN VIGOR
+Estos Términos y Condiciones entrarán en vigor a partir de la fecha indicada en su versión publicada dentro de la Plataforma.
+La utilización del Servicio con posterioridad a dicha fecha implicará la aceptación de la versión vigente.
+
+

@@ -50,6 +50,12 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 button,
 a,
 input,

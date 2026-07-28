@@ -34,8 +34,8 @@ export async function PublicFooter() {
             </Link>
           )}
 
-          <Link href="/terms" className="hover:text-slate-900 dark:hover:text-white transition-colors">Términos</Link>
-          <Link href="/privacy" className="hover:text-slate-900 dark:hover:text-white transition-colors">Privacidad</Link>
+          <Link href="/terms" className="hover:text-slate-900 dark:hover:text-white transition-colors">Términos y Condiciones</Link>
+          <Link href="/privacy" className="hover:text-slate-900 dark:hover:text-white transition-colors">Política de Privacidad</Link>
         </div>
       </div>
     </footer>

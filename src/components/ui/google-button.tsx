@@ -22,7 +22,7 @@ export function GoogleButton({
 
     if (requireLegalAcceptance && !legalAccepted) {
       setError(
-        'Debes aceptar los Términos de Servicio y la Política de Privacidad para continuar.'
+        'Debes aceptar los Términos y Condiciones y la Política de Privacidad para continuar.'
       )
       return
     }

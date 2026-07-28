@@ -83,6 +83,28 @@ export default function LoginPage() {
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </form>
+
+            <nav
+              aria-label="Documentos legales"
+              className="flex flex-wrap justify-center gap-x-4 gap-y-2 border-t border-slate-100 pt-4 text-[11px] dark:border-slate-800"
+            >
+              <Link
+                href="/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-500 hover:text-emerald-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-slate-400 dark:hover:text-emerald-400"
+              >
+                Términos y Condiciones
+              </Link>
+              <Link
+                href="/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-500 hover:text-emerald-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-slate-400 dark:hover:text-emerald-400"
+              >
+                Política de Privacidad
+              </Link>
+            </nav>
           </CardContent>
 
           <CardFooter className="justify-center border-t border-slate-100 dark:border-slate-800/60 pt-4 text-xs text-slate-500 dark:text-slate-400">

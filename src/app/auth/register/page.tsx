@@ -44,18 +44,20 @@ export default function RegisterPage() {
                 aria-describedby="legal-consent-copy"
               />
               <span id="legal-consent-copy">
-                He leído y acepto los{' '}
+                Acepto los{' '}
                 <Link
                   href="/terms"
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
                 >
-                  Términos de Servicio
+                  Términos y Condiciones
                 </Link>{' '}
                 y la{' '}
                 <Link
                   href="/privacy"
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
                 >
                   Política de Privacidad

@@ -118,7 +118,7 @@ export async function registerAction(prevState: unknown, formData: FormData) {
   if (!legalAccepted) {
     return {
       error:
-        'Debes aceptar los Términos de Servicio y la Política de Privacidad para crear una cuenta.',
+        'Debes aceptar los Términos y Condiciones y la Política de Privacidad para crear una cuenta.',
     }
   }
 

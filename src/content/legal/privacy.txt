@@ -1,0 +1,360 @@
+POLÍTICA DE PRIVACIDAD
+Versión: 2026-07-28-draft-1
+Última actualización: 28 de julio de 2026
+
+1. INTRODUCCIÓN
+La presente Política de Privacidad describe la forma en que la Plataforma recopila, utiliza, almacena, protege, comparte y elimina los datos personales de quienes acceden o utilizan sus servicios.
+La protección de la información personal constituye uno de los principios fundamentales de la Plataforma. Por ello, el tratamiento de los datos personales se realiza procurando cumplir la legislación aplicable, incluyendo la normativa colombiana sobre protección de datos personales y, cuando corresponda, otras disposiciones que resulten aplicables a usuarios ubicados en diferentes jurisdicciones.
+Esta Política complementa los Términos y Condiciones de Uso y debe interpretarse conjuntamente con los demás documentos legales publicados por la Plataforma.
+Al utilizar el Servicio, el Usuario declara haber leído y comprendido esta Política de Privacidad.
+
+2. IDENTIFICACIÓN DEL RESPONSABLE DEL TRATAMIENTO
+El responsable del tratamiento de los datos personales es:
+Víctor Alfonso Cuadrado Mestra
+Persona Natural
+Montería, Córdoba, Colombia
+Correo electrónico:
+victor.llhalconll@gmail.com
+En esta Política podrá hacerse referencia al responsable como:
+	• La Plataforma
+	• El Operador
+	• Nosotros
+	• Nuestro
+
+3. ÁMBITO DE APLICACIÓN
+La presente Política aplica al tratamiento de datos personales realizado a través de:
+	• el sitio web de la Plataforma;
+	• el registro de usuarios;
+	• el inicio de sesión;
+	• los perfiles públicos;
+	• las funciones administrativas;
+	• los formularios de contacto;
+	• los sistemas de autenticación;
+	• las herramientas estadísticas;
+	• los sistemas de reporte;
+	• cualquier otra funcionalidad incorporada posteriormente.
+También aplica al tratamiento realizado mediante proveedores tecnológicos contratados para la prestación del Servicio.
+
+4. DEFINICIONES
+Para efectos de esta Política se entenderá por:
+Dato personal
+Toda información que permita identificar o hacer identificable a una persona natural.
+Titular
+La persona a quien pertenecen los datos personales.
+Tratamiento
+Cualquier operación realizada sobre datos personales, incluyendo su recopilación, almacenamiento, organización, consulta, uso, modificación, actualización, conservación, eliminación o anonimización.
+Responsable del tratamiento
+La persona que decide sobre la finalidad y el tratamiento de los datos personales.
+Encargado del tratamiento
+La persona o entidad que realiza tratamiento de datos personales por cuenta del Responsable.
+Usuario
+Toda persona que utiliza la Plataforma.
+Perfil público
+Página creada por un Usuario y visible públicamente conforme a la configuración disponible.
+Proveedor externo
+Empresa independiente que presta servicios necesarios para el funcionamiento de la Plataforma, tales como autenticación, alojamiento, procesamiento de pagos u otros servicios tecnológicos.
+
+5. DATOS PERSONALES QUE RECOPILAMOS
+Dependiendo de la forma en que el Usuario utilice la Plataforma, podremos recopilar diferentes categorías de información.
+5.1 Información de registro
+Cuando un Usuario crea una cuenta podrán recopilarse datos como:
+	• nombre;
+	• nombre de usuario;
+	• dirección de correo electrónico;
+	• contraseña cifrada mediante el proveedor de autenticación;
+	• fotografía de perfil cuando sea proporcionada;
+	• identificadores internos necesarios para la administración de la cuenta.
+5.2 Información proveniente del inicio de sesión con Google
+Cuando el Usuario decida autenticarse mediante Google, la Plataforma podrá recibir la información autorizada por dicho proveedor, incluyendo:
+	• nombre;
+	• dirección de correo electrónico;
+	• fotografía del perfil;
+	• identificador único proporcionado por Google.
+La Plataforma únicamente accederá a la información expresamente autorizada por el Usuario durante el proceso de autenticación.
+5.3 Información del perfil público
+Los Usuarios podrán publicar información destinada a ser visible para terceros, incluyendo:
+	• nombre del perfil;
+	• fotografía;
+	• biografía;
+	• objetivos de apoyo;
+	• montos sugeridos;
+	• enlaces a redes sociales;
+	• información descriptiva;
+	• otros datos que el propio Usuario decida hacer públicos.
+Toda la información publicada voluntariamente como parte del perfil podrá ser visible para cualquier visitante conforme a la configuración de la Plataforma.
+5.4 Información técnica
+Durante el uso del Servicio podrán recopilarse automáticamente determinados datos técnicos, tales como:
+	• dirección IP;
+	• tipo de navegador;
+	• sistema operativo;
+	• idioma del navegador;
+	• resolución de pantalla;
+	• fecha y hora de acceso;
+	• páginas visitadas;
+	• eventos de navegación;
+	• identificadores de sesión;
+	• registros técnicos necesarios para la seguridad del sistema.
+5.5 Información relacionada con reportes
+Cuando un Usuario presente un reporte o denuncia podrán recopilarse datos como:
+	• motivo del reporte;
+	• descripción de los hechos;
+	• identificadores técnicos relacionados con el incidente;
+	• fecha de presentación;
+	• estado del procedimiento.
+
+6. DATOS QUE NO RECOPILAMOS
+La Plataforma no recopila ni almacena directamente:
+	• números completos de tarjetas bancarias;
+	• códigos CVV;
+	• contraseñas de cuentas bancarias;
+	• credenciales de proveedores de pago;
+	• información financiera distinta de la necesaria para el funcionamiento del Servicio;
+	• historial bancario de los Usuarios.
+Los pagos son gestionados exclusivamente por proveedores externos especializados.
+
+7. FINALIDADES DEL TRATAMIENTO
+Los datos personales podrán utilizarse para:
+	• crear cuentas de usuario;
+	• autenticar el acceso;
+	• administrar perfiles públicos;
+	• permitir la utilización de las funcionalidades del Servicio;
+	• mostrar información pública autorizada por el Usuario;
+	• prevenir fraude;
+	• detectar actividades sospechosas;
+	• mejorar la seguridad;
+	• atender solicitudes de soporte;
+	• responder consultas;
+	• gestionar reportes;
+	• elaborar estadísticas internas;
+	• cumplir obligaciones legales;
+	• proteger los derechos de la Plataforma y de terceros.
+La Plataforma no utilizará los datos personales para finalidades incompatibles con aquellas para las cuales fueron recopilados, salvo autorización del Titular o cuando exista una obligación legal que lo permita.
+
+8. BASES JURÍDICAS DEL TRATAMIENTO
+El tratamiento de datos personales podrá fundamentarse, según corresponda, en una o varias de las siguientes bases:
+	• el consentimiento otorgado por el Usuario;
+	• la ejecución de la relación contractual derivada del uso de la Plataforma;
+	• el cumplimiento de obligaciones legales;
+	• la protección de intereses legítimos del Operador, siempre que no prevalezcan los derechos fundamentales del Titular;
+	• la atención de requerimientos formulados por autoridades competentes.
+Cuando el tratamiento requiera consentimiento, este será solicitado de manera previa, expresa e informada conforme a la legislación aplicable.
+
+9. ACEPTACIÓN DE LA POLÍTICA
+Durante el proceso de registro, el Usuario deberá aceptar expresamente la presente Política de Privacidad.
+La Plataforma conservará evidencia de dicha aceptación, incluyendo la versión del documento aceptado, la fecha y hora del registro y demás datos técnicos necesarios para acreditar dicha manifestación de voluntad.
+Cuando esta Política sea modificada de forma sustancial, la Plataforma podrá solicitar nuevamente la aceptación del Usuario antes de permitir el acceso a determinadas funcionalidades.
+
+
+
+10. DATOS PÚBLICOS Y DATOS PRIVADOS
+La Plataforma distingue entre información pública e información privada.
+10.1 Información pública
+Será considerada pública aquella información que el propio Usuario decida publicar dentro de su perfil, incluyendo, entre otros:
+	• nombre de usuario;
+	• fotografía del perfil;
+	• biografía;
+	• descripción del proyecto;
+	• objetivos de apoyo;
+	• botones de apoyo;
+	• enlaces a redes sociales;
+	• demás información que el Usuario configure como visible.
+Esta información podrá ser consultada por cualquier visitante de la Plataforma y podrá ser indexada por motores de búsqueda, salvo que existan limitaciones técnicas o configuraciones específicas que lo impidan.
+10.2 Información privada
+Será considerada privada toda información que no esté destinada a ser visible públicamente, incluyendo, entre otros:
+	• dirección de correo electrónico;
+	• identificadores internos;
+	• estado del plan contratado;
+	• información administrativa;
+	• permisos internos;
+	• fechas relacionadas con la cuenta;
+	• registros técnicos;
+	• información utilizada para la autenticación;
+	• registros de aceptación de documentos legales.
+La Plataforma implementa controles de acceso para restringir el acceso a esta información únicamente al propio Usuario o a personal autorizado cuando resulte estrictamente necesario.
+
+11. AUTENTICACIÓN Y SEGURIDAD DE LA CUENTA
+La Plataforma permite el acceso mediante diferentes mecanismos de autenticación.
+Actualmente el Usuario puede iniciar sesión mediante:
+	• correo electrónico y contraseña;
+	• autenticación con Google.
+Las credenciales de autenticación son administradas por el proveedor correspondiente.
+La Plataforma no almacena contraseñas en texto plano.
+Las contraseñas son gestionadas mediante mecanismos seguros proporcionados por el sistema de autenticación utilizado.
+El Usuario es responsable de mantener la confidencialidad de sus credenciales y de notificar cualquier acceso no autorizado del que tenga conocimiento.
+
+12. PROVEEDORES TECNOLÓGICOS
+Para prestar el Servicio, la Plataforma utiliza servicios proporcionados por terceros especializados.
+Estos proveedores actúan como encargados o prestadores de servicios tecnológicos dentro del alcance de sus respectivas funciones.
+La utilización de dichos servicios no implica la venta de datos personales.
+Cada proveedor tratará la información conforme a sus propios términos y políticas de privacidad.
+Actualmente la Plataforma utiliza, entre otros, los siguientes servicios:
+12.1 Supabase
+Supabase proporciona infraestructura tecnológica para:
+	• autenticación;
+	• base de datos;
+	• almacenamiento;
+	• funciones del servidor;
+	• administración técnica del Servicio.
+La información almacenada en Supabase se encuentra protegida mediante mecanismos de autenticación y controles de acceso implementados por la Plataforma.
+12.2 Google
+Cuando el Usuario decide autenticarse mediante Google, dicho proveedor participa exclusivamente en el proceso de identificación del Usuario conforme a los permisos autorizados por este.
+La Plataforma únicamente recibe la información expresamente compartida durante el proceso de autenticación.
+12.3 Hotmart
+La Plataforma integra herramientas proporcionadas por Hotmart con el fin de permitir que los creadores reciban apoyos económicos mediante dicho proveedor.
+Los pagos son procesados exclusivamente por Hotmart.
+La Plataforma no recibe información completa sobre los medios de pago utilizados por los Usuarios.
+El tratamiento realizado por Hotmart se encuentra sujeto a sus propios documentos legales.
+
+13. TRANSFERENCIAS INTERNACIONALES DE DATOS
+Debido a la naturaleza de Internet y al uso de proveedores tecnológicos internacionales, determinados datos podrán ser tratados o almacenados fuera del país de residencia del Usuario.
+La Plataforma procurará utilizar proveedores que implementen medidas razonables de seguridad y protección de datos conforme a estándares reconocidos.
+Cuando la legislación aplicable exija garantías adicionales para transferencias internacionales, la Plataforma procurará adoptar las medidas correspondientes.
+
+14. CONSERVACIÓN DE LOS DATOS
+Los datos personales serán conservados únicamente durante el tiempo necesario para cumplir las finalidades descritas en esta Política, atender obligaciones legales y garantizar el funcionamiento seguro del Servicio.
+Conforme a la política de retención implementada por la Plataforma:
+	• los registros analíticos podrán conservarse hasta trece (13) meses;
+	• los reportes cerrados podrán conservarse hasta veinticuatro (24) meses;
+	• determinados registros operativos relacionados con integraciones técnicas podrán conservarse por los períodos establecidos en la Política de Retención y Eliminación de Datos.
+Finalizados los períodos de conservación aplicables, la información podrá ser eliminada o anonimizada, salvo cuando exista una obligación legal que exija su conservación por un tiempo mayor.
+
+15. ELIMINACIÓN DE DATOS
+El Usuario podrá solicitar la eliminación de su información cuando ello resulte procedente conforme a la legislación aplicable.
+La desactivación del perfil público no implica necesariamente la eliminación inmediata de toda la información asociada a la cuenta.
+La Plataforma podrá conservar determinados registros cuando ello sea necesario para:
+	• cumplir obligaciones legales;
+	• atender procesos judiciales o administrativos;
+	• resolver reclamaciones;
+	• prevenir fraude;
+	• proteger la seguridad del Servicio;
+	• ejercer o defender derechos.
+Una vez desaparezcan dichas finalidades, la información será eliminada o anonimizada conforme a los procedimientos internos.
+
+16. DERECHOS DEL TITULAR DE LOS DATOS
+Sin perjuicio de los derechos reconocidos por la legislación aplicable, el Titular podrá ejercer, cuando corresponda, los siguientes derechos:
+	• conocer los datos personales objeto de tratamiento;
+	• solicitar la actualización de información inexacta;
+	• solicitar la rectificación de datos incorrectos;
+	• solicitar la supresión de información cuando resulte procedente;
+	• solicitar la limitación del tratamiento en los casos previstos por la ley;
+	• revocar el consentimiento cuando ello sea legalmente posible;
+	• presentar consultas relacionadas con el tratamiento de sus datos;
+	• presentar reclamaciones ante la Plataforma;
+	• acudir ante la autoridad competente cuando considere vulnerados sus derechos.
+El ejercicio de estos derechos podrá estar sujeto a las limitaciones previstas por la legislación aplicable.
+
+17. EJERCICIO DE DERECHOS
+Las solicitudes relacionadas con el tratamiento de datos personales podrán enviarse al siguiente correo electrónico:
+victor.llhalconll@gmail.com
+La Plataforma podrá solicitar información razonable para verificar la identidad del solicitante antes de atender la petición.
+Las solicitudes serán respondidas dentro de los plazos establecidos por la legislación aplicable.
+
+18. MENORES DE EDAD
+Como regla general, la Plataforma está destinada a personas con capacidad legal para contratar.
+Los menores de edad únicamente podrán utilizar el Servicio cuando la legislación aplicable lo permita y, en caso de ser necesario, cuenten con la autorización de su representante legal.
+Cuando la Plataforma tenga conocimiento de que se han recopilado datos personales de un menor en contravención de esta Política o de la legislación aplicable, podrá adoptar las medidas razonables para restringir el acceso, desactivar la cuenta o eliminar la información correspondiente, según proceda.
+
+19. MEDIDAS DE SEGURIDAD
+La Plataforma implementa medidas técnicas, administrativas y organizativas destinadas a proteger la confidencialidad, integridad y disponibilidad de la información tratada.
+Entre otras medidas, podrán utilizarse:
+	• autenticación de usuarios;
+	• control de acceso;
+	• restricciones basadas en permisos;
+	• registros de auditoría;
+	• cifrado cuando resulte aplicable;
+	• monitoreo de incidentes;
+	• procedimientos de recuperación.
+No obstante, ningún sistema informático puede garantizar una seguridad absoluta.
+Por ello, el Usuario también deberá adoptar medidas razonables para proteger su propia información.
+
+
+20. COOKIES Y TECNOLOGÍAS SIMILARES
+La Plataforma utiliza cookies y tecnologías similares con el fin de garantizar el correcto funcionamiento del Servicio, mejorar la experiencia del Usuario, mantener sesiones autenticadas, reforzar la seguridad y obtener información estadística sobre el uso de la Plataforma.
+Las cookies son pequeños archivos que se almacenan en el dispositivo del Usuario cuando visita un sitio web.
+Dependiendo de su finalidad, podrán utilizarse, entre otras, las siguientes categorías:
+	• Cookies estrictamente necesarias.
+	• Cookies de autenticación.
+	• Cookies de seguridad.
+	• Cookies de preferencias.
+	• Cookies analíticas.
+	• Cookies técnicas utilizadas por proveedores externos.
+La información detallada sobre las cookies utilizadas por la Plataforma se encuentra desarrollada en la Política de Cookies.
+El Usuario podrá administrar determinadas cookies mediante la configuración de su navegador. Sin embargo, la desactivación de algunas de ellas podría afectar el correcto funcionamiento del Servicio.
+
+21. COMUNICACIONES
+La Plataforma podrá enviar comunicaciones relacionadas con:
+	• creación de la cuenta;
+	• verificación del correo electrónico;
+	• recuperación de contraseña;
+	• cambios de seguridad;
+	• modificaciones importantes del Servicio;
+	• actualizaciones de documentos legales;
+	• respuestas a solicitudes de soporte;
+	• información indispensable para el funcionamiento de la cuenta.
+Estas comunicaciones forman parte de la prestación del Servicio y podrán enviarse incluso cuando el Usuario haya desactivado comunicaciones de carácter promocional.
+La Plataforma no enviará comunicaciones comerciales de manera indiscriminada y procurará respetar las preferencias del Usuario cuando ello sea compatible con la naturaleza del Servicio.
+
+22. DECISIONES AUTOMATIZADAS
+La Plataforma podrá utilizar procesos automatizados para detectar:
+	• accesos sospechosos;
+	• intentos de fraude;
+	• actividad inusual;
+	• abuso del Servicio;
+	• comportamientos que puedan comprometer la seguridad.
+Cuando dichas medidas produzcan restricciones relevantes para el Usuario, este podrá solicitar la revisión correspondiente mediante los canales de contacto habilitados, salvo que existan limitaciones legales o razones de seguridad que lo impidan.
+
+23. INCIDENTES DE SEGURIDAD
+En caso de detectarse un incidente de seguridad que pueda comprometer datos personales, la Plataforma adoptará medidas razonables para:
+	• contener el incidente;
+	• investigar su alcance;
+	• mitigar sus efectos;
+	• restaurar la disponibilidad del Servicio cuando resulte necesario;
+	• cumplir las obligaciones legales aplicables.
+Cuando la legislación lo exija o las circunstancias lo hagan recomendable, la Plataforma podrá notificar el incidente a los Usuarios afectados y, en su caso, a las autoridades competentes.
+
+24. CONFIDENCIALIDAD
+La Plataforma procurará que toda persona autorizada para acceder a información personal trate dichos datos conforme a los principios de confidencialidad, necesidad y acceso restringido.
+El acceso a datos personales se limitará a quienes lo requieran para el cumplimiento de funciones técnicas, administrativas, operativas o legales relacionadas con la prestación del Servicio.
+
+25. TRANSFERENCIA O REORGANIZACIÓN DEL SERVICIO
+En caso de fusión, adquisición, reorganización empresarial, cesión de activos o cualquier operación equivalente que implique la continuidad de la Plataforma, los datos personales podrán ser transferidos al nuevo responsable del Servicio, siempre que dicha transferencia sea compatible con la legislación aplicable y se respeten los derechos de los Titulares.
+El nuevo responsable quedará sujeto a las obligaciones asumidas respecto al tratamiento de los datos personales.
+
+26. MODIFICACIONES DE LA POLÍTICA DE PRIVACIDAD
+La Plataforma podrá modificar esta Política de Privacidad cuando resulte necesario por razones legales, regulatorias, técnicas, operativas o comerciales.
+La versión vigente estará disponible dentro de la Plataforma e indicará la fecha de su última actualización.
+Cuando las modificaciones impliquen cambios sustanciales en la forma de tratar los datos personales, la Plataforma podrá solicitar nuevamente la aceptación del Usuario o comunicar dichas modificaciones mediante los canales disponibles.
+El uso continuado del Servicio después de la entrada en vigor de una nueva versión implicará la aceptación de la Política vigente, salvo cuando la legislación exija una forma distinta de consentimiento.
+
+27. LEGISLACIÓN APLICABLE
+La presente Política de Privacidad se interpretará conforme a las leyes de la República de Colombia en materia de protección de datos personales y demás normas aplicables.
+Cuando un Usuario resida en una jurisdicción que le otorgue derechos irrenunciables adicionales en materia de privacidad, dichos derechos serán respetados en la medida exigida por la legislación correspondiente.
+
+28. CONTACTO
+Las consultas relacionadas con esta Política de Privacidad o con el tratamiento de datos personales podrán dirigirse al siguiente correo electrónico:
+Correo electrónico:
+victor.llhalconll@gmail.com
+Responsable del tratamiento:
+Víctor Alfonso Cuadrado Mestra
+Montería, Córdoba, Colombia.
+
+29. VIGENCIA
+La presente Política de Privacidad entrará en vigor a partir de la fecha indicada en su versión publicada dentro de la Plataforma.
+Las versiones anteriores podrán conservarse con fines históricos, de auditoría, cumplimiento normativo o para acreditar el consentimiento otorgado por los Usuarios respecto de versiones previas.
+
+30. DOCUMENTOS RELACIONADOS
+La presente Política de Privacidad forma parte del marco jurídico de la Plataforma y deberá interpretarse conjuntamente con los siguientes documentos:
+	• Términos y Condiciones de Uso.
+	• Política de Cookies.
+	• Política de Contenido Aceptable.
+	• Política de Reembolsos y Disputas.
+	• Política de Retención y Eliminación de Datos.
+	• Política de Propiedad Intelectual.
+	• Política de Reportes y Moderación.
+En caso de contradicción entre esta Política y un documento específico que regule una materia particular, prevalecerá este último únicamente respecto de dicha materia.
+
+DISPOSICIÓN FINAL
+La Plataforma reconoce la importancia de la protección de los datos personales y se compromete a tratar la información de los Usuarios de manera transparente, responsable y conforme a la legislación aplicable.
+La utilización del Servicio implica que el Usuario declara haber leído, comprendido y aceptado la presente Política de Privacidad.
+
+

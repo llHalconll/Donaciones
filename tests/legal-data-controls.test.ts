@@ -38,7 +38,7 @@ describe('legal acceptance evidence', () => {
 
   it('requires one consent for email and Google registration', () => {
     assert.match(registerPage, /name="legalAccepted"/)
-    assert.match(registerPage, /Términos de Servicio/)
+    assert.match(registerPage, /Términos y Condiciones/)
     assert.match(registerPage, /Política de Privacidad/)
     assert.match(registerPage, /requireLegalAcceptance/)
   })
