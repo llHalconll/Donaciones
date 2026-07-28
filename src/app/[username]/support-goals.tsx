@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Script from 'next/script'
 import { useCallback, useMemo, useState } from 'react'
 import {
@@ -211,10 +212,20 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                   className="flex min-h-[4.5rem] w-full items-center gap-2.5 px-3 py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500 sm:px-3.5"
                 >
                   <span
-                    className="flex size-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/12 text-xl ring-1 ring-inset ring-emerald-500/15"
+                    className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-emerald-500/12 ring-1 ring-inset ring-emerald-500/15"
                     aria-hidden="true"
                   >
-                    {goal.emoji || '♥'}
+                    {goal.cover_url ? (
+                      <Image
+                        src={goal.cover_url}
+                        alt=""
+                        width={36}
+                        height={36}
+                        className="size-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-xl">{goal.emoji || '♥'}</span>
+                    )}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="line-clamp-2 break-words text-[15px] font-semibold leading-5 text-slate-900 [overflow-wrap:anywhere] dark:text-white">

@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { FormEvent, useState, useTransition } from 'react'
+import { FormEvent, useRef, useState, useTransition } from 'react'
 import {
   ArrowDown,
   ArrowRight,
@@ -175,8 +175,22 @@ export function GoalsManager({ goals, limit }: Props) {
 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-lg" aria-hidden="true">
-                        {goal.emoji || '♥'}
+                      {/* Mini icon — image if available, heart fallback */}
+                      <span
+                        className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-emerald-500/10 ring-1 ring-inset ring-emerald-500/15 text-base"
+                        aria-hidden="true"
+                      >
+                        {goal.cover_url ? (
+                          <Image
+                            src={goal.cover_url}
+                            alt=""
+                            width={28}
+                            height={28}
+                            className="size-full object-cover"
+                          />
+                        ) : (
+                          '♥'
+                        )}
                       </span>
                       <h2 className="break-words font-bold text-slate-900 dark:text-white">
                         {goal.title}
@@ -321,6 +335,27 @@ function GoalForm({
   onSubmit: (event: FormEvent<HTMLFormElement>) => void
   onCancel: () => void
 }) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    goal?.cover_url ?? null
+  )
+  const [removeCover, setRemoveCover] = useState(false)
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setRemoveCover(false)
+    const reader = new FileReader()
+    reader.onload = (ev) => setPreviewUrl(ev.target?.result as string)
+    reader.readAsDataURL(file)
+  }
+
+  function handleRemove() {
+    setPreviewUrl(null)
+    setRemoveCover(true)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
   return (
     <Card className="p-5 sm:p-6">
       <div className="flex items-center justify-between gap-4">
@@ -337,23 +372,65 @@ function GoalForm({
 
       <form onSubmit={onSubmit} className="mt-5 space-y-4">
         <div className="grid gap-4 sm:grid-cols-[7rem_1fr]">
+
+          {/* ── Circular icon uploader ──────────────────────────── */}
           <div>
-            <label
-              htmlFor={`goal-emoji-${goal?.id ?? 'new'}`}
-              className="mb-1.5 block text-xs font-semibold text-slate-700 dark:text-slate-300"
+            <span className="mb-1.5 block text-xs font-semibold text-slate-700 dark:text-slate-300">
+              Ícono
+            </span>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="group relative mx-auto flex size-[4.5rem] cursor-pointer items-center justify-center overflow-hidden rounded-full bg-emerald-500/10 ring-2 ring-inset ring-emerald-500/20 transition hover:ring-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+              aria-label={previewUrl ? 'Cambiar ícono' : 'Subir ícono'}
             >
-              Emoji
-            </label>
+              {previewUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={previewUrl}
+                  alt="Ícono actual"
+                  className="size-full object-cover"
+                />
+              ) : (
+                <ImageIcon
+                  className="size-6 text-emerald-500/70 transition group-hover:text-emerald-600"
+                  aria-hidden="true"
+                />
+              )}
+              {/* Hover overlay */}
+              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/35 opacity-0 transition group-hover:opacity-100">
+                <ImageIcon className="size-5 text-white" aria-hidden="true" />
+              </span>
+            </button>
+
+            {/* Hidden file input */}
             <input
-              id={`goal-emoji-${goal?.id ?? 'new'}`}
-              name="emoji"
-              type="text"
-              maxLength={32}
-              defaultValue={goal?.emoji ?? ''}
-              placeholder="☕"
-              className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-center text-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-950"
+              ref={fileInputRef}
+              name="cover"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="sr-only"
+              onChange={handleFileChange}
             />
+            {removeCover && (
+              <input type="hidden" name="removeCover" value="true" />
+            )}
+
+            {previewUrl ? (
+              <button
+                type="button"
+                onClick={handleRemove}
+                className="mt-1.5 flex w-full justify-center text-[10px] text-rose-500 hover:text-rose-700"
+              >
+                Quitar
+              </button>
+            ) : (
+              <p className="mt-1.5 text-center text-[10px] text-slate-400">
+                JPG · PNG · WebP
+              </p>
+            )}
           </div>
+
           <div>
             <label
               htmlFor={`goal-title-${goal?.id ?? 'new'}`}
@@ -390,40 +467,6 @@ function GoalForm({
             placeholder="Explica brevemente cómo ayudará este apoyo."
             className="w-full resize-y rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-950"
           />
-        </div>
-
-        <div>
-          <label
-            htmlFor={`goal-cover-${goal?.id ?? 'new'}`}
-            className="mb-1.5 block text-xs font-semibold text-slate-700 dark:text-slate-300"
-          >
-            Imagen opcional
-          </label>
-          <label
-            htmlFor={`goal-cover-${goal?.id ?? 'new'}`}
-            className="flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border border-dashed border-slate-300 px-4 text-sm text-slate-500 hover:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500 dark:border-slate-700 dark:text-slate-400"
-          >
-            <ImageIcon className="size-4 shrink-0" aria-hidden="true" />
-            <span>JPG, PNG o WebP · máximo 5 MB</span>
-            <input
-              id={`goal-cover-${goal?.id ?? 'new'}`}
-              name="cover"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="sr-only"
-            />
-          </label>
-          {goal?.cover_url && (
-            <label className="mt-2 flex min-h-11 items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-              <input
-                type="checkbox"
-                name="removeCover"
-                value="true"
-                className="size-4 accent-emerald-500"
-              />
-              Eliminar la imagen actual
-            </label>
-          )}
         </div>
 
         <label className="flex min-h-11 items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
