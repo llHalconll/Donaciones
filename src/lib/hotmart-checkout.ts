@@ -18,7 +18,7 @@ export interface HotmartOverlayInstance {
 
 export interface HotmartCheckoutElementsApi {
   init(
-    mode: 'overlayCheckout',
+    mode: 'overlayCheckout' | 'inlineCheckout',
     options: { offer: string }
   ): HotmartOverlayInstance
 }
@@ -106,5 +106,24 @@ export function attachHotmartOverlay({
 }) {
   const instance = api.init('overlayCheckout', { offer: offerCode })
   instance.attach(selector)
+  return instance
+}
+
+/**
+ * Renders a Hotmart checkout inline inside a DOM container we control.
+ * Use this instead of attachHotmartOverlay when you want to show the
+ * checkout inside your own modal rather than Hotmart's full-screen overlay.
+ */
+export function attachHotmartInline({
+  api,
+  containerSelector,
+  offerCode,
+}: {
+  api: HotmartCheckoutElementsApi
+  containerSelector: string
+  offerCode: string
+}): HotmartOverlayInstance {
+  const instance = api.init('inlineCheckout', { offer: offerCode })
+  instance.attach(containerSelector)
   return instance
 }
