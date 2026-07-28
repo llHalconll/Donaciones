@@ -1,11 +1,11 @@
 'use client'
 
 import { useActionState, useState } from 'react'
-import { KeyRound, Mail, Trash2, AlertCircle, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
+import { KeyRound, Mail, UserRoundX, AlertCircle, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { updatePasswordAction, updateEmailAction, deleteAccountAction } from './actions'
+import { updatePasswordAction, updateEmailAction, deactivateProfileAction } from './actions'
 
 export function SettingsForm({
   userEmail,
@@ -16,8 +16,8 @@ export function SettingsForm({
 }) {
   const [pwState, pwAction, pwPending] = useActionState(updatePasswordAction, null)
   const [emailState, emailAction, emailPending] = useActionState(updateEmailAction, null)
-  const [deleteState, deleteAction, deletePending] = useActionState(deleteAccountAction, null)
-  const [showDelete, setShowDelete] = useState(false)
+  const [deactivateState, deactivateAction, deactivatePending] = useActionState(deactivateProfileAction, null)
+  const [showDeactivate, setShowDeactivate] = useState(false)
 
   return (
     <div className="space-y-6">
@@ -91,60 +91,60 @@ export function SettingsForm({
         </CardContent>
       </Card>
 
-      {/* Delete account */}
-      <Card className="border-rose-200 dark:border-rose-900/50">
+      {/* Deactivate public profile */}
+      <Card className="border-amber-200 dark:border-amber-900/50">
         <CardHeader>
           <button
             type="button"
-            onClick={() => setShowDelete((p) => !p)}
+            onClick={() => setShowDeactivate((p) => !p)}
             className="flex items-center justify-between w-full text-left"
           >
-            <CardTitle className="text-base flex items-center gap-2 text-rose-600 dark:text-rose-400">
-              <Trash2 className="w-4 h-4" />
-              Eliminar Cuenta
+            <CardTitle className="text-base flex items-center gap-2 text-amber-700 dark:text-amber-400">
+              <UserRoundX className="w-4 h-4" />
+              Desactivar perfil público
             </CardTitle>
-            {showDelete ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+            {showDeactivate ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
           </button>
         </CardHeader>
-        {showDelete && (
+        {showDeactivate && (
           <CardContent>
             <div className="space-y-4 max-w-md">
-              <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm">
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-sm">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <p className="font-semibold">Esta acción desactiva tu cuenta.</p>
+                  <p className="font-semibold">Esta acción no elimina tu cuenta ni tus datos.</p>
                   <p className="text-xs">
-                    Tu perfil público será ocultado inmediatamente.{' '}
+                    Tu perfil público se ocultará y se cerrará tu sesión. Podrás volver a iniciar sesión.{' '}
                     {supportEmail
                       ? `Para la eliminación definitiva de datos, contáctanos a ${supportEmail}.`
                       : 'El canal para solicitar la eliminación definitiva todavía no está configurado.'}
                   </p>
                 </div>
               </div>
-              <form action={deleteAction} className="space-y-4">
-                {deleteState?.error && (
+              <form action={deactivateAction} className="space-y-4">
+                {deactivateState?.error && (
                   <div role="alert" className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-sm">
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" /> {deleteState.error}
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" /> {deactivateState.error}
                   </div>
                 )}
                 <div className="space-y-1.5">
-                  <label htmlFor="confirmDelete" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                    Escribe <strong>ELIMINAR</strong> para confirmar
+                  <label htmlFor="confirmDeactivate" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Escribe <strong>DESACTIVAR</strong> para confirmar
                   </label>
                   <input
-                    id="confirmDelete"
+                    id="confirmDeactivate"
                     name="confirmation"
                     type="text"
                     required
-                    placeholder="ELIMINAR"
+                    placeholder="DESACTIVAR"
                     autoComplete="off"
-                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-rose-300 dark:border-rose-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-amber-300 dark:border-amber-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
                   />
                 </div>
-                <Button type="submit" variant="primary" size="sm" isLoading={deletePending}
-                  className="bg-rose-600 hover:bg-rose-700">
-                  <Trash2 className="w-4 h-4" />
-                  Desactivar mi cuenta
+                <Button type="submit" variant="primary" size="sm" isLoading={deactivatePending}
+                  className="bg-amber-600 hover:bg-amber-700">
+                  <UserRoundX className="w-4 h-4" />
+                  Desactivar mi perfil
                 </Button>
               </form>
             </div>

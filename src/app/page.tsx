@@ -18,19 +18,21 @@ import { PublicFooter } from '@/components/shared/footer'
 import { buttonStyles } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { getAuthUser } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { getDemoUsername } from '@/lib/public-config'
 import { formatSupportAmount } from '@/lib/presentation'
 import { formatPublicProfileUrl, resolveSiteUrl } from '@/lib/site-url'
 import { validatePublicImageUrl } from '@/lib/validations/url'
 
 export default async function HomePage() {
-  const { user, supabase } = await getAuthUser()
+  const { user } = await getAuthUser()
+  const publicSupabase = createPublicClient()
   const isLoggedIn = Boolean(user)
   const demoUsername = getDemoUsername()
   const siteUrl = resolveSiteUrl()
 
   const { data: exampleProfile } = demoUsername
-    ? await supabase
+    ? await publicSupabase
         .from('profiles')
         .select(`
           display_name,

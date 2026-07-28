@@ -5,16 +5,32 @@ import { googleOAuthAction } from '@/app/auth/actions'
 
 interface Props {
   label?: string
+  legalAccepted?: boolean
+  requireLegalAcceptance?: boolean
 }
 
-export function GoogleButton({ label = 'Continuar con Google' }: Props) {
+export function GoogleButton({
+  label = 'Continuar con Google',
+  legalAccepted = false,
+  requireLegalAcceptance = false,
+}: Props) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
   function handleClick() {
     setError(null)
+
+    if (requireLegalAcceptance && !legalAccepted) {
+      setError(
+        'Debes aceptar los Términos de Servicio y la Política de Privacidad para continuar.'
+      )
+      return
+    }
+
     startTransition(async () => {
-      const result = await googleOAuthAction()
+      const result = await googleOAuthAction(
+        requireLegalAcceptance && legalAccepted
+      )
       if (result?.error) setError(result.error)
     })
   }

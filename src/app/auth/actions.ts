@@ -1,7 +1,13 @@
 'use server'
 
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import {
+  getPendingLegalConsentValue,
+  PENDING_LEGAL_CONSENT_COOKIE,
+  PRIVACY_VERSION,
+  TERMS_VERSION,
+} from '@/lib/legal-consent'
 import {
   authLimiter,
   buildAuthRateLimitKey,
@@ -53,7 +59,7 @@ async function enforceAuthRateLimit(
   return result.allowed ? null : toAuthActionError(result)
 }
 
-export async function googleOAuthAction() {
+export async function googleOAuthAction(legalAccepted = false) {
   const rateLimitError = await enforceAuthRateLimit('google-oauth')
   // For OAuth, rate-limit blocks redirect to /auth/login with a query param
   // so the page can surface the message — returning an object here would work
@@ -62,6 +68,23 @@ export async function googleOAuthAction() {
 
   const supabase = await createClient()
   const siteUrl = resolveSiteUrl()
+  const cookieStore = await cookies()
+
+  if (legalAccepted) {
+    cookieStore.set(
+      PENDING_LEGAL_CONSENT_COOKIE,
+      getPendingLegalConsentValue(),
+      {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 10 * 60,
+        path: '/auth/callback',
+      }
+    )
+  } else {
+    cookieStore.delete(PENDING_LEGAL_CONSENT_COOKIE)
+  }
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -86,9 +109,17 @@ export async function registerAction(prevState: unknown, formData: FormData) {
   const password = String(formData.get('password') ?? '')
   const displayName = String(formData.get('displayName') ?? '').trim()
   const rawUsername = String(formData.get('username') ?? '')
+  const legalAccepted = formData.get('legalAccepted') === 'yes'
 
   if (!email || !password || !displayName || !rawUsername) {
     return { error: 'Todos los campos son obligatorios.' }
+  }
+
+  if (!legalAccepted) {
+    return {
+      error:
+        'Debes aceptar los Términos de Servicio y la Política de Privacidad para crear una cuenta.',
+    }
   }
 
   const rateLimitError = await enforceAuthRateLimit('register', email)
@@ -105,13 +136,19 @@ export async function registerAction(prevState: unknown, formData: FormData) {
   }
 
   const supabase = await createClient()
-  const { data: existingUser } = await supabase
-    .from('profiles')
-    .select('username')
-    .eq('username', username)
-    .single()
+  const { data: usernameAvailable, error: availabilityError } =
+    await supabase.rpc('is_username_available', {
+      candidate_username: username,
+    })
 
-  if (existingUser) {
+  if (availabilityError) {
+    return {
+      error:
+        'No se pudo verificar la disponibilidad del usuario. Intenta de nuevo.',
+    }
+  }
+
+  if (!usernameAvailable) {
     return { error: `El usuario "${username}" ya está registrado. Elige otro.` }
   }
 
@@ -122,6 +159,9 @@ export async function registerAction(prevState: unknown, formData: FormData) {
       data: {
         username,
         display_name: displayName,
+        legal_terms_version: TERMS_VERSION,
+        legal_privacy_version: PRIVACY_VERSION,
+        legal_acceptance_method: 'email_password',
       },
     },
   })

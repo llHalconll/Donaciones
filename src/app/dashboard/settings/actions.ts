@@ -53,31 +53,31 @@ export async function updateEmailAction(
   }
 }
 
-export async function deleteAccountAction(
+export async function deactivateProfileAction(
   prevState: unknown,
   formData: FormData
 ): Promise<ActionResult> {
   const confirmation = (formData.get('confirmation') as string | null)?.trim() ?? ''
 
-  if (confirmation !== 'ELIMINAR') {
-    return { error: 'Debes escribir ELIMINAR para confirmar.' }
+  if (confirmation !== 'DESACTIVAR') {
+    return { error: 'Debes escribir DESACTIVAR para confirmar.' }
   }
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'No estás autenticado.' }
 
-  // Deactivate the profile first (soft approach — hard delete requires service_role)
-  // This immediately hides the profile from the public.
-  const { error: profileError } = await supabase
-    .from('profiles')
-    .update({ is_active: false, updated_at: new Date().toISOString() })
-    .eq('id', user.id)
+  const { error: profileError } = await supabase.rpc('deactivate_own_profile')
 
-  if (profileError) return { error: profileError.message }
+  if (profileError) {
+    return {
+      error:
+        'No se pudo desactivar el perfil en este momento. Intenta nuevamente.',
+    }
+  }
 
   // Sign out the user
   await supabase.auth.signOut()
 
-  redirect('/?account_deleted=1')
+  redirect('/?profile_deactivated=1')
 }

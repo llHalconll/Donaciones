@@ -55,14 +55,15 @@ WHERE u.id = 'USER_UUID_AQUI';
 --   analytics_events.support_amount_id   ON DELETE SET NULL  ← evento persiste, FK = NULL
 --
 -- auth.users (id) → FK fuente:
---   profiles.id                    (trigger on_auth_user_created)
+--   profiles.id                    ON DELETE CASCADE
+--   legal_acceptances.user_id      ON DELETE CASCADE
 --   profile_reports.reviewed_by    ON DELETE SET NULL
 --
 -- CONCLUSIÓN:
--- Al eliminar el registro de auth.users, Supabase Auth elimina el usuario.
--- Pero los registros de public.profiles y sus dependientes NO se eliminan automáticamente
--- porque la FK va de profiles → auth.users (no al revés con CASCADE).
--- El orden correcto es: datos de app → auth.users.
+-- Eliminar auth.users mediante la API administrativa elimina profiles por
+-- ON DELETE CASCADE y, desde profiles, sus dependencias. Sin embargo, Storage
+-- no participa en cascadas SQL y webhook_events usa ON DELETE SET NULL.
+-- Por trazabilidad se eliminan primero Storage y webhooks, y después Auth.
 
 
 -- ═══════════════════════════════════════════════════════════════════
@@ -119,6 +120,27 @@ SELECT COUNT(*) AS remaining_reports FROM public.profile_reports WHERE profile_i
 
 
 -- ═══════════════════════════════════════════════════════════════════
+-- PASO 3B: ELIMINAR EVENTOS WEBHOOK ASOCIADOS
+-- ═══════════════════════════════════════════════════════════════════
+-- Debe hacerse antes de eliminar el perfil. Sus FKs usan ON DELETE SET NULL;
+-- después de la cascada ya no sería posible encontrarlos por profile_id.
+
+DELETE FROM public.webhook_events
+WHERE profile_id = 'USER_UUID_AQUI'
+   OR support_amount_id IN (
+     SELECT amounts.id
+     FROM public.support_amounts amounts
+     JOIN public.support_goals goals ON goals.id = amounts.goal_id
+     WHERE goals.profile_id = 'USER_UUID_AQUI'
+   );
+
+SELECT COUNT(*) AS remaining_webhooks
+FROM public.webhook_events
+WHERE profile_id = 'USER_UUID_AQUI';
+-- Debe ser 0.
+
+
+-- ═══════════════════════════════════════════════════════════════════
 -- PASO 4: ELIMINAR EL PERFIL (y sus dependientes en cascada)
 -- ═══════════════════════════════════════════════════════════════════
 -- Este DELETE activa los ON DELETE CASCADE para:
@@ -169,6 +191,8 @@ SELECT COUNT(*) AS remaining_profile  FROM public.profiles           WHERE id   
 -- Verificar (después de eliminar desde el Dashboard o API):
 SELECT COUNT(*) AS user_still_exists FROM auth.users WHERE id = 'USER_UUID_AQUI';
 -- Debe ser 0.
+--
+-- legal_acceptances se elimina en cascada con auth.users.
 
 
 -- ═══════════════════════════════════════════════════════════════════
@@ -185,7 +209,11 @@ SELECT 'support_goals',               COUNT(*)              FROM public.support_
 UNION ALL
 SELECT 'analytics_events',            COUNT(*)              FROM public.analytics_events WHERE profile_id = 'USER_UUID_AQUI'
 UNION ALL
-SELECT 'profile_reports',             COUNT(*)              FROM public.profile_reports  WHERE profile_id = 'USER_UUID_AQUI';
+SELECT 'profile_reports',             COUNT(*)              FROM public.profile_reports  WHERE profile_id = 'USER_UUID_AQUI'
+UNION ALL
+SELECT 'legal_acceptances',           COUNT(*)              FROM public.legal_acceptances WHERE user_id = 'USER_UUID_AQUI'
+UNION ALL
+SELECT 'webhook_events',              COUNT(*)              FROM public.webhook_events WHERE profile_id = 'USER_UUID_AQUI';
 
 -- Todos los valores en "registros" deben ser 0.
 -- Si alguno es > 0, repite el paso correspondiente.

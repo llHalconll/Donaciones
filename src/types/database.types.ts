@@ -21,6 +21,11 @@ export type ReportReason =
   | 'suspicious_link'
   | 'spam'
   | 'other'
+export type LegalDocumentType = 'terms' | 'privacy'
+export type LegalAcceptanceMethod =
+  | 'email_password'
+  | 'google_oauth'
+  | 'reauthorization'
 
 // ─────────────────────────────────────────────
 // Core tables
@@ -101,6 +106,23 @@ export interface ProfileReport {
   created_at: string
   reviewed_at: string | null
   reviewed_by: string | null
+}
+
+export interface LegalDocumentVersion {
+  document_type: LegalDocumentType
+  version: string
+  effective_at: string
+  is_current: boolean
+  created_at: string
+}
+
+export interface LegalAcceptance {
+  id: string
+  user_id: string
+  document_type: LegalDocumentType
+  document_version: string
+  acceptance_method: LegalAcceptanceMethod
+  accepted_at: string
 }
 
 // ─────────────────────────────────────────────

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import {
   analyticsLimiter,
   buildRateLimitKey,
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    const supabase = await createClient()
+    const supabase = createPublicClient()
 
     // Verify profile exists and is active
     const { data: profile } = await supabase

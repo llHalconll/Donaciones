@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import {
   buildRateLimitKey,
   checkRateLimit,
@@ -24,8 +24,16 @@ export async function POST(req: NextRequest) {
     if (description && typeof description === 'string' && description.length > 1000)
       return NextResponse.json({ error: 'La descripción no puede superar 1000 caracteres.' }, { status: 400 })
 
-    if (reporter_email && typeof reporter_email === 'string' && reporter_email.length > 254)
+    if (
+      reporter_email &&
+      (
+        typeof reporter_email !== 'string' ||
+        reporter_email.length > 254 ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reporter_email.trim())
+      )
+    ) {
       return NextResponse.json({ error: 'Email inválido.' }, { status: 400 })
+    }
 
     const trustedIp = getTrustedClientIp(req.headers)
     const rateResult = await checkRateLimit(
@@ -48,7 +56,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const supabase = await createClient()
+    const supabase = createPublicClient()
 
     // Verify the profile exists and is active
     const { data: profile } = await supabase
@@ -68,7 +76,13 @@ export async function POST(req: NextRequest) {
       status: 'pending',
     })
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) {
+      console.warn('[reports] No se pudo guardar un reporte.')
+      return NextResponse.json(
+        { error: 'No se pudo enviar el reporte. Intenta nuevamente.' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({ ok: true })
   } catch {

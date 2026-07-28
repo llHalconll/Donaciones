@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -13,6 +13,7 @@ import { BrandLink } from '@/components/shared/brand-link'
 
 export default function RegisterPage() {
   const [state, formAction, isPending] = useActionState(registerAction, null)
+  const [legalAccepted, setLegalAccepted] = useState(false)
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-slate-50 dark:bg-slate-950 transition-colors">
@@ -25,7 +26,7 @@ export default function RegisterPage() {
           <BrandLink size="lg" />
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Crea tu cuenta de creador</h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Reclama tu URL única y empieza a recibir donaciones directas a Hotmart.
+            Reclama tu URL única y presenta tus opciones de apoyo conectadas con Hotmart.
           </p>
         </div>
 
@@ -34,8 +35,41 @@ export default function RegisterPage() {
             <CardTitle className="text-base text-center">Registro de Creador</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs leading-5 text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+              <input
+                type="checkbox"
+                checked={legalAccepted}
+                onChange={(event) => setLegalAccepted(event.target.checked)}
+                className="mt-0.5 size-4 shrink-0 accent-emerald-500"
+                aria-describedby="legal-consent-copy"
+              />
+              <span id="legal-consent-copy">
+                He leído y acepto los{' '}
+                <Link
+                  href="/terms"
+                  target="_blank"
+                  className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
+                >
+                  Términos de Servicio
+                </Link>{' '}
+                y la{' '}
+                <Link
+                  href="/privacy"
+                  target="_blank"
+                  className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
+                >
+                  Política de Privacidad
+                </Link>
+                .
+              </span>
+            </label>
+
             {/* Google OAuth — fastest path */}
-            <GoogleButton label="Registrarse con Google" />
+            <GoogleButton
+              label="Registrarse con Google"
+              legalAccepted={legalAccepted}
+              requireLegalAcceptance
+            />
 
             {/* Divider */}
             <div className="relative flex items-center gap-3">
@@ -46,6 +80,11 @@ export default function RegisterPage() {
 
             {/* Email form */}
             <form action={formAction} className="space-y-4">
+              <input
+                type="hidden"
+                name="legalAccepted"
+                value={legalAccepted ? 'yes' : 'no'}
+              />
               {state?.error && (
                 <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs font-medium">
                   {state.error}

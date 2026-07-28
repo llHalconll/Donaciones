@@ -1,6 +1,7 @@
 # DonacionesSaaS
 
-Plataforma SaaS de apoyo y donaciones que conecta creadores, profesionales, organizaciones e iglesias con sus comunidades — sin procesar pagos directamente.
+Plataforma SaaS de perfiles de apoyo que conecta creadores, profesionales,
+organizaciones e iglesias con sus comunidades, sin procesar pagos directamente.
 
 Cada monto de apoyo redirige al visitante al checkout de **Hotmart** configurado por el creador.
 
@@ -85,11 +86,22 @@ Ejecuta el esquema base:
 -- 8. supabase/migrations/008_oauth_handle_new_user.sql
 -- 9. supabase/migrations/009_performance_indexes.sql
 -- 10. supabase/migrations/010_public_profile_rls_hardening.sql
+-- 11. supabase/migrations/011_support_goals.sql
+-- 12. supabase/migrations/012_hotmart_checkout_overlay.sql
+-- 13. supabase/migrations/013_legal_acceptance.sql
+-- 14. supabase/migrations/014_profiles_rls_hardening.sql
+-- 15. supabase/migrations/015_data_retention.sql
+-- 16. supabase/migrations/016_function_privileges.sql
 ```
 
 La migración 010 requiere reconciliación de historial antes de cualquier nuevo
 `db push`. Consulta [docs/supabase-migration-reconciliation.md](docs/supabase-migration-reconciliation.md);
 no la reapliques únicamente porque el archivo exista.
+
+Las migraciones 013–016 registran aceptación legal versionada, separan los
+campos públicos de los privados, restringen funciones privilegiadas y añaden la función de retención. La función de
+retención debe programarse con `service_role`; consulta
+[docs/data-retention-policy.md](docs/data-retention-policy.md).
 
 ### 3. Ejecuta Storage (buckets)
 
@@ -193,13 +205,13 @@ Visitante → selecciona monto → clic en "Apoyar"
 **No disponible sin webhook de Hotmart:**
 - Pagos completados
 - Ingresos confirmados
-- Donaciones recibidas
+- Apoyos confirmados
 
 ---
 
 ## Planes y límites
 
-| Plan | Botones | Redes sociales |
+| Plan | Objetivos de apoyo | Redes sociales |
 |---|---|---|
 | free | 5 | 5 |
 | pro | 20 | 15 |

@@ -30,10 +30,10 @@ export async function toggleProfileActiveAction(
   // Admin cannot deactivate their own account
   if (profileId === admin.id) return { error: 'No puedes desactivar tu propia cuenta de administrador.' }
 
-  const { error } = await supabase
-    .from('profiles')
-    .update({ is_active: !currentIsActive, updated_at: new Date().toISOString() })
-    .eq('id', profileId)
+  const { error } = await supabase.rpc('admin_set_profile_active', {
+    p_profile_id: profileId,
+    p_is_active: !currentIsActive,
+  })
 
   if (error) return { error: error.message }
 

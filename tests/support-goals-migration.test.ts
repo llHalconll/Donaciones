@@ -52,7 +52,10 @@ describe('support goals migration', () => {
 describe('Hotmart overlay migration', () => {
   it('is transactional, nullable and preserves the checkout URL', () => {
     assert.match(overlaySql, /\bBEGIN;/)
-    assert.match(overlaySql, /ADD COLUMN hotmart_offer_code TEXT;/)
+    assert.match(
+      overlaySql,
+      /ADD COLUMN IF NOT EXISTS hotmart_offer_code TEXT;/
+    )
     assert.doesNotMatch(overlaySql, /hotmart_offer_code TEXT NOT NULL/)
     assert.doesNotMatch(overlaySql, /UPDATE public\.support_amounts/)
     assert.doesNotMatch(overlaySql, /DROP COLUMN hotmart_checkout_url/)

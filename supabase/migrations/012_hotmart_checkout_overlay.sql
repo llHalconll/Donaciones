@@ -5,7 +5,10 @@
 BEGIN;
 
 ALTER TABLE public.support_amounts
-  ADD COLUMN hotmart_offer_code TEXT;
+  ADD COLUMN IF NOT EXISTS hotmart_offer_code TEXT;
+
+ALTER TABLE public.support_amounts
+  DROP CONSTRAINT IF EXISTS support_amounts_hotmart_offer_code_format;
 
 ALTER TABLE public.support_amounts
   ADD CONSTRAINT support_amounts_hotmart_offer_code_format

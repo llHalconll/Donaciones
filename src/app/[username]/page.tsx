@@ -4,7 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { cache, Suspense } from 'react'
 import { ArrowLeft, Globe, Heart } from 'lucide-react'
-import { createClient, getAuthUser } from '@/lib/supabase/server'
+import { getAuthUser } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { resolveSiteUrl } from '@/lib/site-url'
 import { validateUsernameFormat } from '@/lib/validations/auth'
 import {
@@ -32,7 +33,7 @@ const getPublicProfile = cache(async (username: string) => {
     return { data: null, error: null }
   }
 
-  const supabase = await createClient()
+  const supabase = createPublicClient()
   return supabase
     .from('profiles')
     .select(PUBLIC_PROFILE_FIELDS)
@@ -113,7 +114,7 @@ async function PublicSupportContent({
   creatorName: string
   hasWebsite: boolean
 }) {
-  const supabase = await createClient()
+  const supabase = createPublicClient()
   const [
     { data: socialLinks, error: socialLinksError },
     { data: goals, error: goalsError },

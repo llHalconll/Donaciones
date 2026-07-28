@@ -62,6 +62,22 @@
 --      → Retira donation_buttons únicamente después de verificar conteos
 --      → Crea RLS, índices y el bucket support-goals
 --
+--  12. migrations/012_hotmart_checkout_overlay.sql
+--      → Agrega el código opcional de oferta de Hotmart
+--
+--  13. migrations/013_legal_acceptance.sql
+--      → Registra aceptación versionada de Términos y Privacidad
+--
+--  14. migrations/014_profiles_rls_hardening.sql
+--      → Separa lecturas anónimas, propietarios y administradores
+--      → Protege plan, is_active e is_admin de cambios directos
+--
+--  15. migrations/015_data_retention.sql
+--      → Añade índices y función restringida de depuración
+--
+--  16. migrations/016_function_privileges.sql
+--      → Revoca la ejecución anónima de funciones privilegiadas
+--
 -- ═══════════════════════════════════════════════════════════════════
 -- VERIFICACIÓN DESPUÉS DE APLICAR CADA MIGRACIÓN:
 -- ═══════════════════════════════════════════════════════════════════
