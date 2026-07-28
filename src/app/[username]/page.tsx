@@ -268,7 +268,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#f7f8f6] dark:bg-slate-950">
-      <div className="mx-auto max-w-2xl px-4 pt-4">
+      <div className="mx-auto max-w-2xl px-4 pt-4 lg:max-w-3xl">
         <Link
           href={user ? '/dashboard' : '/'}
           className="inline-flex min-h-11 items-center gap-1.5 rounded-lg text-xs text-slate-500 transition-colors hover:text-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-slate-400 dark:hover:text-emerald-400"
@@ -278,8 +278,8 @@ export default async function PublicProfilePage({ params }: PageProps) {
         </Link>
       </div>
 
-      <main className="mx-auto max-w-2xl px-4 pb-16">
-        <div className="relative h-36 w-full overflow-hidden rounded-3xl bg-slate-900 sm:h-44">
+      <main className="mx-auto max-w-2xl px-4 pb-16 lg:max-w-3xl">
+        <div className="relative h-36 w-full overflow-hidden rounded-3xl bg-slate-900 sm:h-44 lg:h-52">
           {safeBanner ? (
             <Image
               src={safeBanner}
@@ -287,29 +287,29 @@ export default async function PublicProfilePage({ params }: PageProps) {
               fill
               className="object-cover"
               priority
-              sizes="(max-width: 672px) 100vw, 672px"
+              sizes="(max-width: 672px) 100vw, (max-width: 1023px) 672px, 768px"
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
-              <Heart className="size-20 fill-emerald-500/10 text-emerald-500/20 sm:size-24" />
+              <Heart className="size-20 fill-emerald-500/10 text-emerald-500/20 sm:size-24 lg:size-28" />
             </div>
           )}
           {safeBanner && <div className="absolute inset-0 bg-slate-950/20" />}
         </div>
 
-        <div className="relative -mt-9 mb-3 px-3">
-          <div className="relative flex size-[4.5rem] items-center justify-center overflow-hidden rounded-full border-4 border-[#f7f8f6] bg-emerald-500 dark:border-slate-950">
+        <div className="relative -mt-9 mb-3 px-3 lg:-mt-11">
+          <div className="relative flex size-[4.5rem] items-center justify-center overflow-hidden rounded-full border-4 border-[#f7f8f6] bg-emerald-500 dark:border-slate-950 lg:size-[5.5rem]">
             {safeAvatar ? (
               <Image
                 src={safeAvatar}
                 alt={`Foto de ${profile.display_name}`}
                 fill
                 className="object-cover"
-                sizes="72px"
+                sizes="(min-width: 1024px) 88px, 72px"
                 priority
               />
             ) : (
-              <span className="text-xl font-bold text-white">{initials}</span>
+              <span className="text-xl font-bold text-white lg:text-2xl">{initials}</span>
             )}
           </div>
         </div>
@@ -317,7 +317,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         <section className="mb-4 space-y-1.5 px-1" aria-labelledby="creator-name">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h1 id="creator-name" className="break-words text-[1.75rem] font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
+              <h1 id="creator-name" className="break-words text-[1.75rem] font-bold leading-tight tracking-tight text-slate-900 dark:text-white lg:text-[2.125rem]">
                 {profile.display_name}
               </h1>
               <p className="mt-0.5 break-all text-sm text-slate-500 dark:text-slate-400">

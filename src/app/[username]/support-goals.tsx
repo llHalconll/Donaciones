@@ -34,7 +34,7 @@ interface Props {
 }
 
 const SUPPORT_CTA_CLASS =
-  'hotmart-fb hotmart__button-checkout mt-2.5 flex min-h-11 w-full items-center justify-center gap-2 rounded-[0.625rem] bg-emerald-500 px-4 py-2 text-center text-sm font-semibold text-white no-underline transition-[background-color,transform,opacity] duration-150 ease-out hover:-translate-y-px hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 active:translate-y-0 dark:text-slate-950 dark:focus-visible:ring-offset-slate-900'
+  'hotmart-fb hotmart__button-checkout mt-2.5 flex min-h-11 w-full items-center justify-center gap-2 rounded-[0.625rem] bg-emerald-500 px-4 py-2 text-center text-sm font-semibold text-white no-underline transition-[background-color,transform,opacity] duration-150 ease-out hover:-translate-y-px hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 active:translate-y-0 dark:text-slate-950 dark:focus-visible:ring-offset-slate-900 lg:min-h-12 lg:rounded-xl lg:px-5 lg:text-base'
 
 export function PublicSupportGoals({ goals, profileId }: Props) {
   const [openGoalId, setOpenGoalId] = useState<string | null>(
@@ -209,10 +209,10 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                   onClick={() => handleGoalToggle(goal.id)}
                   aria-expanded={isOpen}
                   aria-controls={`support-goal-panel-${goal.id}`}
-                  className="flex min-h-[4.5rem] w-full items-center gap-2.5 px-3 py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500 sm:px-3.5"
+                  className="flex min-h-[4.5rem] w-full items-center gap-2.5 px-3 py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500 sm:px-3.5 lg:min-h-[5.25rem] lg:px-5"
                 >
                   <span
-                    className={`relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-inset ${
+                    className={`relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-inset lg:size-11 ${
                       goal.cover_url
                         ? 'bg-white ring-slate-200 dark:bg-slate-800 dark:ring-slate-700'
                         : 'bg-emerald-500/12 ring-emerald-500/15'
@@ -254,7 +254,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
               {isOpen && (
                 <div
                   id={`support-goal-panel-${goal.id}`}
-                  className="support-panel border-t border-slate-100 px-3 pb-3 pt-2.5 dark:border-slate-800 sm:px-3.5"
+                  className="support-panel border-t border-slate-100 px-3 pb-3 pt-2.5 dark:border-slate-800 sm:px-3.5 lg:px-5 lg:pb-4 lg:pt-3.5"
                 >
                   {/* ── Amount chips ──────────────────────────────────── */}
                   <div
@@ -277,7 +277,7 @@ export function PublicSupportGoals({ goals, profileId }: Props) {
                           onKeyDown={(event) =>
                             handleAmountKeyDown(event, goal.id, amount.id)
                           }
-                          className={`relative inline-flex min-h-9 min-w-[4.25rem] flex-none items-center justify-center rounded-[0.625rem] border px-2.5 text-center text-[13px] font-semibold transition-[border-color,background-color,color,transform] duration-150 ease-out hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 dark:focus-visible:ring-offset-slate-950 ${
+                          className={`relative inline-flex min-h-9 min-w-[4.25rem] flex-none items-center justify-center rounded-[0.625rem] border px-2.5 text-center text-[13px] font-semibold transition-[border-color,background-color,color,transform] duration-150 ease-out hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 dark:focus-visible:ring-offset-slate-950 lg:min-h-10 lg:min-w-[4.75rem] lg:text-sm ${
                             isSelected
                               ? 'border-emerald-500 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-400/10 dark:text-emerald-300'
                               : 'border-slate-200 bg-white text-slate-700 hover:border-emerald-500/45 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-emerald-400/45 dark:hover:text-emerald-300'
