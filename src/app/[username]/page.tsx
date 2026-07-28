@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { cache, Suspense } from 'react'
-import { ArrowLeft, Globe, Heart } from 'lucide-react'
+import { ArrowLeft, Heart } from 'lucide-react'
 import { getAuthUser } from '@/lib/supabase/server'
 import { createPublicClient } from '@/lib/supabase/public'
 import { resolveSiteUrl } from '@/lib/site-url'
@@ -108,11 +108,9 @@ function PublicSupportLoading() {
 async function PublicSupportContent({
   profileId,
   creatorName,
-  hasWebsite,
 }: {
   profileId: string
   creatorName: string
-  hasWebsite: boolean
 }) {
   const supabase = createPublicClient()
   const [
@@ -188,7 +186,7 @@ async function PublicSupportContent({
     )
   const emptyStateCopy = getSupportEmptyStateCopy(
     creatorName,
-    hasWebsite || safeSocialLinks.length > 0
+    safeSocialLinks.length > 0
   )
 
   return (
@@ -257,9 +255,6 @@ export default async function PublicProfilePage({ params }: PageProps) {
   const base = resolveSiteUrl()
   const profileUrl = `${base}/${profile.username}`
   const initials = profile.display_name.slice(0, 2).toUpperCase()
-  const safeWebsite = profile.website_url
-    ? validatePublicUrl(profile.website_url).normalizedUrl ?? null
-    : null
   const safeAvatar = profile.avatar_url
     ? validatePublicImageUrl(profile.avatar_url).normalizedUrl ?? null
     : null
@@ -337,25 +332,12 @@ export default async function PublicProfilePage({ params }: PageProps) {
             </p>
           )}
 
-          {safeWebsite && (
-            <a
-              href={safeWebsite}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Sitio web de ${profile.display_name} (abre en una pestaña nueva)`}
-              className="inline-flex min-h-11 items-center gap-2 rounded-lg text-sm font-medium text-emerald-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-emerald-400"
-            >
-              <Globe className="size-4 shrink-0" aria-hidden="true" />
-              <span className="break-all">{safeWebsite.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
-            </a>
-          )}
         </section>
 
         <Suspense fallback={<PublicSupportLoading />}>
           <PublicSupportContent
             profileId={profile.id}
             creatorName={profile.display_name}
-            hasWebsite={Boolean(safeWebsite)}
           />
         </Suspense>
 

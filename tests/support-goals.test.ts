@@ -383,6 +383,24 @@ describe('support empty state', () => {
   })
 })
 
+describe('public profile link placement', () => {
+  const profilePage = readFileSync(
+    join(process.cwd(), 'src/app/[username]/page.tsx'),
+    'utf8'
+  )
+  const socialLinks = readFileSync(
+    join(process.cwd(), 'src/app/[username]/social-links.tsx'),
+    'utf8'
+  )
+
+  it('keeps website links with social networks and removes the duplicate above', () => {
+    assert.doesNotMatch(profilePage, /Sitio web de/)
+    assert.doesNotMatch(profilePage, /<Globe/)
+    assert.match(socialLinks, /website:/)
+    assert.match(socialLinks, /label: 'Sitio web'/)
+  })
+})
+
 describe('public support goals markup', () => {
   it('renders an accordion and compact pressed buttons without radios', () => {
     const markup = renderToStaticMarkup(

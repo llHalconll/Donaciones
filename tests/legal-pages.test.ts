@@ -149,9 +149,11 @@ describe('legal page integration', () => {
     }
   })
 
-  it('mounts one fixed footer globally without authentication queries', () => {
+  it('mounts one in-flow footer globally without authentication queries', () => {
     assert.match(rootLayout, /<PublicFooter \/>/)
-    assert.match(footer, /fixed inset-x-0 bottom-0/)
+    assert.match(footer, /<footer className="mt-auto/)
+    assert.doesNotMatch(footer, /fixed|inset-x-0|bottom-0/)
+    assert.doesNotMatch(footer, /aria-hidden="true" className="h-/)
     assert.match(footer, /href: '\/dashboard'/)
     assert.match(footer, /CookieSettingsButton/)
     assert.match(cookieSettingsButton, /Configurar cookies/)
