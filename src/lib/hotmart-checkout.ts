@@ -4,6 +4,15 @@ import { validateHotmartUrl } from '@/lib/validations/url'
 export const HOTMART_CHECKOUT_ELEMENTS_SRC =
   'https://checkout.hotmart.com/lib/hotmart-checkout-elements.js'
 
+/**
+ * Official Hotmart widget script that intercepts clicks on elements with
+ * class "hotmart-fb hotmart__button-checkout" and opens the checkout as
+ * a popup overlay (checkoutMode=2) without navigating away from the page.
+ */
+export const HOTMART_WIDGET_SCRIPT_SRC =
+  'https://static.hotmart.com/checkout/widget.min.js'
+
+
 export type HotmartScriptStatus = 'loading' | 'ready' | 'error'
 
 export interface HotmartCheckoutAmount {
@@ -160,4 +169,31 @@ export function attachHotmartInline({
   const instance = api.init('inlineCheckout', { offer: offerCode })
   instance.attach(containerSelector)
   return instance
+}
+
+/**
+ * Returns the checkout URL for Hotmart's official popup widget.
+ *
+ * Appends `?checkoutMode=2` so the Hotmart widget script opens the checkout
+ * as a popup overlay without navigating away from the page.
+ * Also includes `?off={offerCode}` when an explicit offer code is present.
+ *
+ * Usage: set `href` on an `<a class="hotmart-fb hotmart__button-checkout">`.
+ * The widget.min.js script intercepts the click and opens the popup.
+ * If the script hasn't loaded yet the link opens the checkout in a new tab.
+ */
+export function getHotmartWidgetUrl(
+  amount: HotmartCheckoutAmount | null
+): string | null {
+  // getEffectiveCheckoutUrl already merges the base URL + offer code.
+  const baseUrl = getEffectiveCheckoutUrl(amount)
+  if (!baseUrl) return null
+
+  try {
+    const url = new URL(baseUrl)
+    url.searchParams.set('checkoutMode', '2')
+    return url.toString()
+  } catch {
+    return baseUrl
+  }
 }

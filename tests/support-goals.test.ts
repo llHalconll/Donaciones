@@ -9,9 +9,10 @@ import {
   attachHotmartOverlay,
   getHotmartCheckoutPresentation,
   getHotmartCheckoutUrl,
-  HOTMART_CHECKOUT_ELEMENTS_SRC,
+  HOTMART_WIDGET_SCRIPT_SRC,
   type HotmartCheckoutElementsApi,
 } from '../src/lib/hotmart-checkout.js'
+
 import {
   canStartSupportCheckout,
   getFeaturedSupportAmountId,
@@ -413,7 +414,7 @@ describe('public support goals markup', () => {
     assert.equal((markup.match(/role="group"/g) ?? []).length, 1)
   })
 
-  it('loads the official Elements script once for several compatible goals', () => {
+  it('loads the widget script once for goals with valid checkout URLs', () => {
     const first = makeGoal(1, 'goal-1')
     const second = makeGoal(1, 'goal-2')
     first.amounts[0].hotmart_offer_code = 'offerOne'
@@ -426,25 +427,27 @@ describe('public support goals markup', () => {
       })
     )
 
-    assert.match(markup, /Preparando pago seguro/)
-    assert.match(markup, /type="button"/)
+    // CTA renders as a link, not a disabled button, while script loads
+    assert.match(markup, /hotmart-fb/)
+    assert.match(markup, /hotmart__button-checkout/)
+    assert.match(markup, /checkoutMode=2/)
 
     const source = readFileSync(
       join(process.cwd(), 'src/app/[username]/support-goals.tsx'),
       'utf8'
     )
     assert.equal(
-      (source.match(/id="hotmart-checkout-elements"/g) ?? []).length,
+      (source.match(/id="hotmart-widget"/g) ?? []).length,
       1
     )
-    assert.ok(source.includes('src={HOTMART_CHECKOUT_ELEMENTS_SRC}'))
+    assert.ok(source.includes('src={HOTMART_WIDGET_SCRIPT_SRC}'))
     assert.equal(
-      HOTMART_CHECKOUT_ELEMENTS_SRC,
-      'https://checkout.hotmart.com/lib/hotmart-checkout-elements.js'
+      HOTMART_WIDGET_SCRIPT_SRC,
+      'https://static.hotmart.com/checkout/widget.min.js'
     )
   })
 
-  it('keeps the normal Hotmart link and fallback copy without an offer code', () => {
+  it('includes checkoutMode=2 in the link even without an offer code', () => {
     const markup = renderToStaticMarkup(
       React.createElement(PublicSupportGoals, {
         goals: [makeGoal(1)],
@@ -452,9 +455,12 @@ describe('public support goals markup', () => {
       })
     )
 
-    assert.match(markup, /href="https:\/\/pay\.hotmart\.com\/LEVEL-1"/)
-    assert.match(markup, /Continuarás en Hotmart/)
-    assert.doesNotMatch(markup, /checkoutMode=2/)
+    // URL must contain the base checkout URL
+    assert.match(markup, /pay\.hotmart\.com\/LEVEL-1/)
+    // checkoutMode=2 enables the popup overlay
+    assert.match(markup, /checkoutMode=2/)
+    // Widget CSS class must be present for the JS to intercept the click
+    assert.match(markup, /hotmart__button-checkout/)
   })
 
   it('preserves long, unbroken, special and emoji goal titles', () => {
@@ -480,17 +486,20 @@ describe('public support goals markup', () => {
     }
   })
 
-  it('keeps one analytics activation and removes the legacy widget', () => {
+  it('uses the widget script and fires analytics exactly once per click', () => {
     const source = readFileSync(
       join(process.cwd(), 'src/app/[username]/support-goals.tsx'),
       'utf8'
     )
 
+    // Analytics event fires exactly once
     assert.equal(
       (source.match(/trackEvent\('hotmart_redirect'/g) ?? []).length,
       1
     )
-    assert.doesNotMatch(source, /static\.hotmart\.com\/checkout\/widget\.min\.js/)
-    assert.doesNotMatch(source, /hotmart__button-checkout/)
+    // Widget script is used (not the legacy Elements script for the CTA)
+    assert.ok(source.includes('HOTMART_WIDGET_SCRIPT_SRC'))
+    // Widget CSS class required for popup interception
+    assert.ok(source.includes('hotmart__button-checkout'))
   })
 })
